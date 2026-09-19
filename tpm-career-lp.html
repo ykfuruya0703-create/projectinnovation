@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TPM Career | TOKYO PRO Market専門 人材紹介サービス</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg0:#060c14;--bg1:#0a1628;--bg2:#0f2040;
+  --accent:#00d4ff;--accent2:#0090ff;--accent3:#00e8b8;
+  --teal:#00c8a0;--teal2:#00e8b8;
+  --purple:#8b5cf6;--purple2:#a78bfa;
+  --gold:#f59e0b;--amber2:#fbbf24;
+  --red:#ef4444;--red2:#f87171;
+  --green:#22c55e;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#475569;
+  --border:rgba(0,212,255,0.1);--border2:rgba(0,212,255,0.22);
+  --jv-navy:#03194C;--jv-navy2:#071f5a;--jv-navy3:#0a2266;
+  --jv-red:#c8102e;--jv-white:#ffffff;--jv-paper:#f5f4f0;
+  --jv-fog:#4a5d7a;--jv-mist:#8a9ab8;
+  --jv-dp:'Syne',sans-serif;--jv-mn:'Space Mono',monospace;--jv-sr:'Noto Serif JP',serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Hiragino Sans','Yu Gothic UI','Noto Sans JP',sans-serif;background:var(--bg0);color:var(--text);overflow-x:hidden;line-height:1.6}
+
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse 80% 60% at 15% 10%,rgba(0,100,255,0.07) 0%,transparent 60%),
+  radial-gradient(ellipse 60% 50% at 85% 80%,rgba(0,200,160,0.06) 0%,transparent 60%),
+  radial-gradient(ellipse 40% 40% at 50% 50%,rgba(0,212,255,0.03) 0%,transparent 70%);
+  pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
+  background-size:60px 60px;pointer-events:none;z-index:0}
+
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.2);border-radius:2px}
+
+.container{max-width:1200px;margin:0 auto;padding:0 40px;position:relative;z-index:1}
+.tag-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.tag-cyan{background:rgba(0,212,255,0.1);color:var(--accent);border:1px solid rgba(0,212,255,0.25)}
+.tag-green{background:rgba(0,255,136,0.08);color:var(--accent3);border:1px solid rgba(0,255,136,0.2)}
+.tag-purple{background:rgba(139,92,246,0.1);color:var(--purple2);border:1px solid rgba(139,92,246,0.25)}
+.tag-gold{background:rgba(245,158,11,0.1);color:var(--amber2);border:1px solid rgba(245,158,11,0.25)}
+.gradient-text{background:linear-gradient(135deg,var(--accent) 0%,var(--teal2) 50%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gradient-text-gold{background:linear-gradient(135deg,var(--gold) 0%,#ffaa00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 20px rgba(0,212,255,0.2)}50%{box-shadow:0 0 40px rgba(0,212,255,0.5)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes scanLine{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.animate-fadeInUp{animation:fadeInUp .7s ease both}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.2s}.delay-3{animation-delay:.3s}.delay-4{animation-delay:.4s}
+
+/* ─── HEADER ─── */
+header{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 40px;height:64px;display:flex;align-items:center;background:rgba(6,12,20,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.header-inner{display:flex;align-items:center;width:100%;max-width:1200px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--teal));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#031018;letter-spacing:-1px;flex-shrink:0;position:relative;overflow:hidden}
+.logo-mark::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.2));pointer-events:none}
+.logo-text b{font-size:15px;color:#fff;letter-spacing:.3px;display:block}
+.logo-text span{font-size:9px;color:var(--accent);letter-spacing:2px;text-transform:uppercase}
+nav{display:flex;align-items:center;gap:26px;margin-left:52px}
+nav a{font-size:12px;color:var(--text2);text-decoration:none;letter-spacing:.5px;transition:.2s;position:relative}
+nav a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:var(--accent);transition:.3s}
+nav a:hover{color:var(--accent)}nav a:hover::after{width:100%}
+.header-cta{margin-left:auto;display:flex;align-items:center;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 22px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s;letter-spacing:.5px;border:none}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--accent)}
+.btn-outline:hover{background:rgba(0,212,255,0.08);border-color:var(--accent)}
+.btn-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#031018;position:relative;overflow:hidden}
+.btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent),var(--accent3));opacity:0;transition:.3s}
+.btn-primary:hover::before{opacity:1}
+.btn-primary span{position:relative;z-index:1}
+.btn-lg{padding:14px 32px;font-size:14px;border-radius:10px}
+
+/* ─── HERO ─── */
+#hero{min-height:100vh;display:flex;align-items:center;padding:100px 0 80px;overflow:hidden;position:relative}
+.hero-scan{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hero-scan::after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,212,255,0.4),transparent);animation:scanLine 6s linear infinite}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:20px;background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);font-size:11px;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:28px}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent3);animation:blink 1.5s infinite}
+.hero-title{font-size:clamp(28px,3.9vw,50px);font-weight:900;line-height:1.3;letter-spacing:-1.3px;margin-bottom:22px}
+.hero-title .line2{color:var(--text2);font-size:.44em;font-weight:400;letter-spacing:0;display:block;margin-top:14px}
+.hero-desc{font-size:16px;color:var(--text2);max-width:560px;line-height:1.9;margin-bottom:36px}
+.hero-actions{display:flex;align-items:center;gap:16px;margin-bottom:52px;flex-wrap:wrap}
+.hero-stats{display:flex;gap:28px;flex-wrap:wrap}
+.hero-stat{display:flex;flex-direction:column;gap:4px}
+.hero-stat-val{font-size:22px;font-weight:900;letter-spacing:-1px}
+.hero-stat-label{font-size:10px;color:var(--text3);letter-spacing:.5px;text-transform:uppercase;max-width:150px}
+.hero-divider{width:1px;height:44px;background:var(--border2);align-self:center}
+
+/* ─── HERO VISUAL: BEFORE / AFTER ─── */
+.preview-wrap{position:relative;animation:float 6s ease-in-out infinite}
+.preview-frame{background:rgba(5,14,28,0.9);border:1px solid var(--border2);border-radius:16px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,0.8),0 0 60px rgba(0,212,255,0.08),inset 0 1px 0 rgba(0,212,255,0.15)}
+.preview-bar{height:36px;background:rgba(2,8,16,0.95);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px}
+.preview-dots{display:flex;gap:6px}
+.preview-dots span{width:10px;height:10px;border-radius:50%}
+.preview-dots span:nth-child(1){background:#ff5f57}.preview-dots span:nth-child(2){background:#febc2e}.preview-dots span:nth-child(3){background:#28c840}
+.preview-url{flex:1;background:rgba(15,32,64,0.6);border-radius:6px;height:20px;display:flex;align-items:center;padding:0 10px;font-size:9px;color:var(--text3)}
+.screen-glow{position:absolute;inset:-20px;border-radius:24px;background:radial-gradient(ellipse 60% 40% at 50% 50%,rgba(0,212,255,0.06),transparent 70%);pointer-events:none}
+.reveal-diagram{padding:24px 22px 22px}
+.rd-label{font-size:9.5px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;font-weight:700}
+.rd-before{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;opacity:.55}
+.rd-box{background:rgba(10,22,40,0.9);border:1px dashed rgba(148,163,184,0.3);border-radius:9px;padding:10px 6px;text-align:center}
+.rd-box .rb-icon{font-size:16px;margin-bottom:5px}
+.rd-box .rb-label{font-size:9.5px;color:var(--text2);font-weight:700}
+.rd-arrow-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.rd-arrow-row .line{flex:1;height:1px;background:repeating-linear-gradient(90deg,rgba(0,212,255,0.4) 0 5px,transparent 5px 10px)}
+.rd-arrow-row .txt{font-size:10px;color:var(--accent);white-space:nowrap;font-weight:700}
+.rd-after{background:linear-gradient(135deg,rgba(0,212,255,0.1),rgba(139,92,246,0.08));border:1px solid rgba(0,212,255,0.35);border-radius:12px;padding:14px}
+.rd-after-title{font-size:11px;font-weight:800;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.rd-chips{display:flex;flex-wrap:wrap;gap:6px}
+.rd-chip{font-size:9.5px;padding:5px 10px;border-radius:20px;background:rgba(0,212,255,0.12);border:1px solid rgba(0,212,255,0.3);color:#bff0ff;font-weight:700;white-space:nowrap}
+
+/* ─── SECTION BASE ─── */
+section{padding:100px 0;position:relative;z-index:1}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:0 40px}
+.section-badge{margin-bottom:16px}
+.section-title{font-size:clamp(24px,3.1vw,40px);font-weight:900;letter-spacing:-1.3px;line-height:1.3;margin-bottom:16px}
+.section-desc{font-size:15px;color:var(--text2);max-width:600px;line-height:1.9}
+.section-header{margin-bottom:56px}
+
+/* ─── NUMBERS ─── */
+#numbers{background:linear-gradient(180deg,var(--bg0) 0%,rgba(0,30,60,0.3) 50%,var(--bg0) 100%);padding:76px 0}
+.numbers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--border)}
+.number-card{background:var(--bg1);padding:40px 26px;text-align:center;position:relative;overflow:hidden;transition:.3s}
+.number-card:hover{background:rgba(5,18,36,0.95)}
+.nc-val{font-size:clamp(24px,2.6vw,36px);font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:8px}
+.nc-label{font-size:12px;color:var(--text2);letter-spacing:.5px;font-weight:700}
+.nc-sub{font-size:10.5px;color:var(--text3);margin-top:6px;line-height:1.6}
+
+/* ─── GAP EXPLAIN ─── */
+#gap{background:var(--bg0)}
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+
+/* ─── POSITIONS ─── */
+#positions{background:linear-gradient(180deg,var(--bg0),var(--bg1))}
+.positions-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.pos-card{background:rgba(5,14,28,0.8);border:1px solid var(--border);border-radius:16px;padding:26px 22px;position:relative;overflow:hidden;transition:all .3s}
+.pos-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c,var(--accent)),transparent)}
+.pos-card:hover{border-color:rgba(var(--cr,0,212,255),0.3);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.pos-num{font-size:10px;color:var(--text3);letter-spacing:2px;margin-bottom:12px;font-weight:700}
+.pos-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:14px}
+.pos-title{font-size:15px;font-weight:800;margin-bottom:9px;color:#fff}
+.pos-desc{font-size:12px;color:var(--text2);line-height:1.75}
+
+/* ─── PILLARS (FEATURES) ─── */
+#pillars{background:var(--bg1)}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.feature-card{background:rgba(5,14,28,0.8);border:1px solid var(--border);border-radius:16px;padding:30px;position:relative;overflow:hidden;transition:all .3s}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c,var(--accent)),transparent)}
+.feature-card:hover{border-color:rgba(var(--cr,0,212,255),0.3);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.fc-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px;margin-bottom:18px}
+.fc-title{font-size:17px;font-weight:800;margin-bottom:10px}
+.fc-desc{font-size:13px;color:var(--text2);line-height:1.8}
+.fc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.fc-tag{font-size:9px;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,0.05);color:var(--text3);border:1px solid var(--border)}
+
+/* ─── FLOW ─── */
+#flow{background:linear-gradient(180deg,var(--bg1),var(--bg0))}
+.flow-steps{display:flex;flex-direction:column;gap:0;position:relative}
+.flow-steps::before{content:'';position:absolute;left:23px;top:24px;bottom:24px;width:1px;background:linear-gradient(180deg,var(--accent),var(--teal),var(--purple))}
+.flow-step{display:flex;gap:24px;align-items:flex-start;padding:22px 0;position:relative}
+.flow-num{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;flex-shrink:0;position:relative;z-index:1}
+.flow-body{flex:1}
+.flow-title{font-size:17px;font-weight:800;margin-bottom:6px}
+.flow-desc{font-size:13px;color:var(--text2);line-height:1.8;max-width:600px}
+.flow-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.flow-tag{font-size:9px;padding:3px 9px;border-radius:4px;font-weight:600}
+
+/* ─── PRICING ─── */
+#pricing{background:var(--bg0)}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:stretch}
+.price-card{background:rgba(5,14,28,0.85);border:1px solid var(--border);border-radius:18px;padding:32px 28px;display:flex;flex-direction:column;position:relative;transition:.3s}
+.price-card:hover{transform:translateY(-4px)}
+.price-card.on{border-color:rgba(0,212,255,0.4);background:rgba(0,212,255,0.04);box-shadow:0 20px 60px rgba(0,212,255,0.12)}
+.price-pop{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent2),var(--accent));color:#031018;font-size:10px;font-weight:800;padding:5px 16px;border-radius:20px;letter-spacing:.5px;white-space:nowrap}
+.price-name{font-size:13px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.price-val{font-size:28px;font-weight:900;letter-spacing:-1px;margin-bottom:2px}
+.price-val small{font-size:13px;font-weight:600;color:var(--text2)}
+.price-unit{font-size:11px;color:var(--text3);margin-bottom:22px}
+.price-desc{font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:20px;min-height:52px}
+.price-list{list-style:none;display:flex;flex-direction:column;gap:11px;margin-bottom:26px;flex:1}
+.price-list li{font-size:12.5px;color:var(--text);display:flex;align-items:flex-start;gap:8px;line-height:1.6}
+.price-list li::before{content:'✓';color:var(--teal2);font-weight:900;flex-shrink:0}
+.price-list li.na{color:var(--text3)}
+.price-list li.na::before{content:'—';color:var(--text3)}
+.pricing-note{text-align:center;font-size:11px;color:var(--text3);margin-top:32px;letter-spacing:.3px;line-height:1.8}
+
+/* ─── QUOTE ─── */
+#quote{background:var(--bg0);text-align:center;padding:76px 0}
+.quote-inner{max-width:800px;margin:0 auto;padding:0 40px}
+.quote-text{font-size:clamp(16px,2.2vw,23px);font-weight:700;line-height:1.8;color:#fff;margin-bottom:22px;position:relative}
+.quote-text::before{content:'"';position:absolute;top:-20px;left:-20px;font-size:80px;color:rgba(0,212,255,0.1);font-family:serif;line-height:1}
+.quote-author{font-size:12px;color:var(--text2);letter-spacing:1px}
+
+/* ─── FAQ ─── */
+#faq{background:linear-gradient(180deg,var(--bg0),var(--bg1))}
+.faq-list{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.faq-item{background:rgba(5,14,28,0.8);border:1px solid var(--border);border-radius:12px;padding:20px 24px;cursor:pointer;transition:.2s}
+.faq-item:hover{border-color:var(--border2)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:14px;font-weight:700;color:#fff}
+.faq-q .fq-mark{font-size:16px;color:var(--accent);transition:.25s;flex-shrink:0}
+.faq-item.open .fq-mark{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.faq-item.open .faq-a{max-height:240px}
+.faq-a p{font-size:12.5px;color:var(--text2);line-height:1.9;padding-top:14px}
+
+/* ─── PROFILE ─── */
+#profile.prof-section{background:var(--jv-paper);padding:6rem 4.5rem}
+.prof-grid{display:grid;grid-template-columns:340px 1fr;gap:4.5rem;align-items:start}
+.prof-photo-card{position:sticky;top:88px}
+.prof-photo{width:100%;aspect-ratio:3/4;overflow:hidden;background:linear-gradient(135deg,var(--jv-navy) 0%,var(--jv-navy3) 100%);position:relative;display:flex;align-items:center;justify-content:center}
+.prof-photo-initial{font-family:var(--jv-dp);font-size:6rem;font-weight:800;color:rgba(255,255,255,.1)}
+.prof-name-block{background:var(--jv-navy);padding:1.5rem 1.8rem;margin-top:-4px}
+.prof-name{font-family:var(--jv-dp);font-size:1.4rem;font-weight:800;color:var(--jv-white);margin-bottom:.15rem}
+.prof-name-en{font-family:var(--jv-mn);font-size:.58rem;letter-spacing:.18em;color:rgba(255,255,255,.35);margin-bottom:.65rem}
+.prof-role-line{font-family:var(--jv-mn);font-size:.58rem;letter-spacing:.06em;color:rgba(255,255,255,.5);line-height:1.8}
+.prof-badges{margin-top:.9rem;display:flex;flex-direction:column;gap:.3rem}
+.prof-badge{display:flex;align-items:center;gap:.5rem;font-family:var(--jv-mn);font-size:.52rem;letter-spacing:.06em;color:rgba(255,255,255,.5)}
+.prof-badge::before{content:'✓';color:var(--jv-red);font-size:.6rem}
+.prof-career-intro{font-family:var(--jv-dp);font-size:clamp(1.4rem,2.3vw,2.1rem);font-weight:700;color:var(--jv-navy);line-height:1.3;margin-bottom:2rem}
+.prof-career-intro em{font-style:normal;color:var(--jv-red)}
+.prof-body-text{font-size:.9rem;font-weight:300;line-height:2;color:var(--jv-fog);margin-bottom:1.6rem}
+.prof-body-text strong{color:var(--jv-navy);font-weight:500}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}
+@media(max-width:1024px){.prof-grid{grid-template-columns:1fr}}
+@media(max-width:768px){#profile.prof-section{padding:4rem 1.25rem}.prof-photo-card{position:static}}
+
+/* ─── CTA / LEAD FORM ─── */
+#cta{padding:110px 0;text-align:center;position:relative;overflow:hidden}
+#cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(0,100,255,0.08),transparent 70%)}
+.cta-title{font-size:clamp(28px,3.6vw,44px);font-weight:900;letter-spacing:-1.5px;margin-bottom:20px}
+.cta-desc{font-size:15px;color:var(--text2);max-width:520px;margin:0 auto 40px;line-height:1.8}
+.glow-btn{position:relative;overflow:hidden;animation:pulseGlow 3s ease-in-out infinite}
+.lead-form{max-width:560px;margin:0 auto;text-align:left;background:rgba(5,14,28,0.85);border:1px solid var(--border2);border-radius:16px;padding:26px 26px 22px;position:relative;z-index:1}
+.lf-toggle{display:flex;gap:8px;margin-bottom:14px;background:var(--bg2);border-radius:9px;padding:4px}
+.lf-toggle label{flex:1;text-align:center;padding:9px 8px;border-radius:7px;font-size:12px;font-weight:700;color:var(--text2);cursor:pointer;transition:.2s}
+.lf-toggle input{display:none}
+.lf-toggle input:checked + span{display:block}
+.lf-toggle label:has(input:checked){background:linear-gradient(135deg,var(--accent2),var(--accent));color:#031018}
+.lead-form .lf-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:560px){.lead-form .lf-row{grid-template-columns:1fr}}
+.lead-form input,.lead-form select,.lead-form textarea{width:100%;padding:11px 13px;border-radius:9px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);font-size:13px;font-family:inherit;outline:none}
+.lead-form input::placeholder,.lead-form textarea::placeholder{color:var(--text3)}
+.lead-form input:focus,.lead-form select:focus,.lead-form textarea:focus{border-color:var(--accent)}
+.lead-form textarea{resize:vertical;margin-bottom:14px}
+.lead-form .lf-submit{width:100%;justify-content:center;margin-bottom:10px}
+.lf-status{font-size:12.5px;min-height:18px;text-align:center}
+.lf-status.ok{color:var(--accent3)}
+.lf-status.err{color:var(--red2)}
+.lf-alt{font-size:12px;color:var(--text3);margin-top:18px}
+.lf-alt a{color:var(--accent);text-decoration:none}
+.cta-note{font-size:11px;color:var(--text3);margin-top:20px;letter-spacing:.5px}
+
+/* ─── FOOTER ─── */
+footer{background:rgba(2,5,12,0.9);border-top:1px solid var(--border);padding:56px 0 30px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:56px;margin-bottom:44px}
+.footer-brand .logo-text b{font-size:17px}
+.footer-desc{font-size:12px;color:var(--text3);margin-top:12px;line-height:1.8;max-width:260px}
+.footer-col h4{font-size:11px;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-col ul li a{font-size:12px;color:var(--text3);text-decoration:none;transition:.2s}
+.footer-col ul li a:hover{color:var(--accent)}
+.footer-bottom{border-top:1px solid var(--border);padding-top:22px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text3);flex-wrap:wrap;gap:10px}
+.live-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);font-size:10px;color:#4ade80;font-weight:700}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 1.5s infinite}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:1024px){.features-grid{grid-template-columns:repeat(2,1fr)}.positions-grid{grid-template-columns:repeat(2,1fr)}.numbers-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}.pricing-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}.overview-grid{grid-template-columns:1fr}}
+@media(max-width:768px){
+  .hero-title{font-size:28px}
+  #hero{padding-top:110px}
+  #hero .container>div{display:block!important}
+  .preview-wrap{margin-top:40px}
+  .container{padding:0 20px}
+  header{padding:0 20px}
+  nav{display:none}
+  .features-grid,.positions-grid{grid-template-columns:1fr}
+  .numbers-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .hero-stats{gap:18px}
+  .flow-step{gap:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- ─── HEADER ─── -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-mark">TPM</div>
+      <div class="logo-text">
+        <b>TPM Career</b>
+        <span>IPO Specialist Recruiting</span>
+      </div>
+    </div>
+    <nav>
+      <a href="#gap">課題</a>
+      <a href="#positions">対象職種</a>
+      <a href="#pillars">選ばれる理由</a>
+      <a href="#flow">紹介の流れ</a>
+      <a href="#pricing">料金</a>
+      <a href="#faq">よくある質問</a>
+      <a href="#profile">運営会社</a>
+    </nav>
+    <div class="header-cta">
+      <a href="#pricing" class="btn btn-outline">料金を見る</a>
+      <a href="#cta" class="btn btn-primary"><span>💬 採用のご相談</span></a>
+    </div>
+  </div>
+</header>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-scan"></div>
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center">
+
+      <!-- LEFT -->
+      <div>
+        <div class="hero-badge animate-fadeInUp">
+          <span class="dot"></span>
+          TOKYO PRO Market 専門 人材紹介サービス
+        </div>
+        <h1 class="hero-title animate-fadeInUp delay-1">
+          そのポジションは、<br>上場を検討しないと<br>見えてこない。
+          <span class="line2">IPOリーダー、経営企画、適時開示、フォーキャスト——市場が変われば、必要な人材も変わる。</span>
+        </h1>
+        <p class="hero-desc animate-fadeInUp delay-2">
+          TOKYO PRO Marketへの上場を決めた瞬間から、これまでの組織図には存在しなかった役割が次々と必要になります。
+          一般的な人材紹介では見極めが難しいこれらのポジションに、<strong style="color:#fff">TPM Career</strong>は特化しています。
+          上場実務の経験者ネットワークから、貴社に合う"即戦力"人材をご紹介します。
+        </p>
+        <div class="hero-actions animate-fadeInUp delay-3">
+          <a href="#cta" class="btn btn-primary btn-lg glow-btn">
+            <span>💬 採用のご相談（無料）</span>
+          </a>
+          <a href="#positions" class="btn btn-outline btn-lg">対象職種を見る →</a>
+        </div>
+        <div class="hero-stats animate-fadeInUp delay-4">
+          <div class="hero-stat">
+            <div class="hero-stat-val gradient-text">7職種</div>
+            <div class="hero-stat-label">IPO実務に特化した専門ポジション</div>
+          </div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-val" style="color:var(--accent3)">成功報酬型</div>
+            <div class="hero-stat-label">着手金なし・入社時のみお支払い</div>
+          </div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-val" style="color:var(--gold)">最短2週間〜</div>
+            <div class="hero-stat-label">ご相談から候補者ご紹介まで</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: BEFORE / AFTER REVEAL -->
+      <div class="preview-wrap animate-fadeInUp delay-2">
+        <div class="screen-glow"></div>
+        <div class="preview-frame">
+          <div class="preview-bar">
+            <div class="preview-dots"><span></span><span></span><span></span></div>
+            <div class="preview-url">貴社の採用ニーズ / 上場検討フェーズ</div>
+          </div>
+          <div class="reveal-diagram">
+            <div class="rd-label">上場を検討する前</div>
+            <div class="rd-before">
+              <div class="rd-box"><div class="rb-icon">💼</div><div class="rb-label">営業</div></div>
+              <div class="rd-box"><div class="rb-icon">🧾</div><div class="rb-label">経理</div></div>
+              <div class="rd-box"><div class="rb-icon">🛠️</div><div class="rb-label">開発</div></div>
+            </div>
+            <div class="rd-arrow-row">
+              <div class="line"></div>
+              <div class="txt">IPOを検討すると →</div>
+              <div class="line"></div>
+            </div>
+            <div class="rd-after">
+              <div class="rd-after-title">✨ 見えてくる7つのポジション</div>
+              <div class="rd-chips">
+                <span class="rd-chip">IPOリーダー</span>
+                <span class="rd-chip">経営企画</span>
+                <span class="rd-chip">会社法・適時開示</span>
+                <span class="rd-chip">フォーキャスト</span>
+                <span class="rd-chip">IPO審査対応</span>
+                <span class="rd-chip">ストックオプション</span>
+                <span class="rd-chip">経理（上場基準）</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── NUMBERS ─── -->
+<div class="divider"></div>
+<section id="numbers">
+  <div class="container">
+    <div class="numbers-grid">
+      <div class="number-card">
+        <div class="nc-val gradient-text">7職種</div>
+        <div class="nc-label">TPM特化ポジション</div>
+        <div class="nc-sub">IPOリーダーから経理・法務まで一気通貫でご紹介</div>
+      </div>
+      <div class="number-card">
+        <div class="nc-val" style="color:var(--accent3)">成功報酬型</div>
+        <div class="nc-label">初期費用ゼロ</div>
+        <div class="nc-sub">ご入社が決まるまで費用は発生しません</div>
+      </div>
+      <div class="number-card">
+        <div class="nc-val gradient-text-gold">2週間〜</div>
+        <div class="nc-label">初回ご紹介まで</div>
+        <div class="nc-sub">ヒアリングから候補者ご紹介までの目安</div>
+      </div>
+      <div class="number-card">
+        <div class="nc-val" style="color:var(--purple)">TPM特化</div>
+        <div class="nc-label">市場特性を理解した見極め</div>
+        <div class="nc-sub">J-Adviser・審査実務を踏まえた候補者選定</div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ─── GAP EXPLAIN ─── -->
+<section id="gap">
+  <div class="container">
+    <div class="overview-grid">
+      <div>
+        <div class="section-badge"><span class="tag-pill tag-cyan">THE GAP</span></div>
+        <h2 class="section-title">求人票を書こうとして、<br>初めて「いない」ことに気づく。</h2>
+        <p class="section-desc">TOKYO PRO Market上場を検討し始めた会社の多くが直面するのが、「そもそも社内にその役割の担当者がいない」という壁です。既存の組織には、上場実務を担う人材の"枠"自体が存在しません。</p>
+        <div style="display:flex;flex-direction:column;gap:16px;margin-top:32px">
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🔍</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;margin-bottom:4px">求人票の書き方が分からない</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.7">「IPO審査対応の経験者」と一言で言っても、どんなスキル・経験を求めればよいか社内に知見がない。</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🧑‍💻</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;margin-bottom:4px">一般的な人材紹介では見極められない</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.7">「経営企画」「経理」という職種名だけでは、上場実務の経験値・対応レベルの違いが伝わらず、ミスマッチが起きやすい。</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">⏳</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;margin-bottom:4px">上場準備は待ってくれない</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.7">審査スケジュールが決まっている以上、採用に時間をかけすぎると準備全体が遅延するリスクがある。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="feature-card" style="--c:#00d4ff;--cr:0,212,255;padding:36px">
+          <div class="fc-icon" style="background:rgba(0,212,255,0.1)">💡</div>
+          <div class="fc-title" style="font-size:19px">TPM Careerの考え方</div>
+          <div class="fc-desc" style="font-size:13.5px">
+            一般的な人材紹介会社は「業界」や「職種」でマッチングします。しかしIPO実務の担い手に必要なのは、業界横断で通用する「上場プロセスの経験」そのものです。<br><br>
+            TPM Careerは、TOKYO PRO Market・グロース市場での上場実務経験者ネットワークに特化し、貴社の上場フェーズに合わせた候補者だけをご紹介します。
+          </div>
+          <div class="fc-tags">
+            <span class="fc-tag">職種横断×IPO実務特化</span>
+            <span class="fc-tag">成功報酬・完全成果型</span>
+            <span class="fc-tag">上場フェーズ別マッチング</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── POSITIONS ─── -->
+<section id="positions">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge"><span class="tag-pill tag-cyan">対象職種</span></div>
+      <h2 class="section-title">上場を検討して初めて<br>必要になる、7つのポジション</h2>
+      <p class="section-desc">いずれも「兼務」や「片手間」で乗り切ろうとして、審査直前に体制不備が発覚しやすい役割です。専任人材の確保を早めにご検討ください。</p>
+    </div>
+    <div class="positions-grid">
+      <div class="pos-card" style="--c:#00d4ff;--cr:0,212,255">
+        <div class="pos-num">01</div>
+        <div class="pos-icon" style="background:rgba(0,212,255,0.1)">🚀</div>
+        <div class="pos-title">IPOリーダー</div>
+        <div class="pos-desc">上場準備プロジェクト全体を統括。主幹事証券・監査法人・J-Adviserとの折衝から、社内推進の陣頭指揮までを担う責任者。</div>
+      </div>
+      <div class="pos-card" style="--c:#00c8a0;--cr:0,200,160">
+        <div class="pos-num">02</div>
+        <div class="pos-icon" style="background:rgba(0,200,160,0.08)">🧮</div>
+        <div class="pos-title">経理</div>
+        <div class="pos-desc">月次決算の早期化、内部統制対応、上場基準を満たす会計体制の構築ができる経理人材。上場準備企業での実務経験を重視。</div>
+      </div>
+      <div class="pos-card" style="--c:#8b5cf6;--cr:139,92,246">
+        <div class="pos-num">03</div>
+        <div class="pos-icon" style="background:rgba(139,92,246,0.08)">📊</div>
+        <div class="pos-title">経営企画</div>
+        <div class="pos-desc">中期経営計画・資本政策・KPI設計・IR資料作成など、経営と現場をつなぐ企画機能を担う人材。</div>
+      </div>
+      <div class="pos-card" style="--c:#f59e0b;--cr:245,158,11">
+        <div class="pos-num">04</div>
+        <div class="pos-icon" style="background:rgba(245,158,11,0.08)">📜</div>
+        <div class="pos-title">会社法・適時開示</div>
+        <div class="pos-desc">取締役会運営、株主総会、登記実務、TDnetでの適時開示対応など、会社法実務に精通した法務人材。</div>
+      </div>
+      <div class="pos-card" style="--c:#00d4ff;--cr:0,212,255">
+        <div class="pos-num">05</div>
+        <div class="pos-icon" style="background:rgba(0,212,255,0.1)">📈</div>
+        <div class="pos-title">業績予測管理（フォーキャスト）</div>
+        <div class="pos-desc">予算・実績・見通しの精度を担保する管理会計人材。経営会議にそのまま出せる予実管理の仕組みを回せる経験者。</div>
+      </div>
+      <div class="pos-card" style="--c:#ef4444;--cr:239,68,68">
+        <div class="pos-num">06</div>
+        <div class="pos-icon" style="background:rgba(239,68,68,0.08)">🔎</div>
+        <div class="pos-title">IPO審査対応</div>
+        <div class="pos-desc">主幹事証券・取引所審査への対応、内部監査・内部統制の構築、想定問答の整理まで担える審査実務の経験者。</div>
+      </div>
+      <div class="pos-card" style="--c:#00c8a0;--cr:0,200,160">
+        <div class="pos-num">07</div>
+        <div class="pos-icon" style="background:rgba(0,200,160,0.08)">🎯</div>
+        <div class="pos-title">ストックオプション設計</div>
+        <div class="pos-desc">税制適格SOをはじめとするインセンティブ制度・株式報酬制度の設計と運用ができる人材。</div>
+      </div>
+      <div class="pos-card" style="--c:#8b5cf6;--cr:139,92,246">
+        <div class="pos-num">＋</div>
+        <div class="pos-icon" style="background:rgba(139,92,246,0.08)">💬</div>
+        <div class="pos-title">上記以外のポジション</div>
+        <div class="pos-desc">CFO候補、IR担当、内部監査責任者など、上場準備・上場後に必要となる関連職種もご相談に応じます。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PILLARS ─── -->
+<section id="pillars">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge"><span class="tag-pill tag-purple">選ばれる理由</span></div>
+      <h2 class="section-title">なぜ、一般的な人材紹介では<br>難しいのか。</h2>
+      <p class="section-desc">上場実務は、職種名だけでは経験値が測れない領域です。だからこそ、市場特性と実務の両方を理解した紹介が必要になります。</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card" style="--c:#00d4ff;--cr:0,212,255">
+        <div class="fc-icon" style="background:rgba(0,212,255,0.1)">🌉</div>
+        <div class="fc-title">TPM特化ネットワーク</div>
+        <div class="fc-desc">TOKYO PRO Market・グロース市場での上場実務経験者に絞ったネットワークを保有。一般的な転職市場には出てこない候補者にアプローチできます。</div>
+        <div class="fc-tags">
+          <span class="fc-tag">上場準備企業出身者</span>
+          <span class="fc-tag">J-Adviser経験者</span>
+        </div>
+      </div>
+      <div class="feature-card" style="--c:#00c8a0;--cr:0,200,160">
+        <div class="fc-icon" style="background:rgba(0,200,160,0.08)">🎯</div>
+        <div class="fc-title">実務目線での見極め</div>
+        <div class="fc-desc">「経営企画」「適時開示対応」を経験と称する候補者の、実際の対応レベル・判断経験の深さまで見極めた上でご紹介します。</div>
+        <div class="fc-tags">
+          <span class="fc-tag">実務経験の深掘り</span>
+          <span class="fc-tag">ミスマッチ防止</span>
+        </div>
+      </div>
+      <div class="feature-card" style="--c:#8b5cf6;--cr:139,92,246">
+        <div class="fc-icon" style="background:rgba(139,92,246,0.08)">⚡</div>
+        <div class="fc-title">審査スケジュールに合わせた速さ</div>
+        <div class="fc-desc">上場審査のタイムラインを踏まえ、必要な時期から逆算した採用計画のご相談から、候補者ご紹介までスピーディに対応します。</div>
+        <div class="fc-tags">
+          <span class="fc-tag">審査逆算の採用設計</span>
+          <span class="fc-tag">最短2週間〜ご紹介</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FLOW ─── -->
+<section id="flow">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start">
+      <div>
+        <div class="section-badge"><span class="tag-pill tag-cyan">Recruiting Flow</span></div>
+        <h2 class="section-title">ご相談から入社まで、<br>5つのステップ</h2>
+        <p class="section-desc">いきなり求人票をお預かりするのではなく、上場フェーズと組織の状況を丁寧にヒアリングした上で、必要な人材要件を一緒に整理します。</p>
+      </div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-num" style="background:rgba(0,212,255,0.15);border:2px solid #00d4ff;color:#00d4ff">1</div>
+          <div class="flow-body">
+            <div class="flow-title">無料相談・要件ヒアリング</div>
+            <div class="flow-desc">上場フェーズ、現状の組織体制、求める役割の優先順位についてお伺いします。求人票がまだ無い状態でもご相談いただけます。</div>
+            <div class="flow-tags">
+              <span class="flow-tag" style="background:rgba(0,212,255,0.1);color:#7dd3fc;border:1px solid rgba(0,212,255,0.2)">オンライン対応可</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num" style="background:rgba(0,200,160,0.15);border:2px solid #00c8a0;color:#00e8b8">2</div>
+          <div class="flow-body">
+            <div class="flow-title">人材要件の整理</div>
+            <div class="flow-desc">求めるスキル・経験レベル・想定年収を、上場実務の観点から一緒に言語化。求人票の作成もサポートします。</div>
+            <div class="flow-tags">
+              <span class="flow-tag" style="background:rgba(0,200,160,0.1);color:#00e8b8;border:1px solid rgba(0,200,160,0.2)">求人票作成支援</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num" style="background:rgba(245,158,11,0.15);border:2px solid #f59e0b;color:#fbbf24">3</div>
+          <div class="flow-body">
+            <div class="flow-title">候補者のご紹介</div>
+            <div class="flow-desc">TPM特化ネットワークの中から、実務経験と適性を見極めた候補者をご紹介。書類選考の日程調整も代行します。</div>
+            <div class="flow-tags">
+              <span class="flow-tag" style="background:rgba(245,158,11,0.1);color:#fde68a;border:1px solid rgba(245,158,11,0.2)">候補者選定</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num" style="background:rgba(239,68,68,0.15);border:2px solid #ef4444;color:#f87171">4</div>
+          <div class="flow-body">
+            <div class="flow-title">面接調整・見極め支援</div>
+            <div class="flow-desc">面接日程の調整に加え、上場実務の観点からの質問例のご提案など、面接の見極め精度を高めるサポートを行います。</div>
+            <div class="flow-tags">
+              <span class="flow-tag" style="background:rgba(239,68,68,0.1);color:#fca5a5;border:1px solid rgba(239,68,68,0.2)">面接設計支援</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num" style="background:rgba(139,92,246,0.15);border:2px solid #8b5cf6;color:#a78bfa">5</div>
+          <div class="flow-body">
+            <div class="flow-title">条件交渉・内定・入社フォロー</div>
+            <div class="flow-desc">年収・入社時期などの条件調整を仲介し、入社後の早期立ち上がりに向けたフォローアップまで伴走します。</div>
+            <div class="flow-tags">
+              <span class="flow-tag" style="background:rgba(139,92,246,0.1);color:#c4b5fd;border:1px solid rgba(139,92,246,0.2)">入社後フォロー</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PRICING ─── -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-header" style="text-align:center">
+      <div class="section-badge" style="justify-content:center;display:flex"><span class="tag-pill tag-cyan">Pricing</span></div>
+      <h2 class="section-title">すべて成功報酬型。<br>着手金・初期費用はいただきません</h2>
+      <p class="section-desc" style="margin:0 auto">ポジションの重要度・難易度に応じて、3つのプランからお選びいただけます。ご入社が決まるまで費用は発生しません。</p>
+    </div>
+    <div class="pricing-grid">
+      <!-- Light -->
+      <div class="price-card">
+        <div class="price-name">ライトプラン</div>
+        <div class="price-val">理論年収の30%<small>（成功報酬）</small></div>
+        <div class="price-unit">着手金なし・入社時のみお支払い</div>
+        <div class="price-desc">経理・経営企画クラスなど、単一ポジションの採用をお考えの会社向け。</div>
+        <ul class="price-list">
+          <li>要件ヒアリング・求人票作成支援</li>
+          <li>TPM特化ネットワークからの候補者紹介</li>
+          <li>面接日程調整</li>
+          <li class="na">複数ポジションの並行探索</li>
+          <li class="na">専任コンサルタントによる伴走</li>
+        </ul>
+        <a href="#cta" class="btn btn-outline" style="justify-content:center">このプランで相談する</a>
+      </div>
+      <!-- Executive Search -->
+      <div class="price-card on">
+        <div class="price-pop">最も選ばれています</div>
+        <div class="price-name">IPO幹部サーチプラン</div>
+        <div class="price-val">理論年収の35%<small>（成功報酬）</small></div>
+        <div class="price-unit">IPOリーダー・CFOクラスを想定</div>
+        <div class="price-desc">IPOリーダーやCFO候補など、上場準備の要となるポジションを確実に採用したい会社向け。</div>
+        <ul class="price-list">
+          <li>ライトプランの内容を含む</li>
+          <li>専任コンサルタントによる伴走型サーチ</li>
+          <li>面接での見極め観点のご提案</li>
+          <li>条件交渉の仲介</li>
+          <li>入社後の早期フォローアップ</li>
+        </ul>
+        <a href="#cta" class="btn btn-primary" style="justify-content:center">無料相談を申し込む</a>
+      </div>
+      <!-- Multi Position -->
+      <div class="price-card">
+        <div class="price-name">複数ポジション伴走プラン</div>
+        <div class="price-val">要問合せ</div>
+        <div class="price-unit">上場準備期間を通じた採用伴走</div>
+        <div class="price-desc">上場準備の各フェーズで複数職種の採用が発生する会社向け。採用計画の設計から一気通貫でサポートします。</div>
+        <ul class="price-list">
+          <li>IPO幹部サーチプランの内容を含む</li>
+          <li>上場準備スケジュールに沿った採用計画設計</li>
+          <li>複数ポジションの並行探索</li>
+          <li>定例での採用状況レビュー</li>
+          <li>必要に応じたポジション追加・優先順位調整</li>
+        </ul>
+        <a href="#cta" class="btn btn-outline" style="justify-content:center">導入について相談する</a>
+      </div>
+    </div>
+    <div class="pricing-note">理論年収とは、月給・賞与・各種手当を含む想定年収額を指します。表示料率は目安であり、ポジションの難易度により変動する場合があります。<br>返金規定・保証期間などの詳細もあわせてご相談ください。</div>
+  </div>
+</section>
+
+<!-- ─── QUOTE ─── -->
+<section id="quote">
+  <div class="quote-inner">
+    <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:32px;padding:6px 18px;border-radius:20px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);font-size:11px;color:var(--gold);letter-spacing:1px;text-transform:uppercase">✦ IPO SPECIALIST RECRUITING</div>
+    <div class="quote-text">
+      上場は、経営体制の完成ではなく始まりだった。<br>
+      これまでの組織図に存在しなかった役割ほど、優秀な"即戦力"人材が必要になる。<br>
+      <span class="gradient-text">見えていなかったポジションに、光を当てる。それがTPM Careerの仕事です。</span>
+    </div>
+    <div class="quote-author">TPM Career — TOKYO PRO Market専門 人材紹介サービス</div>
+  </div>
+</section>
+
+<!-- ─── FAQ ─── -->
+<section id="faq">
+  <div class="container">
+    <div class="section-header" style="text-align:center">
+      <div class="section-badge" style="justify-content:center;display:flex"><span class="tag-pill tag-purple">FAQ</span></div>
+      <h2 class="section-title">よくある質問</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q"><span>一般的な人材紹介会社との違いは何ですか？</span><span class="fq-mark">＋</span></div>
+        <div class="faq-a"><p>一般的な人材紹介は業界・職種でマッチングしますが、TPM Careerは「TOKYO PRO Marketをはじめとする新興市場での上場実務経験」という軸でネットワークを構築しています。同じ「経営企画」でも、上場審査対応の経験有無で求められるレベルが大きく異なるため、実務目線での見極めを行います。</p></div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q"><span>TOKYO PRO Market以外の市場を目指す企業でも利用できますか？</span><span class="fq-mark">＋</span></div>
+        <div class="faq-a"><p>はい。グロース市場など、他の新興市場を目指す企業様からのご相談にも対応しています。まずは現状の上場準備フェーズをお伺いし、最適なポジション設計をご提案します。</p></div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q"><span>費用はいつ発生しますか？</span><span class="fq-mark">＋</span></div>
+        <div class="faq-a"><p>すべて成功報酬型です。着手金・中間費用は一切かからず、ご紹介した候補者の入社が決定した時点で費用が発生します。</p></div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q"><span>まだ求人票を作っていませんが相談できますか？</span><span class="fq-mark">＋</span></div>
+        <div class="faq-a"><p>問題ございません。むしろ「どんな役割が必要か分からない」という段階からのご相談を得意としています。上場フェーズと組織状況をお伺いした上で、求人要件の整理からサポートします。</p></div>
+      </div>
+      <div class="faq-item" onclick="this.classList.toggle('open')">
+        <div class="faq-q"><span>候補者としてキャリア相談することもできますか？</span><span class="fq-mark">＋</span></div>
+        <div class="faq-a"><p>可能です。IPO実務のご経験をお持ちで、TOKYO PRO Market関連企業への転職をご検討の方は、お問い合わせフォームの「転職をご検討の方」を選択の上ご連絡ください。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROFILE ─── -->
+<section class="s prof-section" id="profile">
+  <div class="prof-grid">
+    <div class="prof-photo-card reveal">
+      <div class="prof-photo">
+        <div class="prof-photo-initial">P</div>
+      </div>
+      <div class="prof-name-block">
+        <div class="prof-name">株式会社プロジェクト・イノベーション</div>
+        <div class="prof-name-en">Project Innovation Inc.</div>
+        <div class="prof-role-line">TPM Career 運営会社<br>IR Bridge 運営会社</div>
+        <div class="prof-badges">
+          <div class="prof-badge">上場企業（ホリプロ）経営企画責任者 経験者が代表</div>
+          <div class="prof-badge">取締役CFO 経験者</div>
+          <div class="prof-badge">開示業務・子会社管理の実務経験</div>
+          <div class="prof-badge">経営参謀 コンサルティング 200社+</div>
+        </div>
+      </div>
+    </div>
+    <div class="prof-career reveal d1">
+      <div class="prof-career-intro">
+        上場企業の経営企画責任者として、<br>
+        <em>「誰を採用すべきか」</em>を、<br>
+        自分自身で悩んできたからこそ、<br>
+        本当に必要な人材像が分かる。
+      </div>
+      <p class="prof-body-text">
+        TPM Careerは、TOKYO PRO Market上場会社の体制構築を支援する<strong>IR Bridge</strong>の姉妹サービスとして、株式会社プロジェクト・イノベーションが運営しています。代表は、上場企業（ホリプロ）で経営企画責任者として適時開示・子会社管理を担当し、ITベンチャー（エンプレックス／現SCSK）では取締役CFOとして上場準備・経営管理を経験してきました。
+      </p>
+      <p class="prof-body-text">
+        「業績予測の仕組みをつくれる人材がいない」「適時開示の判断を任せられる人がいない」——体制構築の現場で繰り返し直面してきたのが、まさに<strong>人の課題</strong>でした。TPM Careerは、その実務経験を活かし、TOKYO PRO Market特化の採用支援という形で新興上場会社を支えるサービスです。
+      </p>
+      <div style="margin-top:2.2rem;padding:1.8rem 2rem;background:rgba(3,25,76,.06);border-left:3px solid var(--jv-red);">
+        <div style="font-family:var(--jv-mn);font-size:.52rem;letter-spacing:.2em;color:var(--jv-red);margin-bottom:1rem;opacity:.8;">WHY TPM CAREER</div>
+        <div style="font-family:var(--jv-sr);font-style:italic;font-size:.98rem;color:var(--jv-navy);line-height:1.9;">「体制の仕組みだけを作っても、それを回す人がいなければ意味がない。IR Bridgeで見えてきた"体制のすきま"を、人材の面から埋める。それがTPM Careerです。」</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA / LEAD FORM ─── -->
+<section id="cta">
+  <div class="container" style="text-align:center">
+    <div class="section-badge" style="justify-content:center;display:flex;margin-bottom:24px"><span class="tag-pill tag-green">無料相談受付中</span></div>
+    <h2 class="cta-title">
+      見えていないポジションを、<br>
+      <span class="gradient-text">一緒に言語化しませんか</span>
+    </h2>
+    <p class="cta-desc">まずは30分、貴社の上場フェーズと採用ニーズについてお話をお伺いします。オンライン対応可能です。</p>
+
+    <!--
+      フォーム送信先について（FormSubmit.co / アカウント登録不要）:
+      実際の送信先（action）は furuya@project-innovation.jp です。
+      初回送信時のみ FormSubmit.co から確認メールが届くので、本文中の
+      「Activate Form」リンクを1回クリックすると、以降の送信内容がそのまま届くようになります。
+    -->
+    <form id="leadForm" class="lead-form" action="https://formsubmit.co/ajax/furuya@project-innovation.jp" method="POST">
+      <div class="lf-toggle">
+        <label><input type="radio" name="inquiry_type" value="企業様（採用のご相談）" checked><span>企業様（採用のご相談）</span></label>
+        <label><input type="radio" name="inquiry_type" value="転職をご検討の方"><span>転職をご検討の方</span></label>
+      </div>
+      <div class="lf-row">
+        <input type="text" name="name" placeholder="お名前" autocomplete="name" required>
+        <input type="text" name="company" placeholder="会社名（求職者の方は任意）" autocomplete="organization">
+      </div>
+      <div class="lf-row">
+        <input type="email" name="email" placeholder="メールアドレス" autocomplete="email" required>
+        <select name="stage">
+          <option value="上場を検討中">上場を検討中</option>
+          <option value="上場準備中（審査対応中）">上場準備中（審査対応中）</option>
+          <option value="上場後">上場後</option>
+          <option value="求職者">求職者・キャリア相談</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
+      <textarea name="message" rows="3" placeholder="採用したいポジション・ご経歴・ご質問（任意）"></textarea>
+      <input type="hidden" name="_subject" value="【TPM Career】採用・キャリア相談の申し込み">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
+      <button type="submit" class="btn btn-primary lf-submit glow-btn"><span>💬 無料相談を申し込む</span></button>
+      <div class="lf-status" id="lfStatus" role="status" aria-live="polite"></div>
+    </form>
+    <p class="lf-alt">お急ぎの方は <a href="mailto:furuya@project-innovation.jp">furuya@project-innovation.jp</a> まで直接ご連絡ください。</p>
+    <div class="cta-note">初回相談は無料です。無理な勧誘は行いません。</div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="logo footer-brand" style="margin-bottom:16px">
+          <div class="logo-mark">TPM</div>
+          <div class="logo-text">
+            <b>TPM Career</b>
+            <span>IPO Specialist Recruiting</span>
+          </div>
+        </div>
+        <p class="footer-desc">TOKYO PRO Market専門の人材紹介サービス。IPOリーダー・経理・経営企画・会社法/適時開示・フォーキャスト・IPO審査対応・ストックオプション設計など、上場を検討して初めて必要になるポジションに特化しています。</p>
+      </div>
+      <div class="footer-col">
+        <h4>対象職種</h4>
+        <ul>
+          <li><a href="#positions">IPOリーダー</a></li>
+          <li><a href="#positions">経営企画 / 経理</a></li>
+          <li><a href="#positions">会社法・適時開示</a></li>
+          <li><a href="#positions">その他の職種</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>サービス</h4>
+        <ul>
+          <li><a href="#pillars">選ばれる理由</a></li>
+          <li><a href="#flow">紹介の流れ</a></li>
+          <li><a href="#pricing">料金プラン</a></li>
+          <li><a href="#faq">よくある質問</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>リンク</h4>
+        <ul>
+          <li><a href="#cta">採用のご相談</a></li>
+          <li><a href="#profile">運営会社</a></li>
+          <li><a href="mailto:info@project-innovation.jp">お問い合わせ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="copyYear"></span> TPM Career / 株式会社プロジェクト・イノベーション. All rights reserved.</span>
+      <div class="live-badge"><div class="live-dot"></div>相談受付中</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('copyYear').textContent = new Date().getFullYear();
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.feature-card, .pos-card, .number-card, .flow-step, .price-card, .faq-item').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(24px)';
+  el.style.transition = 'opacity .6s ease, transform .6s ease';
+  observer.observe(el);
+});
+
+window.addEventListener('scroll', () => {
+  const h = document.querySelector('header');
+  if (window.scrollY > 50) {
+    h.style.borderBottomColor = 'rgba(0,212,255,0.15)';
+  } else {
+    h.style.borderBottomColor = 'rgba(0,212,255,0.1)';
+  }
+});
+
+// PROFILE section reveal-in animation
+const profObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('#profile .reveal').forEach(el => profObserver.observe(el));
+
+// Lead form submission (Formspree-compatible)
+(function(){
+  const form=document.getElementById('leadForm');
+  const status=document.getElementById('lfStatus');
+  if(!form) return;
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    const btn=form.querySelector('.lf-submit');
+    if(form.action.includes('YOUR_FORM_ID')){
+      status.textContent='⚠️ フォーム送信先が未設定です（info@project-innovation.jp まで直接ご連絡ください）';
+      status.className='lf-status err';
+      return;
+    }
+    btn.disabled=true;
+    status.textContent='送信中...';
+    status.className='lf-status';
+    try{
+      const res=await fetch(form.action,{
+        method:'POST',
+        body:new FormData(form),
+        headers:{'Accept':'application/json'}
+      });
+      if(res.ok){
+        status.textContent='✅ 送信しました。担当者より2営業日以内にご連絡します。';
+        status.className='lf-status ok';
+        form.reset();
+      } else {
+        const data=await res.json().catch(()=>({}));
+        throw new Error((data.errors&&data.errors.map(x=>x.message).join(', '))||'送信に失敗しました');
+      }
+    }catch(err){
+      status.textContent='⚠️ 送信に失敗しました。お手数ですが info@project-innovation.jp まで直接ご連絡ください。';
+      status.className='lf-status err';
+    }finally{
+      btn.disabled=false;
+    }
+  });
+})();
+</script>
+</body>
+</html>

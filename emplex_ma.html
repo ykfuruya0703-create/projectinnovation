@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eMplex MA | マーケティングオートメーション ダッシュボード</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg0:#060c14;--bg1:#0a1628;--bg2:#0f2040;--bg3:#152850;
+  --accent:#00d4ff;--accent2:#0090ff;--accent3:#00ff88;
+  --gold:#f5c842;--gold2:#ffaa00;
+  --teal:#00c8a0;--teal2:#00e8b8;
+  --purple:#8b5cf6;--purple2:#a78bfa;
+  --pink:#ec4899;--pink2:#f472b6;
+  --red:#ef4444;--red2:#f87171;
+  --green:#22c55e;--green2:#4ade80;
+  --orange:#f97316;--orange2:#fb923c;
+  --gray:#334155;--gray2:#64748b;--gray3:#94a3b8;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#475569;
+  --border:rgba(0,212,255,0.12);--border2:rgba(0,212,255,0.25);
+  --glow:0 0 20px rgba(0,212,255,0.15);
+}
+body{font-family:'Hiragino Sans','Yu Gothic UI',sans-serif;background:var(--bg0);color:var(--text);font-size:12px}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(0,100,200,0.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,rgba(0,200,160,0.06) 0%,transparent 60%);pointer-events:none;z-index:0}
+
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;background:rgba(6,12,20,0.95);border-bottom:1px solid var(--border2);display:flex;align-items:center;padding:0 20px;gap:0;z-index:200;backdrop-filter:blur(20px)}
+.logo{display:flex;align-items:center;gap:10px;padding-right:20px;border-right:1px solid var(--border2);flex-shrink:0}
+.logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--teal));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#000;letter-spacing:-1px}
+.logo-text{display:flex;flex-direction:column;line-height:1.2}
+.logo-text b{font-size:13px;color:#fff;letter-spacing:1px}
+.logo-text span{font-size:9px;color:var(--accent);letter-spacing:2px;text-transform:uppercase}
+.nav-tabs{display:flex;height:100%;padding-left:8px;overflow-x:auto}
+.nav-tab{padding:0 15px;height:100%;display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;letter-spacing:.3px}
+.nav-tab:hover{color:var(--text);background:rgba(0,212,255,0.05)}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px;flex-shrink:0;white-space:nowrap}
+.live-badge{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--green);padding:3px 8px;border:1px solid rgba(34,197,94,0.3);border-radius:12px;background:rgba(34,197,94,0.08)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.date-badge{font-size:10px;color:var(--text2)}
+
+.app{display:flex;flex-direction:column;min-height:100vh;padding-top:56px}
+.content{display:none;flex:1}
+.content.active{display:flex;flex-direction:column}
+.scroll-main{flex:1;padding:18px 22px;max-width:1680px;width:100%;margin:0 auto}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.2);border-radius:3px}
+
+.card{background:rgba(10,22,40,0.8);border:1px solid var(--border);border-radius:12px;padding:16px;backdrop-filter:blur(10px);position:relative;overflow:hidden;margin-bottom:14px}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.4}
+.card-title{font-size:11px;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:6px;justify-content:space-between}
+.card-title .t{display:flex;align-items:center;gap:6px}
+.card-title .t::before{content:'';width:3px;height:11px;background:var(--accent);border-radius:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:1200px){.grid2,.grid3,.grid4,.grid5{grid-template-columns:1fr 1fr}}
+
+.kpi{background:rgba(10,22,40,0.9);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden;transition:.2s}
+.kpi:hover{border-color:var(--border2);box-shadow:var(--glow)}
+.kpi-accent{position:absolute;bottom:0;left:0;right:0;height:2px}
+.kpi-label{font-size:10.5px;color:var(--text2);margin-bottom:8px;letter-spacing:.5px}
+.kpi-val{font-size:26px;font-weight:700;letter-spacing:-1px;line-height:1}
+.kpi-sub{font-size:10.5px;margin-top:6px;color:var(--text2)}
+.kpi-icon{position:absolute;top:14px;right:14px;font-size:22px;opacity:.15}
+
+.dtbl{width:100%;border-collapse:collapse;font-size:11.5px}
+.dtbl th{background:rgba(15,32,64,0.9);color:var(--text2);padding:8px 10px;text-align:left;font-weight:600;border-bottom:1px solid var(--border);white-space:nowrap;letter-spacing:.3px;position:sticky;top:0}
+.dtbl td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);color:var(--text);white-space:nowrap}
+.dtbl tr:hover td{background:rgba(0,212,255,0.04)}
+.dtbl td.num,.dtbl th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tbl-scroll{overflow-x:auto;max-height:560px;overflow-y:auto}
+
+.badge-rank{display:inline-flex;align-items:center;justify-content:center;min-width:26px;padding:2px 8px;border-radius:6px;font-weight:800;font-size:12px}
+.rank-S{background:rgba(245,200,66,0.18);color:var(--gold)}
+.rank-A{background:rgba(0,200,160,0.18);color:var(--teal2)}
+.rank-B{background:rgba(0,212,255,0.15);color:var(--accent)}
+.rank-C{background:rgba(148,163,184,0.18);color:var(--text2)}
+
+.pill{display:inline-block;padding:2px 9px;border-radius:10px;font-size:10px;border:1px solid var(--border2);color:var(--text2)}
+.pill.acc{color:var(--accent);border-color:rgba(0,212,255,0.4);background:rgba(0,212,255,0.08)}
+.pill.gold{color:var(--gold);border-color:rgba(245,200,66,0.4);background:rgba(245,200,66,0.08)}
+.pill.teal{color:var(--teal2);border-color:rgba(0,200,160,0.4);background:rgba(0,200,160,0.08)}
+.pill.red{color:var(--red2);border-color:rgba(239,68,68,0.4);background:rgba(239,68,68,0.08)}
+.pill.purple{color:var(--purple2);border-color:rgba(139,92,246,0.4);background:rgba(139,92,246,0.08)}
+.pill.gray{color:var(--gray3);border-color:rgba(148,163,184,0.3);background:rgba(148,163,184,0.06)}
+
+.progress-bar{height:6px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden;position:relative;display:flex}
+.progress-bar i{display:block;height:100%}
+.progress-bar i.single{border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--teal))}
+
+.subhead{font-size:11px;color:var(--accent);font-weight:700;margin:14px 0 6px;letter-spacing:.5px;display:flex;align-items:center;gap:6px}
+.subhead::before{content:'▸'}
+.text-block{font-size:12px;line-height:1.9;color:var(--text);white-space:pre-wrap;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:1100px){.two-col{grid-template-columns:1fr}}
+
+.form-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.form-row input,.form-row select,.form-row textarea{background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:6px;color:var(--text);padding:6px 10px;font-size:11.5px;font-family:inherit}
+.form-row textarea{width:100%;min-height:50px;resize:vertical}
+.btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#001a26;border:none;border-radius:6px;padding:7px 16px;font-size:11.5px;font-weight:700;cursor:pointer;transition:.15s}
+.btn:hover{filter:brightness(1.1)}
+.btn.sec{background:rgba(255,255,255,0.06);color:var(--text);border:1px solid var(--border2)}
+.btn.danger{background:rgba(239,68,68,0.15);color:var(--red2);border:1px solid rgba(239,68,68,0.4)}
+.btn.xs{padding:4px 10px;font-size:10.5px;border-radius:5px}
+
+.toggle{position:relative;width:38px;height:20px;border-radius:10px;background:rgba(255,255,255,0.1);cursor:pointer;flex-shrink:0;transition:.2s;border:1px solid var(--border2)}
+.toggle.on{background:rgba(34,197,94,0.35);border-color:rgba(34,197,94,0.6)}
+.toggle i{position:absolute;top:1px;left:1px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s}
+.toggle.on i{transform:translateX(18px);background:#22c55e}
+
+.score-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,0.06);width:100%}
+.score-bar .attr{background:linear-gradient(90deg,#0090ff,#00d4ff)}
+.score-bar .beh{background:linear-gradient(90deg,#00c8a0,#00e8b8)}
+
+.seg-card{background:rgba(10,22,40,0.9);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;transition:.15s}
+.seg-card:hover{border-color:var(--border2)}
+.seg-name{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px}
+.seg-cond{font-size:11px;color:var(--text2);line-height:1.6;margin-bottom:8px}
+.seg-count{font-size:20px;font-weight:800;color:var(--accent)}
+.seg-meta{font-size:10px;color:var(--text3)}
+
+.scenario-card{background:rgba(10,22,40,0.9);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px}
+.scenario-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.scenario-title{font-size:13.5px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px}
+.scenario-flow{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:6px 0}
+.sf-node{background:rgba(15,32,64,0.7);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;min-width:150px;flex-shrink:0}
+.sf-node .sf-tag{font-size:8.5px;color:var(--text3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.sf-node .sf-body{font-size:11px;color:var(--text);line-height:1.5}
+.sf-arrow{display:flex;align-items:center;justify-content:center;padding:0 8px;color:var(--accent);font-size:16px;flex-shrink:0}
+.scenario-stats{display:flex;gap:20px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
+.scenario-stat{display:flex;flex-direction:column;gap:2px}
+.scenario-stat b{font-size:15px;color:#fff}
+.scenario-stat span{font-size:9.5px;color:var(--text3)}
+
+.funnel-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.funnel-bar-wrap{flex:1;background:rgba(255,255,255,0.05);border-radius:6px;height:30px;position:relative;overflow:hidden}
+.funnel-bar{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));display:flex;align-items:center;padding-left:10px;font-size:11px;font-weight:700;color:#001a26;white-space:nowrap}
+.funnel-label{width:150px;font-size:11px;color:var(--text2);flex-shrink:0}
+.funnel-val{width:110px;text-align:right;font-size:11.5px;font-weight:700;color:#fff;flex-shrink:0}
+
+.tier-pill{display:inline-flex;align-items:center;justify-content:center;padding:3px 10px;border-radius:6px;font-size:10.5px;font-weight:800;letter-spacing:.3px}
+.signal-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;padding:3px 9px;border-radius:12px;margin:2px 4px 2px 0;border:1px solid}
+.golden-box{background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(239,68,68,0.06));border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:16px 18px;margin-bottom:14px}
+.p0-card{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.35);border-radius:10px;padding:14px;margin-bottom:10px}
+.p0-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.ai-draft{white-space:pre-wrap;font-size:11px;line-height:1.8;background:rgba(0,0,0,0.25);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;color:var(--text2);margin-top:8px;display:none}
+.ai-draft.show{display:block}
+.roi-compare{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.roi-box{border-radius:12px;padding:20px;text-align:center}
+.pager{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:var(--text2)}
+.pager button{background:rgba(255,255,255,0.06);border:1px solid var(--border2);color:var(--text);border-radius:5px;padding:4px 10px;cursor:pointer;font-size:11px}
+.pager button:disabled{opacity:.35;cursor:default}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-mark">e</div>
+    <div class="logo-text"><b>eMplex MA</b><span>Marketing Automation</span></div>
+  </div>
+  <div class="nav-tabs" id="navTabs">
+    <div class="nav-tab active" data-tab="dashboard">📊 ダッシュボード</div>
+    <div class="nav-tab" data-tab="visitors">🔍 企業訪問ログ</div>
+    <div class="nav-tab" data-tab="intent">🎯 インテントシグナル</div>
+    <div class="nav-tab" data-tab="scoring">🏆 リードスコアリング</div>
+    <div class="nav-tab" data-tab="segments">🧩 セグメント/リスト</div>
+    <div class="nav-tab" data-tab="scenarios">🔁 シナリオ自動化</div>
+    <div class="nav-tab" data-tab="roi">💹 MA-ROI</div>
+    <div class="nav-tab" data-tab="campaigns">📧 メール配信</div>
+    <div class="nav-tab" data-tab="forms">🧾 フォーム/LP・設定</div>
+  </div>
+  <div class="topbar-right">
+    <span class="date-badge" id="dateBadge"></span>
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+  </div>
+</div>
+
+<div class="app">
+  <div class="content active" id="tab-dashboard"><div class="scroll-main" id="pane-dashboard"></div></div>
+  <div class="content" id="tab-visitors"><div class="scroll-main" id="pane-visitors"></div></div>
+  <div class="content" id="tab-intent"><div class="scroll-main" id="pane-intent"></div></div>
+  <div class="content" id="tab-scoring"><div class="scroll-main" id="pane-scoring"></div></div>
+  <div class="content" id="tab-segments"><div class="scroll-main" id="pane-segments"></div></div>
+  <div class="content" id="tab-scenarios"><div class="scroll-main" id="pane-scenarios"></div></div>
+  <div class="content" id="tab-roi"><div class="scroll-main" id="pane-roi"></div></div>
+  <div class="content" id="tab-campaigns"><div class="scroll-main" id="pane-campaigns"></div></div>
+  <div class="content" id="tab-forms"><div class="scroll-main" id="pane-forms"></div></div>
+</div>
+
+<script>
+/* ============ UTIL ============ */
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fmtNum(n){ return n.toLocaleString('ja-JP'); }
+function fmtPct(n){ return (Math.round(n*10)/10)+'%'; }
+let seedState = 88172645;
+function rnd(){ seedState ^= seedState << 13; seedState ^= seedState >>> 17; seedState ^= seedState << 5; seedState |= 0; return ((seedState < 0 ? ~seedState + 1 : seedState) % 100000) / 100000; }
+function pick(arr){ return arr[Math.floor(rnd()*arr.length)]; }
+function pickWeighted(pairs){ const total = pairs.reduce((s,p)=>s+p[1],0); let r = rnd()*total; for (const [v,w] of pairs){ if (r < w) return v; r -= w; } return pairs[0][0]; }
+const charts = {};
+function destroyChart(id){ if (charts[id]){ charts[id].destroy(); delete charts[id]; } }
+
+/* ============ SEED DATA ============ */
+const INDUSTRIES = ['不動産取引業','不動産賃貸業・管理業','総合工事業','情報サービス業','専門サービス業','機械器具卸売業','金融・保険業','その他'];
+const CAPITAL_RANGES = ['1億円未満','1億円以上10億円未満','10億円以上50億円未満','50億円以上100億円未満','100億円以上500億円未満','500億円以上1000億円未満','1000億円以上'];
+const CAP_ORDER = {}; CAPITAL_RANGES.forEach((c,i)=>CAP_ORDER[c]=i);
+const PREFS = ['東京都','神奈川県','大阪府','埼玉県','千葉県','愛知県','福岡県','北海道','茨城県'];
+const PAGES = ['トップページ','サービス紹介','料金ページ','導入事例','採用情報','会社概要','資料ダウンロード','お問い合わせ','ブログ記事'];
+const REFERRERS = ['Google','Yahoo!検索','Bing','直接入力','Facebook','X(Twitter)','リスティング広告','記事メディア'];
+
+const REAL_COMPANIES = [
+  ['JIANGSU GROUP CO.','その他','1億円未満',5,false,'不明'],
+  ['株式会社東急コミュニティー','不動産賃貸業・管理業','1000億円以上',3200,true,'東京都'],
+  ['株式会社ノット','情報サービス業','1億円未満',40,false,'東京都'],
+  ['株式会社グリッド','情報サービス業','1億円未満',85,false,'東京都'],
+  ['株式会社ベンハウス','不動産取引業','50億円以上100億円未満',210,false,'大阪府'],
+  ['旭電設有限会社','総合工事業','1億円未満',18,false,'神奈川県'],
+  ['有限会社野口工務店','総合工事業','1億円未満',22,false,'千葉県'],
+  ['エクシオグループ株式会社','総合工事業','1000億円以上',5400,true,'東京都'],
+  ['株式会社インターパーク','不動産取引業','1億円以上10億円未満',95,false,'北海道'],
+  ['株式会社クレアスライフ','不動産取引業','100億円以上500億円未満',480,true,'東京都'],
+  ['山田建設株式会社','総合工事業','100億円以上500億円未満',620,false,'東京都'],
+  ['株式会社KRS','専門サービス業','1億円未満',65,false,'大阪府'],
+  ['茨城グローブシップ株式会社','不動産賃貸業・管理業','10億円以上50億円未満',340,false,'茨城県'],
+  ['株式会社JTB','専門サービス業','1000億円以上',3600,false,'東京都'],
+  ['株式会社ネオキャリア','情報サービス業','500億円以上1000億円未満',2800,false,'東京都'],
+  ['学校法人同朋学園','その他','1億円未満',450,false,'愛知県'],
+  ['株式会社ラクス','情報サービス業','100億円以上500億円未満',1450,true,'東京都'],
+  ['プロパティエージェント株式会社','不動産取引業','100億円以上500億円未満',290,true,'東京都'],
+  ['Ｑ．ＥＮＥＳＴホールディングス','機械器具卸売業','1億円未満',60,false,'福岡県'],
+  ['アルティウスリンク株式会社','専門サービス業','1000億円以上',13000,false,'東京都'],
+  ['千葉グランディハウス株式会社','不動産取引業','10億円以上50億円未満',410,false,'千葉県'],
+  ['ライフティ株式会社','専門サービス業','10億円以上50億円未満',180,false,'東京都'],
+  ['株式会社ＤＹＭ','専門サービス業','100億円以上500億円未満',980,false,'東京都'],
+  ['Sansan株式会社','情報サービス業','100億円以上500億円未満',900,true,'東京都'],
+  ['株式会社博士.com','情報サービス業','1億円未満',30,false,'東京都'],
+  ['株式会社ホークワン','不動産取引業','1億円以上10億円未満',150,false,'神奈川県'],
+  ['株式会社エイアンドリブリション','専門サービス業','1億円未満',25,false,'東京都'],
+  ['AQ Group','総合工事業','1億円以上10億円未満',140,false,'埼玉県'],
+  ['アイデイ株式会社','不動産賃貸業・管理業','1億円未満',50,false,'神奈川県'],
+  ['株式会社経営の科学','専門サービス業','1億円未満',15,false,'大阪府'],
+  ['伊藤建材株式会社','機械器具卸売業','1億円未満',95,false,'神奈川県'],
+  ['シースクイエイド株式会社','専門サービス業','1億円未満',20,false,'東京都'],
+  ['株式会社辻商店','機械器具卸売業','1億円未満',12,false,'東京都'],
+];
+
+const SYN_CORE = ['サンライズ','テクノブリッジ','グランドヒルズ','コアバリュー','ネクストフィールド','アセットプランニング','セントラル物流','ウェルネスホーム','スカイライン建設','トラストパートナーズ','フューチャーワークス','クリエイトホールディングス','ハーモニーライフ','グリーンテラス','パシフィックエンジニアリング','ブライトウェイ','ユナイテッドファシリティ','オリオン商事','キャピタルブリッジ','ソリッドグラウンド','ネオシティ開発','ファーストレジデンス','タウンメイク','ライズテック','コンパスコンサルティング','スターゲイト物産','エバーグリーンホーム','デルタ設備','リンクスコーポレーション','フロンティアテラス','メトロポリタン住建','クロスフィールド','グランツリー不動産','ノーザンライツ','ベイサイド商事','シティプランナーズ','ホライズン建築','アップライトホーム','ケイズプロパティ','ミライホールディングス'];
+function makeCompanyName(i){
+  const core = SYN_CORE[i % SYN_CORE.length] + (i>=SYN_CORE.length ? (Math.floor(i/SYN_CORE.length)+1) : '');
+  return rnd() < 0.55 ? ('株式会社'+core) : (core+'株式会社');
+}
+function genSyntheticCompanies(n){
+  const list = [];
+  for (let i=0;i<n;i++){
+    const industry = pick(INDUSTRIES);
+    const capital = pickWeighted([['1億円未満',34],['1億円以上10億円未満',26],['10億円以上50億円未満',16],['50億円以上100億円未満',8],['100億円以上500億円未満',9],['500億円以上1000億円未満',4],['1000億円以上',3]]);
+    const capIdx = CAP_ORDER[capital];
+    const employees = Math.max(4, Math.round((capIdx+1) * (18 + rnd()*140)));
+    const listed = capIdx >= 4 ? rnd() < 0.4 : rnd() < 0.04;
+    const pref = pick(PREFS);
+    list.push([makeCompanyName(i), industry, capital, employees, listed, pref]);
+  }
+  return list;
+}
+const COMPANY_POOL = REAL_COMPANIES.concat(genSyntheticCompanies(95)).map((c,idx)=>({
+  id: idx, name:c[0], industry:c[1], capital:c[2], employees:c[3], listed:c[4], pref:c[5]
+}));
+
+/* ---- Visit log generation (last 6 months, weighted so some companies revisit) ---- */
+const TODAY = new Date('2026-07-21T18:00:00');
+function randomPastDate(maxDaysAgo){
+  const d = new Date(TODAY.getTime() - Math.floor(rnd()*maxDaysAgo)*86400000 - Math.floor(rnd()*86400000));
+  return d;
+}
+function fmtDT(d){
+  const y=d.getFullYear(), m=d.getMonth()+1, day=d.getDate(), hh=d.getHours(), mm=String(d.getMinutes()).padStart(2,'0');
+  return `${y}/${String(m).padStart(2,'0')}/${String(day).padStart(2,'0')} ${hh}:${mm}`;
+}
+function monthKey(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
+
+// weight pool: ~30% of companies are "frequent visitors" generating multiple hits
+const freqPool = COMPANY_POOL.filter((_,i)=> i%3===0);
+const VISITS = [];
+const N_VISITS = 640;
+for (let i=0;i<N_VISITS;i++){
+  const company = rnd() < 0.62 ? pick(freqPool) : pick(COMPANY_POOL);
+  const daysAgo = pickWeighted([[10,30],[45,26],[90,22],[150,14],[180,8]]);
+  const dt = randomPastDate(daysAgo);
+  const referrer = pickWeighted([['Google',38],['直接入力',18],['Yahoo!検索',14],['リスティング広告',12],['記事メディア',8],['X(Twitter)',6],['Facebook',2],['Bing',2]]);
+  const landing = pick(PAGES);
+  const pagesViewed = pickWeighted([[1,32],[2,24],[3,16],[4,10],[5,8],[6,5],[7,3],[8,1],[9,1]]);
+  const durationSec = Math.round(20 + pagesViewed*(30+rnd()*70) + rnd()*60);
+  const isNew = rnd() < 0.42;
+  VISITS.push({ dt, company, referrer, landing, pagesViewed, durationSec, isNew });
+}
+VISITS.sort((a,b)=> b.dt - a.dt);
+
+/* ---- Aggregate per-company stats from VISITS ---- */
+const statsMap = new Map();
+COMPANY_POOL.forEach(c=> statsMap.set(c.id, { company:c, visits:0, pages:0, duration:0, lastDt:null, firstDt:null, landings:new Set(), referrers:new Set() }));
+VISITS.forEach(v=>{
+  const s = statsMap.get(v.company.id);
+  s.visits++; s.pages += v.pagesViewed; s.duration += v.durationSec;
+  s.landings.add(v.landing); s.referrers.add(v.referrer);
+  if (!s.lastDt || v.dt > s.lastDt) s.lastDt = v.dt;
+  if (!s.firstDt || v.dt < s.firstDt) s.firstDt = v.dt;
+});
+const COMPANY_STATS = Array.from(statsMap.values()).filter(s=>s.visits>0);
+
+/* ---- Scoring engine ---- */
+function attributeScore(c){
+  let s = 0;
+  if (['不動産取引業','不動産賃貸業・管理業','総合工事業'].includes(c.industry)) s += 20;
+  else if (c.industry==='情報サービス業') s += 14;
+  else s += 8;
+  const capIdx = CAP_ORDER[c.capital];
+  s += Math.min(20, capIdx*4);
+  if (c.listed) s += 10;
+  if (c.employees >= 300) s += 8; else if (c.employees >= 50) s += 4;
+  return Math.min(50, s);
+}
+function behaviorScore(st){
+  let s = 0;
+  s += Math.min(20, st.visits*4);
+  s += Math.min(15, st.pages*1.5);
+  const avgDur = st.duration/st.visits;
+  if (avgDur >= 180) s += 10; else if (avgDur >= 90) s += 6; else s += 2;
+  if (st.landings.has('採用情報')) s += 6;
+  if (st.landings.has('料金ページ')) s += 8;
+  if (st.landings.has('資料ダウンロード')) s += 10;
+  return Math.min(50, Math.round(s));
+}
+function rankOf(total){ return total>=80?'S': total>=60?'A': total>=40?'B':'C'; }
+const LEADS = COMPANY_STATS.map(st=>{
+  const attr = attributeScore(st.company);
+  const beh = behaviorScore(st);
+  const total = attr+beh;
+  return { ...st, attr, beh, total, rank: rankOf(total) };
+}).sort((a,b)=> b.total - a.total);
+
+/* ============================================================
+   INTENT SALES ENGINE — MAスコア(行動) × CRM感情スコア × SNSインテントシグナル
+   3つのシグナルが重なった瞬間をP0として検知し、統合スコア80超でホットアラートを発火する。
+   ============================================================ */
+const INTENT_SIGNAL_DEFS = {
+  sns:     { label:'SNS課題投稿検知',   desc:'LinkedIn/X等で自社領域の課題・競合比較・予算感に関する投稿を検知',        icon:'💬', color:'#00d4ff' },
+  fiscal:  { label:'決算期接近',        desc:'決算期まで90日以内。予算執行の意思決定が動きやすいタイミング',              icon:'📅', color:'#f59e0b' },
+  emotion: { label:'感情スコア急上昇',  desc:'日報テキスト・SNS投稿のセンチメント分析でCRM感情スコアが急上昇',           icon:'📈', color:'#ec4899' },
+};
+const INTENT_TIER_DEFS = {
+  P0:{ label:'P0（今日動く）', color:'#ef4444', desc:'3シグナル同時検知。確信度が最も高く、即日アプローチ対象' },
+  P1:{ label:'P1（今週動く）', color:'#f59e0b', desc:'2シグナル検知。今週中のアプローチを推奨' },
+  P2:{ label:'P2（注視）',     color:'#00d4ff', desc:'1シグナル検知。ナーチャリング継続で温度感を注視' },
+  P3:{ label:'P3（静観）',     color:'#64748b', desc:'シグナル未検知。通常のナーチャリング対象' },
+};
+const SNS_POST_SAMPLES = [
+  '「ROI可視化が急務」という趣旨の投稿',
+  '「営業とマーケの情報分断が課題」という趣旨の投稿',
+  '「MAツールの入れ替えを検討中」という趣旨の投稿',
+  '「経営会議でCRM刷新の話が出た」という趣旨の投稿',
+  '「リードは獲得できるが商談化しない」という趣旨の投稿',
+  '「決算に向けて営業体制を見直したい」という趣旨の投稿',
+];
+LEADS.forEach(l=>{
+  const emotionBase = 28 + Math.round(rnd()*48);
+  const emotionSpike = rnd() < 0.24;
+  l.emotionScore = Math.min(100, emotionBase + (emotionSpike ? 18+Math.round(rnd()*17) : 0));
+  l.emotionBase = emotionBase;
+  l.emotionSpike = emotionSpike;
+  l.fiscalDaysToEnd = 5 + Math.floor(rnd()*360);
+  l.fiscalNear = l.fiscalDaysToEnd <= 90;
+  l.snsSignal = rnd() < 0.24;
+  l.snsPost = l.snsSignal ? pick(SNS_POST_SAMPLES) : null;
+  l.snsDt = l.snsSignal ? randomPastDate(14) : null;
+
+  const sigs = [];
+  if (l.snsSignal) sigs.push({ type:'sns', dt:l.snsDt, detail:l.snsPost });
+  if (l.fiscalNear) sigs.push({ type:'fiscal', dt:TODAY, detail:`決算まで残り${l.fiscalDaysToEnd}日` });
+  if (l.emotionSpike) sigs.push({ type:'emotion', dt:randomPastDate(10), detail:`感情スコアが${emotionBase}→${l.emotionScore}に急上昇` });
+  l.signals = sigs.sort((a,b)=>b.dt-a.dt);
+  l.signalTypeCount = sigs.length;
+  l.intentTier = sigs.length>=3 ? 'P0' : sigs.length===2 ? 'P1' : sigs.length===1 ? 'P2' : 'P3';
+  l.unifiedScore = Math.min(100, Math.round(l.beh*1.0 + l.emotionScore*0.3 + sigs.length*10));
+});
+const P0_LEADS = LEADS.filter(l=>l.intentTier==='P0').sort((a,b)=>b.unifiedScore-a.unifiedScore);
+const P1_LEADS = LEADS.filter(l=>l.intentTier==='P1').sort((a,b)=>b.unifiedScore-a.unifiedScore);
+function aiApproachDraft(l){
+  const c = l.company;
+  const sigLines = l.signals.map(s=>`・${INTENT_SIGNAL_DEFS[s.type].label}：${s.detail}`).join('\n');
+  return `【${c.name} ご担当者様】\n\n`
+    + `貴社の最近の動きを拝見し、ご連絡いたしました。\n${sigLines}\n\n`
+    + `${c.industry}領域では、マーケティングと営業の情報が分断されたまま意思決定期を迎えるケースが多く見られます。\n`
+    + `よろしければ30分ほど、貴社の状況に合わせた活用イメージと投資対効果の試算をご説明させてください。\n\n`
+    + `本日中でしたら${['14:00','15:30','17:00'][Math.floor(rnd()*3)]}にお時間いただけますでしょうか。\n\n`
+    + `eMplex MA　カスタマーサクセス担当`;
+}
+
+/* ---- PBM連動：受注実績と粗利（MA-ROIダッシュボード用） ---- */
+const ORDER_SCENARIO_POOL = ['採用ページ ナーチャリング','ホットリード即時アラート','休眠リード掘り起こし','料金ページ導線フォロー','直接反響（シナリオ外）'];
+const SCENARIO_MARGIN_BASE = { '採用ページ ナーチャリング':38, 'ホットリード即時アラート':34, '休眠リード掘り起こし':26, '料金ページ導線フォロー':31, '直接反響（シナリオ外）':22 };
+const wonCandidates = LEADS.filter(l=> l.rank==='S' || l.rank==='A');
+const ORDERS = wonCandidates.filter((_,i)=> i%2===0 || rnd()<0.35).map(l=>{
+  const scenario = pick(ORDER_SCENARIO_POOL);
+  const dealAmount = Math.round(300 + rnd()*2200) * 10000;
+  const marginBase = SCENARIO_MARGIN_BASE[scenario];
+  const grossMarginPct = Math.max(4, Math.min(52, Math.round(marginBase + (rnd()-0.5)*24)));
+  const grossProfit = Math.round(dealAmount * grossMarginPct/100);
+  return { lead:l, scenario, dealAmount, grossMarginPct, grossProfit, excluded: grossMarginPct < 15, wonDate: randomPastDate(150) };
+});
+function scenarioROI(){
+  const map = new Map();
+  ORDER_SCENARIO_POOL.forEach(s=> map.set(s, { scenario:s, count:0, revenue:0, profit:0, excludedCount:0 }));
+  ORDERS.forEach(o=>{
+    const m = map.get(o.scenario);
+    m.count++; m.revenue += o.dealAmount;
+    if (o.excluded) m.excludedCount++; else m.profit += o.grossProfit;
+  });
+  return Array.from(map.values()).map(m=>({ ...m, marginPct: m.revenue? Math.round(m.profit/m.revenue*1000)/10 : 0 }));
+}
+const SCENARIO_ROI = scenarioROI();
+const MA_ROI_COST_BASIS = 4800000; // 半年間の運用コスト想定（人件費＋ツール費）
+const MA_ROI_REVENUE_BASED = 3140; // 受注金額ベースROI（参考・一般的なMAツールの指標）
+const MA_ROI_PROFIT_BASED = 2275;  // MA-ROI（粗利ベース・eMplex独自指標）
+const MA_ROI_EXCLUDED_COUNT = ORDERS.filter(o=>o.excluded).length;
+
+/* ---- Segments (computed dynamically from company pool / stats) ---- */
+const SEGMENTS = [
+  { name:'不動産・建設業 × 資本金1億円以上', cond:'業種：不動産取引業/不動産賃貸業・管理業/総合工事業　AND　資本金：1億円以上',
+    match: LEADS.filter(l=> ['不動産取引業','不動産賃貸業・管理業','総合工事業'].includes(l.company.industry) && CAP_ORDER[l.company.capital]>=1) },
+  { name:'採用情報ページ 2回以上閲覧', cond:'閲覧ページ：採用情報　AND　訪問回数：2回以上',
+    match: LEADS.filter(l=> l.landings.has('採用情報') && l.visits>=2) },
+  { name:'料金ページ閲覧企業', cond:'閲覧ページ：料金ページ　を含む',
+    match: LEADS.filter(l=> l.landings.has('料金ページ')) },
+  { name:'初回訪問（新規リード）', cond:'訪問回数：1回　AND　直近30日以内',
+    match: LEADS.filter(l=> l.visits===1 && (TODAY - l.lastDt)/86400000 <= 30) },
+  { name:'大企業セグメント（従業員500名以上）', cond:'従業員数：500名以上',
+    match: LEADS.filter(l=> l.company.employees>=500) },
+  { name:'上場企業のみ', cond:'上場区分：上場',
+    match: LEADS.filter(l=> l.company.listed) },
+  { name:'資料ダウンロード実施企業', cond:'閲覧ページ：資料ダウンロード　を含む',
+    match: LEADS.filter(l=> l.landings.has('資料ダウンロード')) },
+  { name:'休眠リード（60日以上未訪問）', cond:'最終訪問：60日以上前',
+    match: LEADS.filter(l=> (TODAY - l.lastDt)/86400000 > 60) },
+];
+
+/* ---- Scenarios (nurturing automation) ---- */
+const SCENARIOS = [
+  { name:'採用ページ ナーチャリング', on:true, color:'#00d4ff',
+    steps:[['TRIGGER','採用情報ページを2回以上閲覧'],['WAIT','3営業日後'],['ACTION','人事向けナーチャリングメールを送信'],['SCORE','開封で行動スコア+10pt']],
+    target: SEGMENTS[1].match.length, sent: 214, openRate:42.6, ctr:11.3, cv:9 },
+  { name:'ホットリード即時アラート', on:true, color:'#f59e0b',
+    steps:[['TRIGGER','統合スコアが80pt超（MA行動+CRM感情+SNSインテント）'],['ACTION','Slack「#sales-hotlead」へ即時通知'],['ACTION','AIアプローチ文をシグナル内容に基づき自動生成'],['ACTION','CRMに商談レコードを自動登録'],['ACTION','営業担当へ1ステップでハンドオフ']],
+    target: LEADS.filter(l=>l.unifiedScore>80).length, sent: LEADS.filter(l=>l.unifiedScore>80).length, openRate:null, ctr:null, cv: P0_LEADS.length },
+  { name:'休眠リード掘り起こし', on:true, color:'#8b5cf6',
+    steps:[['TRIGGER','初回訪問から7日間 再訪問なし'],['ACTION','リマインドメールを送信'],['SCORE','再訪問で行動スコアを再計算']],
+    target: SEGMENTS[3].match.length, sent: 156, openRate:28.4, ctr:6.1, cv:4 },
+  { name:'料金ページ導線フォロー', on:false, color:'#00c8a0',
+    steps:[['TRIGGER','料金ページに3分以上滞在'],['ACTION','導入事例資料ダウンロード案内メール送信'],['SCORE','資料DLで行動スコア+10pt']],
+    target: SEGMENTS[2].match.length, sent: 98, openRate:36.7, ctr:14.2, cv:7 },
+  { name:'PBM粗利連動 配信最適化', on:true, color:'#22c55e',
+    steps:[['TRIGGER','毎月1日：前月の受注データをPBMから同期'],['SCORE','シナリオ別の平均粗利率を再計算'],['ACTION','粗利率が高いシナリオへ配信比率を自動シフト'],['ACTION','低粗利シナリオは配信対象セグメントを縮小']],
+    target: ORDERS.length, sent: ORDERS.length, openRate:null, ctr:null, cv: ORDERS.filter(o=>!o.excluded).length },
+];
+
+/* ---- Campaigns ---- */
+const CAMPAIGNS = [
+  { date:'2026/07/15', name:'7月度 導入事例まとめ配信', segment:'不動産・建設業 × 資本金1億円以上', sent:412, open:39.8, click:9.2, cv:6, status:'配信済み' },
+  { date:'2026/07/08', name:'採用ページ閲覧企業向けフォロー', segment:'採用情報ページ 2回以上閲覧', sent:186, open:44.1, click:12.6, cv:5, status:'配信済み' },
+  { date:'2026/06/24', name:'休眠リード掘り起こしキャンペーン', segment:'休眠リード（60日以上未訪問）', sent:301, open:24.5, click:5.3, cv:2, status:'配信済み' },
+  { date:'2026/06/10', name:'料金ページ比較資料の案内', segment:'料金ページ閲覧企業', sent:154, open:37.9, click:13.8, cv:8, status:'配信済み' },
+  { date:'2026/07/28', name:'夏季 新機能アップデート告知', segment:'全リード', sent:0, open:0, click:0, cv:0, status:'配信予約' },
+];
+
+/* ---- Forms / LP funnel ---- */
+const FUNNEL = [
+  { label:'サイト訪問（企業識別）', val: COMPANY_STATS.length },
+  { label:'資料DL/フォーム表示', val: Math.round(COMPANY_STATS.length*0.34) },
+  { label:'フォーム入力開始', val: Math.round(COMPANY_STATS.length*0.19) },
+  { label:'フォーム送信完了', val: Math.round(COMPANY_STATS.length*0.11) },
+];
+const LP_STATS = [
+  { name:'資料ダウンロードLP', visits:842, cv:96, cvr:11.4 },
+  { name:'導入事例特集LP', visits:614, cv:58, cvr:9.4 },
+  { name:'料金シミュレーターLP', visits:503, cv:71, cvr:14.1 },
+  { name:'採用オウンドメディア', visits:388, cv:22, cvr:5.7 },
+  { name:'ウェビナー申込LP', visits:276, cv:41, cvr:14.9 },
+];
+
+/* ============ NAV ============ */
+document.querySelectorAll('.nav-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
+    renderTab(tab.dataset.tab);
+  });
+});
+function renderTab(id){
+  if (id==='dashboard') renderDashboard();
+  if (id==='visitors') renderVisitors();
+  if (id==='intent') renderIntent();
+  if (id==='scoring') renderScoring();
+  if (id==='segments') renderSegments();
+  if (id==='scenarios') renderScenarios();
+  if (id==='roi') renderROI();
+  if (id==='campaigns') renderCampaigns();
+  if (id==='forms') renderForms();
+}
+document.getElementById('dateBadge').textContent = '2026年7月21日（火）更新';
+
+function monthlySeries(){
+  const map = new Map();
+  VISITS.forEach(v=>{
+    const k = monthKey(v.dt);
+    if (!map.has(k)) map.set(k, new Set());
+    map.get(k).add(v.company.id);
+  });
+  const keys = Array.from(map.keys()).sort();
+  return keys.map(k=>({ key:k, label:k.slice(5)+'月', count: map.get(k).size }));
+}
+function renderDashboard(){
+  const thisMonthKey = monthKey(TODAY);
+  const thisMonthCompanies = new Set(VISITS.filter(v=>monthKey(v.dt)===thisMonthKey).map(v=>v.company.id)).size;
+  const lastMonthDate = new Date(TODAY.getFullYear(), TODAY.getMonth()-1, 15);
+  const lastMonthKey = monthKey(lastMonthDate);
+  const lastMonthCompanies = new Set(VISITS.filter(v=>monthKey(v.dt)===lastMonthKey).map(v=>v.company.id)).size || 1;
+  const momPct = ((thisMonthCompanies-lastMonthCompanies)/lastMonthCompanies*100);
+  const hotCount = LEADS.filter(l=>l.rank==='S'||l.rank==='A').length;
+  const avgScore = Math.round(LEADS.reduce((s,l)=>s+l.total,0)/LEADS.length);
+  const scenarioSent = SCENARIOS.reduce((s,sc)=>s+sc.sent,0);
+  const handoff = LEADS.filter(l=>l.rank==='S').length;
+
+  const industryCount = {}; INDUSTRIES.forEach(i=>industryCount[i]=0);
+  COMPANY_STATS.forEach(s=> industryCount[s.company.industry] = (industryCount[s.company.industry]||0)+1);
+  const capCount = {}; CAPITAL_RANGES.forEach(c=>capCount[c]=0);
+  COMPANY_STATS.forEach(s=> capCount[s.company.capital]++);
+  const refCount = {}; REFERRERS.forEach(r=>refCount[r]=0);
+  VISITS.forEach(v=> refCount[v.referrer]++);
+  const empBuckets = [['〜49名',0,49],['50〜299名',50,299],['300〜999名',300,999],['1000名以上',1000,Infinity]];
+  const empCount = empBuckets.map(b=>({ label:b[0], count: COMPANY_STATS.filter(s=>s.company.employees>=b[1] && s.company.employees<=b[2]).length }));
+  const series = monthlySeries();
+
+  const top10 = LEADS.slice(0,10);
+
+  document.getElementById('pane-dashboard').innerHTML = `
+    <div class="grid5">
+      <div class="kpi"><div class="kpi-icon">🏢</div><div class="kpi-label">今月の識別企業数</div><div class="kpi-val" style="color:#00d4ff">${fmtNum(thisMonthCompanies)}社</div><div class="kpi-sub" style="color:${momPct>=0?'#4ade80':'#f87171'}">前月比 ${momPct>=0?'+':''}${fmtPct(momPct)}</div><div class="kpi-accent" style="background:#00d4ff"></div></div>
+      <div class="kpi"><div class="kpi-icon">🔥</div><div class="kpi-label">ホットリード（S+A）</div><div class="kpi-val" style="color:#fbbf24">${hotCount}社</div><div class="kpi-sub">全${LEADS.length}社中</div><div class="kpi-accent" style="background:#f5c842"></div></div>
+      <div class="kpi"><div class="kpi-icon">📊</div><div class="kpi-label">平均リードスコア</div><div class="kpi-val" style="color:#00e8b8">${avgScore}pt</div><div class="kpi-sub">属性+行動 100pt満点</div><div class="kpi-accent" style="background:#00e8b8"></div></div>
+      <div class="kpi"><div class="kpi-icon">🔁</div><div class="kpi-label">シナリオ配信数（累計）</div><div class="kpi-val" style="color:#a78bfa">${fmtNum(scenarioSent)}件</div><div class="kpi-sub">稼働中シナリオ ${SCENARIOS.filter(s=>s.on).length}件</div><div class="kpi-accent" style="background:#8b5cf6"></div></div>
+      <div class="kpi"><div class="kpi-icon">🔔</div><div class="kpi-label">営業引継ぎ（Sランク）</div><div class="kpi-val" style="color:#f87171">${handoff}件</div><div class="kpi-sub">Slack自動通知済み</div><div class="kpi-accent" style="background:#ef4444"></div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title"><span class="t">月次 訪問企業数の推移</span><span class="pill acc">直近${series.length}ヶ月</span></div>
+        <canvas id="chMonthly" height="90"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="t">流入経路別 訪問数</span><span class="pill">累計${fmtNum(VISITS.length)}件</span></div>
+        <canvas id="chReferrer" height="90"></canvas>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="card">
+        <div class="card-title"><span class="t">業種別 識別企業数</span></div>
+        <canvas id="chIndustry" height="200"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="t">資本金規模別</span></div>
+        <canvas id="chCapital" height="200"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="t">従業員規模別</span></div>
+        <canvas id="chEmployee" height="200"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t">ホットリード ランキング TOP10</span><span class="pill gold">スコア降順</span></div>
+      <div class="tbl-scroll">
+      <table class="dtbl">
+        <tr><th>順位</th><th>ランク</th><th>企業名</th><th>業種</th><th class="num">訪問回数</th><th class="num">閲覧P数</th><th>最終訪問</th><th class="num">スコア</th><th>内訳（属性/行動）</th></tr>
+        ${top10.map((l,i)=>`
+        <tr>
+          <td>${i+1}</td>
+          <td><span class="badge-rank rank-${l.rank}">${l.rank}</span></td>
+          <td>${esc(l.company.name)}</td>
+          <td>${esc(l.company.industry)}</td>
+          <td class="num">${l.visits}</td>
+          <td class="num">${l.pages}</td>
+          <td>${fmtDT(l.lastDt)}</td>
+          <td class="num" style="font-weight:800">${l.total}pt</td>
+          <td style="min-width:120px"><div class="score-bar"><div class="attr" style="width:${l.attr}%"></div><div class="beh" style="width:${l.beh}%"></div></div></td>
+        </tr>`).join('')}
+      </table>
+      </div>
+    </div>
+  `;
+
+  destroyChart('chMonthly');
+  charts.chMonthly = new Chart(document.getElementById('chMonthly'), {
+    type:'bar',
+    data:{ labels: series.map(s=>s.label), datasets:[{ label:'識別企業数', data: series.map(s=>s.count), backgroundColor:'rgba(0,212,255,0.55)', borderRadius:4 }] },
+    options:{ plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#94a3b8',font:{size:10}},grid:{display:false}}, y:{ticks:{color:'#94a3b8',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}} } }
+  });
+  destroyChart('chReferrer');
+  charts.chReferrer = new Chart(document.getElementById('chReferrer'), {
+    type:'pie',
+    data:{ labels: REFERRERS, datasets:[{ data: REFERRERS.map(r=>refCount[r]), backgroundColor:['#00d4ff','#00e8b8','#8b5cf6','#f5c842','#f97316','#ec4899','#22c55e','#64748b'] }] },
+    options:{ plugins:{legend:{position:'right',labels:{color:'#94a3b8',font:{size:9.5},boxWidth:10}}} }
+  });
+  destroyChart('chIndustry');
+  charts.chIndustry = new Chart(document.getElementById('chIndustry'), {
+    type:'doughnut',
+    data:{ labels: INDUSTRIES, datasets:[{ data: INDUSTRIES.map(i=>industryCount[i]), backgroundColor:['#00d4ff','#00e8b8','#8b5cf6','#f5c842','#f97316','#ec4899','#22c55e','#64748b'] }] },
+    options:{ plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:8.5},boxWidth:8,padding:6}}} }
+  });
+  destroyChart('chCapital');
+  charts.chCapital = new Chart(document.getElementById('chCapital'), {
+    type:'doughnut',
+    data:{ labels: CAPITAL_RANGES, datasets:[{ data: CAPITAL_RANGES.map(c=>capCount[c]), backgroundColor:['#334155','#0090ff','#00d4ff','#00e8b8','#f5c842','#f97316','#ef4444'] }] },
+    options:{ plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',font:{size:8.5},boxWidth:8,padding:6}}} }
+  });
+  destroyChart('chEmployee');
+  charts.chEmployee = new Chart(document.getElementById('chEmployee'), {
+    type:'bar',
+    data:{ labels: empCount.map(e=>e.label), datasets:[{ data: empCount.map(e=>e.count), backgroundColor:'rgba(0,200,160,0.6)', borderRadius:4 }] },
+    options:{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#94a3b8',font:{size:9.5}},grid:{color:'rgba(255,255,255,0.05)'}}, y:{ticks:{color:'#94a3b8',font:{size:9.5}},grid:{display:false}} } }
+  });
+}
+
+const VFILTER = { industry:'', listed:'', referrer:'', keyword:'', page:1 };
+const V_PAGE_SIZE = 25;
+function renderVisitors(){
+  document.getElementById('pane-visitors').innerHTML = `
+    <div class="card">
+      <div class="card-title"><span class="t">企業訪問ログ検索</span><span class="pill acc">全期間 累計${fmtNum(VISITS.length)}件</span></div>
+      <div class="form-row">
+        <input type="text" id="vfKeyword" placeholder="企業名で検索" style="width:220px" oninput="vfChange('keyword',this.value)">
+        <select id="vfIndustry" onchange="vfChange('industry',this.value)">
+          <option value="">業種：すべて</option>
+          ${INDUSTRIES.map(i=>`<option value="${i}">${i}</option>`).join('')}
+        </select>
+        <select id="vfListed" onchange="vfChange('listed',this.value)">
+          <option value="">上場区分：すべて</option>
+          <option value="1">上場</option>
+          <option value="0">未上場</option>
+        </select>
+        <select id="vfReferrer" onchange="vfChange('referrer',this.value)">
+          <option value="">流入元：すべて</option>
+          ${REFERRERS.map(r=>`<option value="${r}">${r}</option>`).join('')}
+        </select>
+        <button class="btn sec xs" onclick="vfReset()">条件をクリア</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="t">全期間データ</span></div>
+      <div id="visitorTableWrap"></div>
+    </div>
+  `;
+  renderVisitorTable();
+}
+function vfChange(field, val){ VFILTER[field] = val; VFILTER.page = 1; renderVisitorTable(); }
+function vfReset(){
+  VFILTER.industry=''; VFILTER.listed=''; VFILTER.referrer=''; VFILTER.keyword=''; VFILTER.page=1;
+  document.getElementById('vfKeyword').value=''; document.getElementById('vfIndustry').value='';
+  document.getElementById('vfListed').value=''; document.getElementById('vfReferrer').value='';
+  renderVisitorTable();
+}
+function vfPage(delta){ VFILTER.page += delta; renderVisitorTable(); }
+function renderVisitorTable(){
+  let rows = VISITS;
+  if (VFILTER.industry) rows = rows.filter(v=>v.company.industry===VFILTER.industry);
+  if (VFILTER.listed) rows = rows.filter(v=> VFILTER.listed==='1' ? v.company.listed : !v.company.listed);
+  if (VFILTER.referrer) rows = rows.filter(v=>v.referrer===VFILTER.referrer);
+  if (VFILTER.keyword) rows = rows.filter(v=>v.company.name.includes(VFILTER.keyword));
+
+  const total = rows.length;
+  const pages = Math.max(1, Math.ceil(total/V_PAGE_SIZE));
+  VFILTER.page = Math.min(Math.max(1,VFILTER.page), pages);
+  const start = (VFILTER.page-1)*V_PAGE_SIZE;
+  const pageRows = rows.slice(start, start+V_PAGE_SIZE);
+
+  document.getElementById('visitorTableWrap').innerHTML = `
+    <div class="tbl-scroll">
+    <table class="dtbl">
+      <tr>
+        <th>日時</th><th>企業名</th><th>業種</th><th>上場区分</th><th>資本金</th><th class="num">従業員数</th>
+        <th>都道府県</th><th>流入元</th><th>流入ページ</th><th class="num">閲覧P数</th><th class="num">滞在時間</th>
+        <th class="num">訪問回数(累計)</th><th>新規/既存</th>
+      </tr>
+      ${pageRows.map(v=>{
+        const st = statsMap.get(v.company.id);
+        return `<tr>
+          <td>${fmtDT(v.dt)}</td>
+          <td>${esc(v.company.name)}</td>
+          <td>${esc(v.company.industry)}</td>
+          <td><span class="pill ${v.company.listed?'teal':'gray'}">${v.company.listed?'上場':'未上場'}</span></td>
+          <td>${esc(v.company.capital)}</td>
+          <td class="num">${fmtNum(v.company.employees)}</td>
+          <td>${esc(v.company.pref)}</td>
+          <td>${esc(v.referrer)}</td>
+          <td>${esc(v.landing)}</td>
+          <td class="num">${v.pagesViewed}</td>
+          <td class="num">${Math.floor(v.durationSec/60)}分${v.durationSec%60}秒</td>
+          <td class="num">${st.visits}</td>
+          <td><span class="pill ${v.isNew?'acc':'gray'}">${v.isNew?'新規':'既存'}</span></td>
+        </tr>`;
+      }).join('')}
+    </table>
+    </div>
+    <div class="pager">
+      <button onclick="vfPage(-1)" ${VFILTER.page<=1?'disabled':''}>‹ 前へ</button>
+      <span>${fmtNum(start+1)} - ${fmtNum(Math.min(start+V_PAGE_SIZE,total))} / ${fmtNum(total)}件</span>
+      <button onclick="vfPage(1)" ${VFILTER.page>=pages?'disabled':''}>次へ ›</button>
+    </div>
+  `;
+}
+
+function tierPillHTML(tier){
+  const d = INTENT_TIER_DEFS[tier];
+  return `<span class="tier-pill" style="background:${d.color}22;color:${d.color};border:1px solid ${d.color}55">${d.label}</span>`;
+}
+function signalChipHTML(sig){
+  const d = INTENT_SIGNAL_DEFS[sig.type];
+  return `<span class="signal-chip" style="color:${d.color};border-color:${d.color}55;background:${d.color}15">${d.icon} ${d.label}</span>`;
+}
+function toggleAiDraft(idx){
+  const el = document.getElementById('aiDraft'+idx);
+  if (!el) return;
+  el.classList.toggle('show');
+}
+function renderIntent(){
+  const totalSignals = LEADS.reduce((s,l)=>s+l.signalTypeCount,0);
+  const p0Today = P0_LEADS.length;
+  const avgReachMin = 8;
+  document.getElementById('pane-intent').innerHTML = `
+    <div class="grid4">
+      <div class="kpi"><div class="kpi-icon">🚨</div><div class="kpi-label">本日のP0アラート</div><div class="kpi-val" style="color:#ef4444">${p0Today}社</div><div class="kpi-sub">3シグナル同時検知・即日アプローチ対象</div><div class="kpi-accent" style="background:#ef4444"></div></div>
+      <div class="kpi"><div class="kpi-icon">📡</div><div class="kpi-label">検知シグナル数（累計）</div><div class="kpi-val" style="color:#00d4ff">${fmtNum(totalSignals)}件</div><div class="kpi-sub">SNS/決算期/感情スコアの合計</div><div class="kpi-accent" style="background:#00d4ff"></div></div>
+      <div class="kpi"><div class="kpi-icon">✍️</div><div class="kpi-label">AIアプローチ文生成数</div><div class="kpi-val" style="color:#a78bfa">${fmtNum(p0Today+P1_LEADS.length)}件</div><div class="kpi-sub">P0/P1リード向けに自動生成</div><div class="kpi-accent" style="background:#8b5cf6"></div></div>
+      <div class="kpi"><div class="kpi-icon">⏱</div><div class="kpi-label">平均アプローチ到達時間</div><div class="kpi-val" style="color:#00e8b8">${avgReachMin}分</div><div class="kpi-sub">シグナル検知→営業へのハンドオフ</div><div class="kpi-accent" style="background:#00e8b8"></div></div>
+    </div>
+
+    <div class="golden-box">
+      <div style="font-size:11px;color:var(--gold);font-weight:800;letter-spacing:.5px;margin-bottom:8px">⚡ ゴールデンタイム判定の例</div>
+      <div style="font-size:12px;color:var(--text);line-height:1.9">
+        山本様が「ROI可視化が急務」とSNSに投稿した1時間後、<b>決算90日前のタイミング</b>と<b>感情スコア急上昇</b>が重なったため、eMplex MAは自動で <span class="tier-pill" style="background:#ef444422;color:#f87171;border:1px solid #ef444455">P0（今日動く）</span> と判定。Slack通知とAIアプローチ文が同時に生成され、8分後に営業担当がメールを送信しました。<br>
+        <span style="color:var(--text2)">1週間後に連絡していた場合と比べ、受注確率は数十%変わると言われています。一般的な営業は「時間軸」でフォローしますが、インテントセールスは「意思軸」でアプローチします。</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t">3つのシグナル検知エンジン</span><span class="pill red">重複するほど確信度が上昇</span></div>
+      <div class="grid3">
+        ${Object.entries(INTENT_SIGNAL_DEFS).map(([k,d])=>`
+          <div class="kpi" style="border-top:2px solid ${d.color}">
+            <div style="font-size:20px;margin-bottom:6px">${d.icon}</div>
+            <div style="font-size:13px;font-weight:800;color:#fff;margin-bottom:6px">${d.label}</div>
+            <div style="font-size:11px;color:var(--text2);line-height:1.7">${d.desc}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="subhead" style="margin-top:16px">アラートレベル判定ロジック</div>
+      <table class="dtbl">
+        <tr><th>レベル</th><th>検知シグナル数</th><th>対応方針</th></tr>
+        ${Object.entries(INTENT_TIER_DEFS).map(([k,d])=>`
+        <tr><td>${tierPillHTML(k)}</td><td>${k==='P0'?'3種類同時':k==='P1'?'2種類':k==='P2'?'1種類':'0種類'}</td><td>${d.desc}</td></tr>
+        `).join('')}
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t">P0リード — 今日アプローチすべき企業</span><span class="pill red">${P0_LEADS.length}社</span></div>
+      ${P0_LEADS.length===0 ? '<div style="font-size:12px;color:var(--text2);padding:12px">現在P0判定のリードはありません。</div>' : P0_LEADS.slice(0,12).map((l,idx)=>`
+        <div class="p0-card">
+          <div class="p0-head">
+            <div style="display:flex;align-items:center;gap:10px">
+              ${tierPillHTML(l.intentTier)}
+              <b style="font-size:13px;color:#fff">${esc(l.company.name)}</b>
+              <span class="pill">${esc(l.company.industry)}</span>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:16px;font-weight:800;color:#f87171">統合スコア ${l.unifiedScore}pt</div>
+            </div>
+          </div>
+          <div style="margin:6px 0">${l.signals.map(signalChipHTML).join('')}</div>
+          <div class="form-row" style="margin-top:8px;margin-bottom:0">
+            <button class="btn xs" onclick="toggleAiDraft(${idx})">✍️ AIアプローチ文を確認</button>
+            <button class="btn sec xs" onclick="alert('Slack #sales-hotlead へ通知済み、CRMに商談登録済みです（デモ）')">🔔 Slack/CRM連携ログを見る</button>
+          </div>
+          <div class="ai-draft" id="aiDraft${idx}">${esc(aiApproachDraft(l))}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t">シグナル検知ログ（全リード）</span><span class="pill">P0/P1優先表示</span></div>
+      <div class="tbl-scroll">
+      <table class="dtbl">
+        <tr><th>レベル</th><th>企業名</th><th>業種</th><th class="num">統合スコア</th><th>検知シグナル</th><th class="num">CRM感情スコア</th><th class="num">決算まで</th></tr>
+        ${LEADS.filter(l=>l.signalTypeCount>0).sort((a,b)=>b.unifiedScore-a.unifiedScore).slice(0,60).map(l=>`
+        <tr>
+          <td>${tierPillHTML(l.intentTier)}</td>
+          <td>${esc(l.company.name)}</td>
+          <td>${esc(l.company.industry)}</td>
+          <td class="num" style="font-weight:800">${l.unifiedScore}pt</td>
+          <td>${l.signals.map(signalChipHTML).join('')}</td>
+          <td class="num">${l.emotionScore}${l.emotionSpike?' 🔺':''}</td>
+          <td class="num">${l.fiscalNear?l.fiscalDaysToEnd+'日':'—'}</td>
+        </tr>`).join('')}
+      </table>
+      </div>
+    </div>
+  `;
+}
+
+const SFILTER = { rank:'', page:1 };
+const S_PAGE_SIZE = 30;
+const HANDOFF_STATUSES = ['未対応','対応中','商談化','失注'];
+function handoffStatus(l, idx){
+  if (l.rank==='S') return idx%4===3 ? '失注' : (idx%3===0?'商談化':'対応中');
+  if (l.rank==='A') return idx%5===0 ? '商談化' : (idx%2===0?'対応中':'未対応');
+  return '未対応';
+}
+function renderScoring(){
+  const rankCounts = { S:0,A:0,B:0,C:0 };
+  LEADS.forEach(l=>rankCounts[l.rank]++);
+  document.getElementById('pane-scoring').innerHTML = `
+    <div class="grid4">
+      <div class="kpi"><div class="kpi-label">Sランク（80pt〜）</div><div class="kpi-val" style="color:#f5c842">${rankCounts.S}社</div><div class="kpi-sub">即時営業引継ぎ対象</div><div class="kpi-accent" style="background:#f5c842"></div></div>
+      <div class="kpi"><div class="kpi-label">Aランク（60〜79pt）</div><div class="kpi-val" style="color:#00e8b8">${rankCounts.A}社</div><div class="kpi-sub">シナリオで育成中</div><div class="kpi-accent" style="background:#00e8b8"></div></div>
+      <div class="kpi"><div class="kpi-label">Bランク（40〜59pt）</div><div class="kpi-val" style="color:#00d4ff">${rankCounts.B}社</div><div class="kpi-sub">継続フォロー対象</div><div class="kpi-accent" style="background:#00d4ff"></div></div>
+      <div class="kpi"><div class="kpi-label">Cランク（〜39pt）</div><div class="kpi-val" style="color:#94a3b8">${rankCounts.C}社</div><div class="kpi-sub">ナーチャリング対象外</div><div class="kpi-accent" style="background:#64748b"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t">統合スコアの構成 — MAスコア × CRM感情スコア × SNSインテントシグナル</span><span class="pill red">eMplex独自</span></div>
+      <p style="font-size:11.5px;color:var(--text2);line-height:1.9;margin-bottom:10px">HubSpotやMarketoのスコアリングは「メール開封・ページ閲覧」など行動データのみです。eMplexはMAの行動スコアに加えて、CRMの感情スコア（SNS投稿・日報テキストのセンチメント分析）とSNSインテントシグナルを同一DB上で統合し、<b style="color:#fff">「統合スコア」</b>として算出します。統合スコアが80ptを超えた瞬間、ホットリードアラートが自動発火します（詳細は🎯インテントシグナルタブ）。</p>
+      <div class="grid3">
+        <div class="kpi" style="border-top:2px solid #00d4ff"><div class="kpi-label">MAスコア（行動）</div><div class="kpi-val" style="font-size:18px;color:#00d4ff">最大50pt</div><div class="kpi-sub">訪問回数・閲覧数・滞在時間・重要ページ閲覧</div></div>
+        <div class="kpi" style="border-top:2px solid #ec4899"><div class="kpi-label">CRM感情スコア</div><div class="kpi-val" style="font-size:18px;color:#ec4899">最大30pt寄与</div><div class="kpi-sub">SNS投稿・日報テキストのセンチメント分析</div></div>
+        <div class="kpi" style="border-top:2px solid #f59e0b"><div class="kpi-label">SNSインテントシグナル</div><div class="kpi-val" style="font-size:18px;color:#f59e0b">最大30pt寄与</div><div class="kpi-sub">検知シグナル種別数 × 10pt</div></div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title"><span class="t">属性スコア加点ルール（最大50pt）</span></div>
+        <table class="dtbl">
+          <tr><th>条件</th><th class="num">加点</th></tr>
+          <tr><td>業種が不動産取引業／不動産賃貸業・管理業／総合工事業</td><td class="num">+20pt</td></tr>
+          <tr><td>業種が情報サービス業</td><td class="num">+14pt</td></tr>
+          <tr><td>その他業種</td><td class="num">+8pt</td></tr>
+          <tr><td>資本金規模（レンジが上がるほど加点、最大）</td><td class="num">+24pt</td></tr>
+          <tr><td>上場企業</td><td class="num">+10pt</td></tr>
+          <tr><td>従業員数 300名以上（50〜299名は+4pt）</td><td class="num">+8pt</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="t">行動スコア加点ルール（最大50pt）</span></div>
+        <table class="dtbl">
+          <tr><th>条件</th><th class="num">加点</th></tr>
+          <tr><td>訪問回数 × 4pt（最大20pt）</td><td class="num">〜+20pt</td></tr>
+          <tr><td>累計閲覧ページ数 × 1.5pt（最大15pt）</td><td class="num">〜+15pt</td></tr>
+          <tr><td>平均滞在時間 180秒以上（90秒以上は+6pt）</td><td class="num">+10pt</td></tr>
+          <tr><td>採用情報ページ閲覧</td><td class="num">+6pt</td></tr>
+          <tr><td>料金ページ閲覧</td><td class="num">+8pt</td></tr>
+          <tr><td>資料ダウンロード実施</td><td class="num">+10pt</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span class="t">リード一覧（スコア降順）</span>
+        <select onchange="sfChange(this.value)" style="background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:6px;color:var(--text);padding:5px 10px;font-size:11px">
+          <option value="">ランク：すべて</option>
+          <option value="S">Sランクのみ</option>
+          <option value="A">Aランクのみ</option>
+          <option value="B">Bランクのみ</option>
+          <option value="C">Cランクのみ</option>
+        </select>
+      </div>
+      <div id="scoringTableWrap"></div>
+    </div>
+  `;
+  renderScoringTable();
+}
+function sfChange(val){ SFILTER.rank = val; SFILTER.page = 1; renderScoringTable(); }
+function sfPage(delta){ SFILTER.page += delta; renderScoringTable(); }
+function renderScoringTable(){
+  let rows = LEADS;
+  if (SFILTER.rank) rows = rows.filter(l=>l.rank===SFILTER.rank);
+  const total = rows.length;
+  const pages = Math.max(1, Math.ceil(total/S_PAGE_SIZE));
+  SFILTER.page = Math.min(Math.max(1,SFILTER.page), pages);
+  const start = (SFILTER.page-1)*S_PAGE_SIZE;
+  const pageRows = rows.slice(start, start+S_PAGE_SIZE);
+  document.getElementById('scoringTableWrap').innerHTML = `
+    <div class="tbl-scroll">
+    <table class="dtbl">
+      <tr><th>ランク</th><th>企業名</th><th>業種</th><th class="num">訪問回数</th><th>最終訪問</th><th>スコア内訳（属性/行動）</th><th class="num">合計</th><th class="num">統合スコア</th><th>インテント層</th><th>営業ステータス</th></tr>
+      ${pageRows.map((l,i)=>`
+      <tr>
+        <td><span class="badge-rank rank-${l.rank}">${l.rank}</span></td>
+        <td>${esc(l.company.name)}</td>
+        <td>${esc(l.company.industry)}</td>
+        <td class="num">${l.visits}</td>
+        <td>${fmtDT(l.lastDt)}</td>
+        <td style="min-width:130px"><div class="score-bar"><div class="attr" style="width:${l.attr}%"></div><div class="beh" style="width:${l.beh}%"></div></div><div style="font-size:9px;color:var(--text3);margin-top:2px">属性${l.attr} / 行動${l.beh}</div></td>
+        <td class="num" style="font-weight:800">${l.total}pt</td>
+        <td class="num" style="font-weight:800;color:${l.unifiedScore>80?'#f87171':'#94a3b8'}">${l.unifiedScore}pt</td>
+        <td>${tierPillHTML(l.intentTier)}</td>
+        <td><span class="pill ${{'未対応':'gray','対応中':'acc','商談化':'teal','失注':'red'}[handoffStatus(l,start+i)]}">${handoffStatus(l,start+i)}</span></td>
+      </tr>`).join('')}
+    </table>
+    </div>
+    <div class="pager">
+      <button onclick="sfPage(-1)" ${SFILTER.page<=1?'disabled':''}>‹ 前へ</button>
+      <span>${fmtNum(start+1)} - ${fmtNum(Math.min(start+S_PAGE_SIZE,total))} / ${fmtNum(total)}件</span>
+      <button onclick="sfPage(1)" ${SFILTER.page>=pages?'disabled':''}>次へ ›</button>
+    </div>
+  `;
+}
+
+let segRows = [ { type:'industry', val: INDUSTRIES[0] }, { type:'visitsMin', val: 2 } ];
+const SEG_TYPE_LABEL = { industry:'業種 =', capitalMin:'資本金 ≥', employeesMin:'従業員数 ≥', listed:'上場区分 =', visitsMin:'訪問回数 ≥', landing:'閲覧ページ含む =' };
+function segRowEvaluator(row){
+  return (l)=>{
+    if (row.type==='industry') return l.company.industry === row.val;
+    if (row.type==='capitalMin') return CAP_ORDER[l.company.capital] >= CAP_ORDER[row.val];
+    if (row.type==='employeesMin') return l.company.employees >= Number(row.val);
+    if (row.type==='listed') return row.val==='上場' ? l.company.listed : !l.company.listed;
+    if (row.type==='visitsMin') return l.visits >= Number(row.val);
+    if (row.type==='landing') return l.landings.has(row.val);
+    return true;
+  };
+}
+function segBuilderMatchCount(){
+  const evals = segRows.map(segRowEvaluator);
+  return LEADS.filter(l=> evals.every(fn=>fn(l))).length;
+}
+function segRowValueInput(row, idx){
+  if (row.type==='industry') return `<select onchange="segRowUpdate(${idx},this.value)">${INDUSTRIES.map(i=>`<option ${i===row.val?'selected':''}>${i}</option>`).join('')}</select>`;
+  if (row.type==='capitalMin') return `<select onchange="segRowUpdate(${idx},this.value)">${CAPITAL_RANGES.map(c=>`<option ${c===row.val?'selected':''}>${c}</option>`).join('')}</select>`;
+  if (row.type==='employeesMin') return `<input type="number" style="width:90px" value="${row.val}" oninput="segRowUpdate(${idx},this.value)">`;
+  if (row.type==='listed') return `<select onchange="segRowUpdate(${idx},this.value)"><option ${row.val==='上場'?'selected':''}>上場</option><option ${row.val==='未上場'?'selected':''}>未上場</option></select>`;
+  if (row.type==='visitsMin') return `<input type="number" style="width:90px" value="${row.val}" oninput="segRowUpdate(${idx},this.value)">`;
+  if (row.type==='landing') return `<select onchange="segRowUpdate(${idx},this.value)">${PAGES.map(p=>`<option ${p===row.val?'selected':''}>${p}</option>`).join('')}</select>`;
+  return '';
+}
+function segRowUpdate(idx,val){ segRows[idx].val = val; renderSegBuilder(); }
+function segRowTypeChange(idx, type){
+  const defaults = { industry:INDUSTRIES[0], capitalMin:CAPITAL_RANGES[0], employeesMin:50, listed:'上場', visitsMin:2, landing:PAGES[0] };
+  segRows[idx] = { type, val: defaults[type] };
+  renderSegBuilder();
+}
+function segAddRow(){ segRows.push({ type:'visitsMin', val:1 }); renderSegBuilder(); }
+function segRemoveRow(idx){ segRows.splice(idx,1); renderSegBuilder(); }
+function segSave(){
+  const nameInput = document.getElementById('segNameInput');
+  const name = (nameInput.value||'').trim();
+  if (!name){ nameInput.focus(); return; }
+  const evals = segRows.map(segRowEvaluator);
+  const match = LEADS.filter(l=> evals.every(fn=>fn(l)));
+  const cond = segRows.map(r=> `${SEG_TYPE_LABEL[r.type]}${r.val}`).join('　AND　');
+  SEGMENTS.unshift({ name, cond, match, custom:true });
+  nameInput.value = '';
+  renderSegments();
+}
+function segDelete(idx){ SEGMENTS.splice(idx,1); renderSegments(); }
+function segToVisitors(industry){
+  document.querySelector('.nav-tab[data-tab="visitors"]').click();
+  setTimeout(()=>{ if (industry){ document.getElementById('vfIndustry').value = industry; vfChange('industry', industry); } }, 0);
+}
+function renderSegBuilder(){
+  document.getElementById('segBuilderWrap').innerHTML = `
+    ${segRows.map((row,idx)=>`
+      <div class="form-row">
+        <select onchange="segRowTypeChange(${idx},this.value)">
+          ${Object.entries(SEG_TYPE_LABEL).map(([k,label])=>`<option value="${k}" ${k===row.type?'selected':''}>${label.replace(' =','').replace(' ≥','')}</option>`).join('')}
+        </select>
+        <span style="color:var(--text3);font-size:11px">${row.type==='listed'||row.type==='industry'||row.type==='landing' ? '=' : '≥'}</span>
+        ${segRowValueInput(row, idx)}
+        <button class="btn danger xs" onclick="segRemoveRow(${idx})">✕ 削除</button>
+      </div>`).join('')}
+    <div class="form-row">
+      <button class="btn sec xs" onclick="segAddRow()">＋ 条件を追加</button>
+      <span class="pill acc" style="margin-left:auto">プレビュー一致件数：${segBuilderMatchCount()}社</span>
+    </div>
+    <div class="form-row" style="margin-top:8px">
+      <input type="text" id="segNameInput" placeholder="セグメント名を入力">
+      <button class="btn xs" onclick="segSave()">💾 セグメントとして保存</button>
+    </div>
+  `;
+}
+function renderSegments(){
+  document.getElementById('pane-segments').innerHTML = `
+    <div class="card">
+      <div class="card-title"><span class="t">条件ビルダー（AND条件）</span><span class="pill purple">属性 × 行動条件</span></div>
+      <div id="segBuilderWrap"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="t">保存済みセグメント</span><span class="pill">${SEGMENTS.length}件</span></div>
+      ${SEGMENTS.map((seg,idx)=>`
+        <div class="seg-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+            <div style="flex:1">
+              <div class="seg-name">${esc(seg.name)} ${seg.custom?'<span class="pill acc" style="margin-left:6px">カスタム</span>':''}</div>
+              <div class="seg-cond">${esc(seg.cond)}</div>
+              <div class="seg-meta">最終更新：2026/07/20　|　対象：企業訪問ログ全期間データより算出</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div class="seg-count">${seg.match.length}<span style="font-size:11px;color:var(--text3)">社</span></div>
+            </div>
+          </div>
+          <div class="form-row" style="margin-top:10px;margin-bottom:0">
+            <button class="btn sec xs" onclick="segToVisitors()">🔍 訪問ログで見る</button>
+            <button class="btn sec xs" onclick="alert('「${esc(seg.name)}」をCSVでエクスポートしました（デモ）')">⬇ CSV出力</button>
+            <button class="btn sec xs" onclick="alert('「${esc(seg.name)}」をシナリオのトリガー対象に追加しました（デモ）')">🔁 シナリオに追加</button>
+            ${seg.custom?`<button class="btn danger xs" onclick="segDelete(${idx})">✕ 削除</button>`:''}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  renderSegBuilder();
+}
+
+function scenarioToggle(idx){ SCENARIOS[idx].on = !SCENARIOS[idx].on; renderScenarios(); }
+const STEP_ICON = { TRIGGER:'⚡', WAIT:'⏱', ACTION:'✉️', SCORE:'📈' };
+function renderScenarios(){
+  const totalSent = SCENARIOS.reduce((s,sc)=>s+sc.sent,0);
+  const avgOpen = (()=>{ const withOpen = SCENARIOS.filter(s=>s.openRate!=null); return withOpen.length? (withOpen.reduce((s,sc)=>s+sc.openRate,0)/withOpen.length).toFixed(1) : '—'; })();
+  document.getElementById('pane-scenarios').innerHTML = `
+    <div class="grid4">
+      <div class="kpi"><div class="kpi-label">稼働中シナリオ</div><div class="kpi-val" style="color:#00d4ff">${SCENARIOS.filter(s=>s.on).length}<span style="font-size:14px">/${SCENARIOS.length}</span></div><div class="kpi-sub">トリガー×条件×アクション</div><div class="kpi-accent" style="background:#00d4ff"></div></div>
+      <div class="kpi"><div class="kpi-label">累計配信数</div><div class="kpi-val" style="color:#00e8b8">${fmtNum(totalSent)}件</div><div class="kpi-sub">全シナリオ合計</div><div class="kpi-accent" style="background:#00e8b8"></div></div>
+      <div class="kpi"><div class="kpi-label">平均開封率</div><div class="kpi-val" style="color:#fbbf24">${avgOpen}%</div><div class="kpi-sub">配信系シナリオ平均</div><div class="kpi-accent" style="background:#f5c842"></div></div>
+      <div class="kpi"><div class="kpi-label">シナリオ経由CV</div><div class="kpi-val" style="color:#a78bfa">${SCENARIOS.reduce((s,sc)=>s+sc.cv,0)}件</div><div class="kpi-sub">商談化・スコア到達含む</div><div class="kpi-accent" style="background:#8b5cf6"></div></div>
+    </div>
+
+    ${SCENARIOS.map((sc,idx)=>`
+      <div class="scenario-card">
+        <div class="scenario-head">
+          <div class="scenario-title"><span style="width:8px;height:8px;border-radius:50%;background:${sc.on?'#22c55e':'#64748b'};display:inline-block"></span>${esc(sc.name)}</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span class="pill ${sc.on?'teal':'gray'}">${sc.on?'稼働中':'停止中'}</span>
+            <div class="toggle ${sc.on?'on':''}" onclick="scenarioToggle(${idx})"><i></i></div>
+          </div>
+        </div>
+        <div class="scenario-flow">
+          ${sc.steps.map((st,i)=>`
+            ${i>0?'<div class="sf-arrow">→</div>':''}
+            <div class="sf-node" style="border-color:${sc.color}55">
+              <div class="sf-tag" style="color:${sc.color}">${STEP_ICON[st[0]]||''} ${st[0]}</div>
+              <div class="sf-body">${esc(st[1])}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="scenario-stats">
+          <div class="scenario-stat"><b>${fmtNum(sc.target)}社</b><span>対象セグメント規模</span></div>
+          <div class="scenario-stat"><b>${fmtNum(sc.sent)}件</b><span>累計配信/実行数</span></div>
+          <div class="scenario-stat"><b>${sc.openRate!=null? sc.openRate+'%':'—'}</b><span>開封率</span></div>
+          <div class="scenario-stat"><b>${sc.ctr!=null? sc.ctr+'%':'—'}</b><span>クリック率</span></div>
+          <div class="scenario-stat"><b style="color:var(--teal2)">${sc.cv}件</b><span>CV / 商談化</span></div>
+        </div>
+      </div>
+    `).join('')}
+
+    <div class="card" style="text-align:center;padding:26px">
+      <button class="btn" onclick="alert('シナリオビルダーを開きます（デモ）')">＋ 新しいシナリオを作成</button>
+    </div>
+  `;
+}
+
+function renderROI(){
+  const totalOrders = ORDERS.length;
+  const totalRevenue = ORDERS.reduce((s,o)=>s+o.dealAmount,0);
+  const totalProfit = ORDERS.filter(o=>!o.excluded).reduce((s,o)=>s+o.grossProfit,0);
+  const excludedOrders = ORDERS.filter(o=>o.excluded).sort((a,b)=>b.dealAmount-a.dealAmount);
+  const bestMargin = SCENARIO_ROI.slice().sort((a,b)=>b.marginPct-a.marginPct)[0];
+  const example = excludedOrders[0];
+
+  document.getElementById('pane-roi').innerHTML = `
+    <div class="grid4">
+      <div class="kpi"><div class="kpi-icon">💹</div><div class="kpi-label">MA-ROI（粗利ベース・eMplex独自）</div><div class="kpi-val" style="color:#22c55e">${fmtNum(MA_ROI_PROFIT_BASED)}%</div><div class="kpi-sub">PBM確定粗利 ÷ 運用コストから算出</div><div class="kpi-accent" style="background:#22c55e"></div></div>
+      <div class="kpi"><div class="kpi-icon">📐</div><div class="kpi-label">参考：収益ベースROI（一般的なMA指標）</div><div class="kpi-val" style="color:#94a3b8">${fmtNum(MA_ROI_REVENUE_BASED)}%</div><div class="kpi-sub">受注金額のみで算出（原価は考慮されない）</div><div class="kpi-accent" style="background:#64748b"></div></div>
+      <div class="kpi"><div class="kpi-icon">🧾</div><div class="kpi-label">累計受注件数（半年間）</div><div class="kpi-val" style="color:#00d4ff">${fmtNum(totalOrders)}件</div><div class="kpi-sub">受注金額 ${fmtNum(Math.round(totalRevenue/10000))}万円</div><div class="kpi-accent" style="background:#00d4ff"></div></div>
+      <div class="kpi"><div class="kpi-icon">🚫</div><div class="kpi-label">貢献計上から除外した受注</div><div class="kpi-val" style="color:#f87171">${MA_ROI_EXCLUDED_COUNT}件</div><div class="kpi-sub">原価超過（粗利率15%未満）のため</div><div class="kpi-accent" style="background:#ef4444"></div></div>
+    </div>
+
+    <div class="golden-box">
+      <div style="font-size:11px;color:var(--gold);font-weight:800;letter-spacing:.5px;margin-bottom:8px">💹 差別化⑤：MA-ROIをPBM粗利で証明する</div>
+      <div style="font-size:12px;color:var(--text);line-height:1.9">
+        一般的なMAツールのROI指標は「受注金額」です。eMplexはPBM（プロジェクト予算管理）で確定した<b style="color:#fff">粗利額</b>から逆算するため、
+        <b style="color:#4ade80">「受注できたが原価超過で儲からなかった案件」は貢献として計上しません。</b>
+        受注金額ベースでは ${fmtNum(MA_ROI_REVENUE_BASED)}% のROIに見えても、粗利ベースでは ${fmtNum(MA_ROI_PROFIT_BASED)}% ——
+        「本当に儲かった受注を生んだ施策はどれか」を可視化します。
+      </div>
+      ${example ? `
+      <div style="margin-top:12px;padding:10px 14px;background:rgba(0,0,0,0.2);border-left:3px solid var(--red);border-radius:6px">
+        <div style="font-size:10.5px;color:var(--red2);letter-spacing:.5px;margin-bottom:4px">EXCLUDED CASE EXAMPLE</div>
+        <div style="font-size:11.5px;color:var(--text2);line-height:1.8">${esc(example.lead.company.name)}（経由シナリオ：${esc(example.scenario)}）— 受注金額 ${fmtNum(Math.round(example.dealAmount/10000))}万円だが、確定粗利率は${example.grossMarginPct}%（原価超過）。<b style="color:var(--red2)">MA-ROIの貢献実績からは除外</b>されています。</div>
+      </div>` : ''}
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title"><span class="t">シナリオ別 受注件数・確定粗利</span></div>
+        <canvas id="chROI" height="200"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="t">受注→PBM粗利確定→シナリオ学習ループ</span></div>
+        <div class="scenario-flow" style="flex-wrap:wrap">
+          <div class="sf-node" style="border-color:#00d4ff55"><div class="sf-tag" style="color:#00d4ff">1</div><div class="sf-body">シグナル検知・P0アラート発火</div></div>
+          <div class="sf-arrow">→</div>
+          <div class="sf-node" style="border-color:#f59e0b55"><div class="sf-tag" style="color:#f59e0b">2</div><div class="sf-body">当日アプローチ・商談化</div></div>
+          <div class="sf-arrow">→</div>
+          <div class="sf-node" style="border-color:#22c55e55"><div class="sf-tag" style="color:#22c55e">3</div><div class="sf-body">受注・PBMで粗利確定</div></div>
+          <div class="sf-arrow">→</div>
+          <div class="sf-node" style="border-color:#8b5cf655"><div class="sf-tag" style="color:#8b5cf6">4</div><div class="sf-body">シナリオ別 平均粗利率を再学習</div></div>
+          <div class="sf-arrow">→</div>
+          <div class="sf-node" style="border-color:#ec489955"><div class="sf-tag" style="color:#ec4899">5</div><div class="sf-body">高粗利シナリオへ配信比率を自動シフト</div></div>
+        </div>
+        <p style="font-size:11px;color:var(--text2);line-height:1.8;margin-top:10px">現在最も平均粗利率が高いのは <b style="color:#fff">「${esc(bestMargin.scenario)}」経由（粗利率${bestMargin.marginPct}%）</b>。「PBM粗利連動 配信最適化」シナリオが毎月この学習結果をもとに配信比率を自動調整します。</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t">シナリオ別 ROI明細</span><span class="pill teal">粗利率が高い順に配信比率を自動シフト</span></div>
+      <table class="dtbl">
+        <tr><th>経由シナリオ</th><th class="num">受注件数</th><th class="num">受注金額</th><th class="num">PBM確定粗利</th><th class="num">粗利率</th><th class="num">除外件数（原価超過）</th></tr>
+        ${SCENARIO_ROI.slice().sort((a,b)=>b.marginPct-a.marginPct).map(m=>`
+        <tr>
+          <td>${esc(m.scenario)}</td>
+          <td class="num">${m.count}件</td>
+          <td class="num">${fmtNum(Math.round(m.revenue/10000))}万円</td>
+          <td class="num" style="color:var(--teal2);font-weight:700">${fmtNum(Math.round(m.profit/10000))}万円</td>
+          <td class="num" style="font-weight:800">${m.marginPct}%</td>
+          <td class="num">${m.excludedCount>0?`<span class="pill red">${m.excludedCount}件</span>`:'—'}</td>
+        </tr>`).join('')}
+      </table>
+    </div>
+  `;
+  destroyChart('chROI');
+  const sorted = SCENARIO_ROI.slice().sort((a,b)=>b.profit-a.profit);
+  charts.chROI = new Chart(document.getElementById('chROI'), {
+    type:'bar',
+    data:{
+      labels: sorted.map(m=>m.scenario),
+      datasets:[
+        { label:'受注件数', data: sorted.map(m=>m.count), backgroundColor:'rgba(0,212,255,0.55)', borderRadius:4, yAxisID:'y' },
+        { label:'確定粗利（万円）', data: sorted.map(m=>Math.round(m.profit/10000)), backgroundColor:'rgba(34,197,94,0.6)', borderRadius:4, yAxisID:'y1' },
+      ]
+    },
+    options:{
+      plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}}}},
+      scales:{
+        x:{ticks:{color:'#94a3b8',font:{size:9}},grid:{display:false}},
+        y:{position:'left',ticks:{color:'#94a3b8',font:{size:9.5}},grid:{color:'rgba(255,255,255,0.05)'}},
+        y1:{position:'right',ticks:{color:'#94a3b8',font:{size:9.5}},grid:{display:false}},
+      }
+    }
+  });
+}
+
+function renderCampaigns(){
+  const sentCampaigns = CAMPAIGNS.filter(c=>c.status==='配信済み');
+  const totalSent = sentCampaigns.reduce((s,c)=>s+c.sent,0);
+  const avgOpen = (sentCampaigns.reduce((s,c)=>s+c.open,0)/sentCampaigns.length).toFixed(1);
+  const avgClick = (sentCampaigns.reduce((s,c)=>s+c.click,0)/sentCampaigns.length).toFixed(1);
+  const totalCv = sentCampaigns.reduce((s,c)=>s+c.cv,0);
+  document.getElementById('pane-campaigns').innerHTML = `
+    <div class="grid4">
+      <div class="kpi"><div class="kpi-label">累計配信数</div><div class="kpi-val" style="color:#00d4ff">${fmtNum(totalSent)}件</div><div class="kpi-sub">配信済み${sentCampaigns.length}キャンペーン</div><div class="kpi-accent" style="background:#00d4ff"></div></div>
+      <div class="kpi"><div class="kpi-label">平均開封率</div><div class="kpi-val" style="color:#00e8b8">${avgOpen}%</div><div class="kpi-sub">業界平均比 +8.2pt</div><div class="kpi-accent" style="background:#00e8b8"></div></div>
+      <div class="kpi"><div class="kpi-label">平均クリック率</div><div class="kpi-val" style="color:#fbbf24">${avgClick}%</div><div class="kpi-sub">セグメント配信の効果</div><div class="kpi-accent" style="background:#f5c842"></div></div>
+      <div class="kpi"><div class="kpi-label">CV貢献数</div><div class="kpi-val" style="color:#a78bfa">${totalCv}件</div><div class="kpi-sub">商談・資料請求換算</div><div class="kpi-accent" style="background:#8b5cf6"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t">キャンペーン別 開封率・クリック率</span></div>
+      <canvas id="chCampaign" height="80"></canvas>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t">配信キャンペーン一覧</span><span class="pill">${CAMPAIGNS.length}件</span></div>
+      <div class="tbl-scroll">
+      <table class="dtbl">
+        <tr><th>配信日</th><th>キャンペーン名</th><th>対象セグメント</th><th class="num">配信数</th><th class="num">開封率</th><th class="num">クリック率</th><th class="num">CV数</th><th>ステータス</th></tr>
+        ${CAMPAIGNS.map(c=>`
+        <tr>
+          <td>${c.date}</td>
+          <td>${esc(c.name)}</td>
+          <td>${esc(c.segment)}</td>
+          <td class="num">${fmtNum(c.sent)}</td>
+          <td class="num">${c.sent? fmtPct(c.open) : '—'}</td>
+          <td class="num">${c.sent? fmtPct(c.click) : '—'}</td>
+          <td class="num">${c.cv||'—'}</td>
+          <td><span class="pill ${c.status==='配信済み'?'teal':'gold'}">${c.status}</span></td>
+        </tr>`).join('')}
+      </table>
+      </div>
+    </div>
+
+    <div class="card" style="text-align:center;padding:26px">
+      <button class="btn" onclick="alert('新規キャンペーン作成画面を開きます（デモ）')">＋ 新規キャンペーンを作成</button>
+    </div>
+  `;
+  destroyChart('chCampaign');
+  charts.chCampaign = new Chart(document.getElementById('chCampaign'), {
+    type:'bar',
+    data:{
+      labels: CAMPAIGNS.map(c=>c.name),
+      datasets:[
+        { label:'開封率(%)', data: CAMPAIGNS.map(c=>c.open), backgroundColor:'rgba(0,212,255,0.6)', borderRadius:4 },
+        { label:'クリック率(%)', data: CAMPAIGNS.map(c=>c.click), backgroundColor:'rgba(0,232,184,0.6)', borderRadius:4 },
+      ]
+    },
+    options:{ plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}}}}, scales:{ x:{ticks:{color:'#94a3b8',font:{size:9}},grid:{display:false}}, y:{ticks:{color:'#94a3b8',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}} } }
+  });
+}
+
+const SETTINGS_STATE = { slack:true, teams:false, crm:true, scoreThreshold:80 };
+function settingsToggle(key){ SETTINGS_STATE[key] = !SETTINGS_STATE[key]; renderForms(); }
+function renderForms(){
+  const maxFunnel = FUNNEL[0].val;
+  document.getElementById('pane-forms').innerHTML = `
+    <div class="card">
+      <div class="card-title"><span class="t">コンバージョンファネル（訪問 → フォーム送信）</span></div>
+      ${FUNNEL.map((f,i)=>{
+        const pct = Math.round(f.val/maxFunnel*100);
+        const dropText = i>0 ? `<span style="color:var(--red2)">前段より ${fmtPct(100-Math.round(f.val/FUNNEL[i-1].val*100))} 離脱</span>` : '';
+        return `<div class="funnel-row">
+          <div class="funnel-label">${f.label}</div>
+          <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${pct}%">${pct}%</div></div>
+          <div class="funnel-val">${fmtNum(f.val)}社</div>
+        </div>
+        ${dropText?`<div style="margin:-4px 0 8px 162px;font-size:10px">${dropText}</div>`:''}`;
+      }).join('')}
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="t">LP・フォーム別 CVR</span></div>
+      <table class="dtbl">
+        <tr><th>LP / フォーム名</th><th class="num">訪問数</th><th class="num">CV数</th><th class="num">CVR</th></tr>
+        ${LP_STATS.map(l=>`
+        <tr>
+          <td>${esc(l.name)}</td>
+          <td class="num">${fmtNum(l.visits)}</td>
+          <td class="num">${l.cv}</td>
+          <td class="num" style="font-weight:800;color:var(--teal2)">${fmtPct(l.cvr)}</td>
+        </tr>`).join('')}
+      </table>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title"><span class="t">通知・連携設定</span></div>
+        <div class="form-row" style="justify-content:space-between">
+          <div><b style="font-size:12.5px">Slack通知</b><div style="font-size:10.5px;color:var(--text3)">Sランク到達時に #sales-hotlead へ通知</div></div>
+          <div class="toggle ${SETTINGS_STATE.slack?'on':''}" onclick="settingsToggle('slack')"><i></i></div>
+        </div>
+        <div class="form-row" style="justify-content:space-between">
+          <div><b style="font-size:12.5px">Microsoft Teams通知</b><div style="font-size:10.5px;color:var(--text3)">営業チームチャネルへの自動通知</div></div>
+          <div class="toggle ${SETTINGS_STATE.teams?'on':''}" onclick="settingsToggle('teams')"><i></i></div>
+        </div>
+        <div class="form-row" style="justify-content:space-between">
+          <div><b style="font-size:12.5px">CRM連携（Salesforce）</b><div style="font-size:10.5px;color:var(--text3)">Sランク到達で商談レコードを自動作成</div></div>
+          <div class="toggle ${SETTINGS_STATE.crm?'on':''}" onclick="settingsToggle('crm')"><i></i></div>
+        </div>
+        <div class="subhead">アラートしきい値</div>
+        <div class="form-row">
+          <span style="font-size:11.5px;color:var(--text2)">スコアが</span>
+          <input type="number" value="${SETTINGS_STATE.scoreThreshold}" style="width:70px" oninput="SETTINGS_STATE.scoreThreshold=this.value">
+          <span style="font-size:11.5px;color:var(--text2)">pt 以上で営業へ即時通知</span>
+          <button class="btn xs" onclick="alert('しきい値を'+SETTINGS_STATE.scoreThreshold+'ptに更新しました（デモ）')">保存</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="t">サイト設置タグ</span></div>
+        <p style="font-size:11.5px;color:var(--text2);line-height:1.8;margin-bottom:10px">計測したいサイトの &lt;/body&gt; 直前に以下のタグを設置してください。設置後、最短当日から企業訪問の識別が始まります。</p>
+        <div class="text-block" style="font-family:'SF Mono',Consolas,monospace;font-size:10.5px;color:#00e8b8">&lt;script src="https://cdn.emplex-ma.jp/tag/v1/emplex-ma.js"&gt;&lt;/script&gt;
+&lt;script&gt;EmplexMA.init({ siteId: "ema_8f2c91a0" });&lt;/script&gt;</div>
+        <div class="form-row" style="margin-top:12px">
+          <button class="btn sec xs" onclick="alert('タグをコピーしました（デモ）')">📋 タグをコピー</button>
+          <span class="pill teal">最終計測：${fmtDT(VISITS[0].dt)}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+renderDashboard();
+</script>
+</body>
+</html>

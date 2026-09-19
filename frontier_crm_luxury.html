@@ -1,0 +1,2381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frontier CRM — Private Wealth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  /* Navy palette */
+  --n1: #03080f;
+  --n2: #060e1a;
+  --n3: #0a1628;
+  --n4: #0f1e38;
+  --n5: #162745;
+  --n6: #1e3358;
+  --n7: #253f6b;
+  --n8: #2d4c7e;
+
+  /* Gold palette */
+  --g1: #7a5a1a;
+  --g2: #a07822;
+  --g3: #c49a2c;
+  --g4: #d4aa3a;
+  --g5: #e2bc52;
+  --g6: #eeca6e;
+  --g7: #f5d98a;
+  --g8: #faeab0;
+
+  /* Text */
+  --t1: #f0eadb;
+  --t2: #b8a98a;
+  --t3: #7a6e58;
+  --t4: #4a4236;
+
+  /* Status */
+  --s-green: #2a9d6e;
+  --s-green-bg: rgba(42,157,110,.12);
+  --s-red: #d45a4a;
+  --s-red-bg: rgba(212,90,74,.12);
+  --s-amber: #c8922a;
+  --s-amber-bg: rgba(200,146,42,.12);
+  --s-blue: #3a7abd;
+  --s-blue-bg: rgba(58,122,189,.12);
+
+  /* Borders */
+  --b1: rgba(212,170,58,.08);
+  --b2: rgba(212,170,58,.16);
+  --b3: rgba(212,170,58,.28);
+  --b4: rgba(212,170,58,.45);
+
+  /* Surfaces */
+  --card: rgba(15,30,56,.7);
+  --card2: rgba(22,39,69,.8);
+  --glass: rgba(255,255,255,.03);
+
+  --radius: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --font: 'Outfit', sans-serif;
+  --serif: 'Cormorant Garamond', serif;
+  --mono: 'DM Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100vh; overflow: hidden; }
+
+body {
+  font-family: var(--font);
+  background: var(--n1);
+  color: var(--t1);
+  font-size: 13px;
+  display: flex;
+  position: relative;
+}
+
+/* Background texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(212,170,58,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 85% 100%, rgba(10,22,40,.8) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── SIDEBAR ── */
+#sidebar {
+  width: 210px;
+  min-width: 210px;
+  height: 100vh;
+  background: var(--n2);
+  border-right: 1px solid var(--b1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+}
+
+#sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 200px;
+  background: linear-gradient(180deg, rgba(212,170,58,.04) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.sb-header {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--b1);
+  position: relative;
+}
+
+.sb-logo-mark {
+  font-family: var(--serif);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--g5);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.sb-logo-name {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--t1);
+  line-height: 1;
+  letter-spacing: .5px;
+}
+
+.sb-logo-sub {
+  font-size: 10px;
+  color: var(--t3);
+  margin-top: 4px;
+  letter-spacing: .5px;
+}
+
+.gold-rule {
+  height: 1px;
+  background: linear-gradient(90deg, var(--g5), transparent);
+  margin: 10px 0 0;
+}
+
+#sb-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 0;
+}
+#sb-nav::-webkit-scrollbar { width: 0; }
+
+.sb-section {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--t3);
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  padding: 14px 16px 5px;
+}
+
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--t3);
+  border-left: 2px solid transparent;
+  transition: all .2s;
+  position: relative;
+}
+
+.sb-item:hover {
+  color: var(--t2);
+  background: rgba(212,170,58,.03);
+}
+
+.sb-item.active {
+  color: var(--g6);
+  background: rgba(212,170,58,.06);
+  border-left-color: var(--g5);
+}
+
+.sb-item .ico {
+  width: 14px; height: 14px;
+  flex-shrink: 0;
+  opacity: .6;
+}
+.sb-item.active .ico { opacity: 1; }
+
+.sb-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--b1);
+  flex-shrink: 0;
+}
+
+.sb-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--g3), var(--g6));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--n2);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(212,170,58,.2);
+}
+
+.sb-uname { font-size: 12px; color: var(--t2); font-weight: 500; }
+.sb-urole { font-size: 10px; color: var(--t3); }
+
+/* ── MAIN ── */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  min-width: 0;
+  position: relative;
+  z-index: 5;
+}
+
+/* TOPBAR */
+#topbar {
+  height: 52px;
+  background: rgba(6,14,26,.95);
+  border-bottom: 1px solid var(--b1);
+  display: flex;
+  align-items: center;
+  padding: 0 22px;
+  gap: 14px;
+  flex-shrink: 0;
+  backdrop-filter: blur(10px);
+}
+
+.tb-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--t1);
+  letter-spacing: .3px;
+}
+
+.tb-spacer { flex: 1; }
+
+.tb-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--b2);
+  border-radius: var(--radius);
+  padding: 7px 12px;
+  width: 200px;
+  transition: .2s;
+}
+.tb-search:focus-within {
+  border-color: var(--b4);
+  background: rgba(212,170,58,.04);
+}
+.tb-search input {
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  color: var(--t1);
+  font-family: var(--font);
+  width: 100%;
+  outline: none;
+}
+.tb-search input::placeholder { color: var(--t3); }
+
+.btn-gold {
+  height: 32px;
+  padding: 0 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--g4);
+  background: linear-gradient(135deg, rgba(196,154,44,.2), rgba(212,170,58,.1));
+  color: var(--g6);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: .2s;
+  letter-spacing: .3px;
+}
+.btn-gold:hover {
+  background: linear-gradient(135deg, rgba(196,154,44,.35), rgba(212,170,58,.2));
+  box-shadow: 0 0 12px rgba(212,170,58,.15);
+}
+
+.btn-ghost {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--b2);
+  background: transparent;
+  color: var(--t3);
+  font-family: var(--font);
+  font-size: 12px;
+  cursor: pointer;
+  transition: .2s;
+}
+.btn-ghost:hover { border-color: var(--b3); color: var(--t2); }
+
+/* CONTENT */
+#content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+#content::-webkit-scrollbar { width: 4px; }
+#content::-webkit-scrollbar-thumb {
+  background: var(--b3);
+  border-radius: 2px;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--b1);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.card-body { padding: 16px 20px; }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--b1);
+}
+
+.card-title {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--t1);
+  margin-bottom: 14px;
+  letter-spacing: .3px;
+}
+
+.card-title-sm {
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t1);
+  margin: 0;
+  letter-spacing: .3px;
+}
+
+/* ── GRIDS ── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+
+/* ── METRIC CARDS ── */
+.metric {
+  background: rgba(15,30,56,.6);
+  border: 1px solid var(--b1);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  position: relative;
+  overflow: hidden;
+  transition: .2s;
+}
+.metric::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--g3), transparent);
+}
+.metric:hover { border-color: var(--b2); }
+.metric-label {
+  font-size: 10px;
+  color: var(--t3);
+  font-weight: 500;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.metric-value {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--t1);
+  line-height: 1;
+}
+.metric-unit { font-size: 14px; color: var(--t3); font-family: var(--font); }
+.metric-sub { font-size: 10.5px; color: var(--t3); margin-top: 5px; }
+.metric-up { color: var(--s-green); }
+.metric-down { color: var(--s-red); }
+.metric-gold { color: var(--g5); }
+
+/* ── TABLES ── */
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--t3);
+  text-align: left;
+  padding: 9px 14px;
+  background: rgba(255,255,255,.02);
+  border-bottom: 1px solid var(--b1);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+}
+.tbl td {
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(212,170,58,.05);
+  color: var(--t1);
+  vertical-align: middle;
+  font-size: 12.5px;
+}
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td {
+  background: rgba(212,170,58,.03);
+}
+.tbl .name { font-weight: 500; color: var(--t1); }
+.tbl .sub { font-size: 10.5px; color: var(--t3); margin-top: 1px; }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+  letter-spacing: .3px;
+}
+.b-vip {
+  background: rgba(212,170,58,.15);
+  color: var(--g6);
+  border: 1px solid rgba(212,170,58,.3);
+}
+.b-gold { background: rgba(200,146,42,.12); color: #e8a840; border: 1px solid rgba(200,146,42,.25); }
+.b-plat { background: rgba(58,122,189,.12); color: #7ab3e0; border: 1px solid rgba(58,122,189,.25); }
+.b-silver { background: rgba(120,120,130,.1); color: #9099a8; border: 1px solid rgba(120,120,130,.2); }
+.b-std { background: rgba(42,157,110,.1); color: #5cc49a; border: 1px solid rgba(42,157,110,.2); }
+.b-green { background: var(--s-green-bg); color: #5cc49a; border: 1px solid rgba(42,157,110,.2); }
+.b-amber { background: var(--s-amber-bg); color: #e8a840; border: 1px solid rgba(200,146,42,.25); }
+.b-red { background: var(--s-red-bg); color: #e87a6a; border: 1px solid rgba(212,90,74,.25); }
+.b-blue { background: var(--s-blue-bg); color: #7ab3e0; border: 1px solid rgba(58,122,189,.25); }
+.b-gray { background: rgba(255,255,255,.05); color: var(--t2); border: 1px solid var(--b1); }
+
+/* ── PBAR ── */
+.pbar {
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255,255,255,.06);
+  overflow: hidden;
+  flex: 1;
+}
+.pfill { height: 100%; border-radius: 2px; }
+
+/* ── GOLD DOT ── */
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ── TIMELINE ── */
+.tl-item {
+  display: flex;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(212,170,58,.05);
+}
+.tl-item:last-child { border-bottom: none; }
+.tl-dot-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+.tl-dot2 { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.tl-line { flex: 1; width: 1px; background: var(--b1); margin-top: 4px; }
+.tl-content { flex: 1; }
+.tl-hdr { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.tl-title { font-size: 12.5px; font-weight: 500; color: var(--t1); }
+.tl-date { font-size: 10.5px; color: var(--t3); }
+.tl-body { font-size: 11.5px; color: var(--t2); line-height: 1.5; }
+
+/* ── KV ROWS ── */
+.kv { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(212,170,58,.06); }
+.kv:last-child { border-bottom: none; }
+.kk { font-size: 11.5px; color: var(--t3); }
+.kvv { font-size: 12.5px; font-weight: 500; color: var(--t1); }
+
+/* ── LTV BANNER ── */
+.ltv-banner {
+  background: linear-gradient(135deg, #0a1628 0%, #0f1e38 40%, #07100a 100%);
+  border: 1px solid var(--b3);
+  border-radius: var(--radius-xl);
+  padding: 22px 26px;
+  position: relative;
+  overflow: hidden;
+}
+.ltv-banner::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,170,58,.12) 0%, transparent 70%);
+}
+.ltv-banner::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--g5), transparent);
+  opacity: .4;
+}
+.ltv-eyebrow {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--g4);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.ltv-number {
+  font-family: var(--serif);
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--g6);
+  line-height: 1;
+  position: relative;
+}
+.ltv-number span { font-size: 18px; font-weight: 400; color: var(--g3); }
+.ltv-sub2 { font-size: 11px; color: var(--t3); margin-top: 6px; }
+.ltv-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 16px; position: relative; }
+.ltv-mini {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(212,170,58,.1);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.ltv-mini-l { font-size: 9.5px; color: var(--t3); margin-bottom: 3px; letter-spacing: .3px; }
+.ltv-mini-v { font-family: var(--serif); font-size: 16px; font-weight: 600; color: var(--t1); }
+
+/* ── SCORE RING ── */
+.score-ring { position: relative; flex-shrink: 0; }
+
+/* ── PROFILE AVATAR ── */
+.p-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 700;
+  flex-shrink: 0;
+  border: 2px solid var(--b3);
+}
+
+/* ── FUNNEL ── */
+.funnel-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+.funnel-label { font-size: 11.5px; color: var(--t2); width: 82px; flex-shrink: 0; }
+.funnel-bar {
+  height: 22px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: width .4s;
+}
+.funnel-count { font-size: 11.5px; font-weight: 600; color: var(--t2); min-width: 32px; text-align: right; }
+
+/* ── PILL FILTERS ── */
+.pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
+.pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  cursor: pointer;
+  border: 1px solid var(--b1);
+  background: transparent;
+  color: var(--t3);
+  font-family: var(--font);
+  transition: .2s;
+}
+.pill:hover { border-color: var(--b3); color: var(--t2); }
+.pill.on {
+  background: rgba(212,170,58,.12);
+  border-color: var(--b4);
+  color: var(--g6);
+  font-weight: 500;
+}
+
+/* ── INNER TABS ── */
+.itab-group {
+  display: flex;
+  gap: 2px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--b1);
+  border-radius: 8px;
+  padding: 3px;
+}
+.itab {
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--t3);
+  transition: .15s;
+}
+.itab.on { background: rgba(212,170,58,.1); color: var(--g6); font-weight: 500; border: 1px solid var(--b2); }
+
+/* ── UTILS ── */
+.mb8 { margin-bottom: 8px; }
+.mb12 { margin-bottom: 12px; }
+.mb14 { margin-bottom: 14px; }
+.mb16 { margin-bottom: 16px; }
+.mb20 { margin-bottom: 20px; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-c { align-items: center; }
+.j-bw { justify-content: space-between; }
+.gap6 { gap: 6px; }
+.gap8 { gap: 8px; }
+.gap10 { gap: 10px; }
+.gap12 { gap: 12px; }
+.gap14 { gap: 14px; }
+.fw5 { font-weight: 500; }
+.fw6 { font-weight: 600; }
+.fs10 { font-size: 10px; }
+.fs11 { font-size: 11px; }
+.fs12 { font-size: 12px; }
+.fs13 { font-size: 13px; }
+.mono { font-family: var(--mono); }
+.tc-t2 { color: var(--t2); }
+.tc-t3 { color: var(--t3); }
+.tc-g { color: var(--g5); }
+.tc-green { color: var(--s-green); }
+.tc-red { color: var(--s-red); }
+.tc-amber { color: var(--s-amber); }
+.tc-blue { color: var(--s-blue); }
+.scroll-x { overflow-x: auto; }
+.scroll-x::-webkit-scrollbar { height: 3px; }
+.scroll-x::-webkit-scrollbar-thumb { background: var(--b3); border-radius: 2px; }
+.w100 { width: 100%; }
+
+/* ── ACTION BUTTONS ── */
+.act { display: inline-flex; align-items: center; gap: 5px; padding: 5px 13px; border-radius: var(--radius); font-size: 11.5px; font-weight: 500; cursor: pointer; border: 1px solid; font-family: var(--font); transition: .2s; }
+.act-p { background: rgba(212,170,58,.12); border-color: var(--b3); color: var(--g6); }
+.act-p:hover { background: rgba(212,170,58,.2); box-shadow: 0 0 10px rgba(212,170,58,.1); }
+.act-s { background: transparent; border-color: var(--b1); color: var(--t3); }
+.act-s:hover { border-color: var(--b2); color: var(--t2); }
+
+/* ── GOLD DIVIDER ── */
+.gold-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--b3), transparent); margin: 14px 0; }
+
+/* ── CHART CONTAINER ── */
+.ch-wrap { position: relative; }
+
+/* ── ENTRY ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.anim { animation: fadeUp .3s ease both; }
+.anim-d1 { animation-delay: .05s; }
+.anim-d2 { animation-delay: .1s; }
+.anim-d3 { animation-delay: .15s; }
+.anim-d4 { animation-delay: .2s; }
+
+/* ── RANK BADGE SPECIAL ── */
+.rank-pip {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+textarea {
+  font-family: var(--font);
+  color: var(--t1);
+  border: 1px solid var(--b2);
+  border-radius: var(--radius);
+  padding: 9px 12px;
+  font-size: 12px;
+  background: rgba(255,255,255,.03);
+  resize: none;
+  outline: none;
+  width: 100%;
+}
+textarea:focus { border-color: var(--b4); }
+textarea::placeholder { color: var(--t4); }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-header">
+    <div class="sb-logo-mark">Frontier</div>
+    <div class="sb-logo-name">Private CRM</div>
+    <div class="sb-logo-sub">不動産・金融統合資産管理</div>
+    <div class="gold-rule"></div>
+  </div>
+  <div id="sb-nav"></div>
+  <div class="sb-user">
+    <div class="sb-avatar">山</div>
+    <div>
+      <div class="sb-uname">山田 太郎</div>
+      <div class="sb-urole">シニアFA &nbsp;·&nbsp; 横浜</div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <div id="topbar">
+    <div class="tb-title" id="tb-title">顧客一覧</div>
+    <div class="tb-spacer"></div>
+    <div class="tb-search">
+      <svg width="12" height="12" fill="none" stroke="var(--t3)" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="global-search" type="text" placeholder="顧客名・ID・企業名..." oninput="onSearch(this.value)">
+    </div>
+    <button class="btn-ghost" onclick="alert('CSV出力')">エクスポート</button>
+    <button class="btn-gold" onclick="alert('新規顧客登録')">＋ 新規登録</button>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+// ── DATA ──
+const TC = { VIP:'#e2bc52', Gold:'#c8922a', Platinum:'#3a7abd', Silver:'#6b7280', Standard:'#2a9d6e' };
+const TB = { VIP:'rgba(212,170,58,.15)', Gold:'rgba(200,146,42,.12)', Platinum:'rgba(58,122,189,.12)', Silver:'rgba(107,114,128,.1)', Standard:'rgba(42,157,110,.1)' };
+const TCLS = { VIP:'b-vip', Gold:'b-gold', Platinum:'b-plat', Silver:'b-silver', Standard:'b-std' };
+
+const CX = [
+  {id:'C001',name:'田中 健一',kana:'たなか けんいち',tier:'VIP',age:58,job:'代表取締役',co:'田中建設(株)',dept:'経営',family:{s:true,k:2,p:false},assets:'8,500',income:'3,200',invest:4,last:'2026/04/10',mgr:'佐藤 一郎',score:98,phone:'090-1234-5678',email:'tanaka@tkc.co.jp',addr:'横浜市港北区',ltv:4280,ltvH:[320,420,510,680,720,850,780],contracts:12,tags:['相続検討中','CF興味あり','節税ニーズ','家族信託検討'],note:''},
+  {id:'C002',name:'山田 美咲',kana:'やまだ みさき',tier:'Gold',age:47,job:'院長',co:'山田クリニック',dept:'医療',family:{s:true,k:1,p:false},assets:'4,200',income:'2,800',invest:2,last:'2026/04/09',mgr:'田中 誠',score:84,phone:'090-2345-6789',email:'yamada@mc.jp',addr:'横浜市中区',ltv:2150,ltvH:[180,220,280,340,380,420,330],contracts:7,tags:['医師','CF利用者'],note:''},
+  {id:'C003',name:'鈴木 大輔',kana:'すずき だいすけ',tier:'Platinum',age:52,job:'取締役',co:'(株)鈴木商事',dept:'経営企画',family:{s:true,k:3,p:true},assets:'2,800',income:'1,850',invest:3,last:'2026/04/08',mgr:'山田 誠',score:76,phone:'090-3456-7890',email:'suzuki@ss.co.jp',addr:'川崎市高津区',ltv:1480,ltvH:[100,140,180,220,280,320,240],contracts:5,tags:['節税ニーズ'],note:''},
+  {id:'C004',name:'伊藤 花子',kana:'いとう はなこ',tier:'Gold',age:43,job:'院長',co:'伊藤歯科医院',dept:'医療',family:{s:true,k:2,p:false},assets:'2,200',income:'1,500',invest:2,last:'2026/04/07',mgr:'佐藤 一郎',score:71,phone:'090-4567-8901',email:'ito@ida.jp',addr:'横浜市都筑区',ltv:1120,ltvH:[80,120,150,180,210,240,140],contracts:4,tags:['歯科医','CF検討中'],note:''},
+  {id:'C005',name:'渡辺 隆',kana:'わたなべ たかし',tier:'Silver',age:61,job:'代表',co:'渡辺不動産(有)',dept:'営業',family:{s:true,k:2,p:true},assets:'1,800',income:'1,200',invest:1,last:'2026/04/06',mgr:'田中 誠',score:65,phone:'090-5678-9012',email:'watanabe@wfr.jp',addr:'横浜市鶴見区',ltv:680,ltvH:[60,80,90,110,130,150,60],contracts:3,tags:['不動産業'],note:''},
+  {id:'C006',name:'小林 直樹',kana:'こばやし なおき',tier:'VIP',age:55,job:'会長',co:'(株)小林グループ',dept:'経営',family:{s:true,k:4,p:true},assets:'12,000',income:'5,600',invest:6,last:'2026/04/10',mgr:'山田 誠',score:99,phone:'090-6789-0123',email:'kobayashi@kg.co.jp',addr:'横浜市西区',ltv:8940,ltvH:[520,720,980,1200,1480,2040,2000],contracts:18,tags:['相続対策','家族信託','法人活用','VIPクライアント'],note:''},
+  {id:'C007',name:'加藤 智子',kana:'かとう ともこ',tier:'Standard',age:38,job:'薬剤師',co:'加藤調剤薬局',dept:'薬局',family:{s:false,k:0,p:true},assets:'850',income:'850',invest:1,last:'2026/04/03',mgr:'佐藤 一郎',score:52,phone:'090-7890-1234',email:'kato@kph.jp',addr:'横浜市保土ケ谷区',ltv:280,ltvH:[20,30,40,50,60,80,0],contracts:2,tags:['若手投資家'],note:''},
+  {id:'C008',name:'吉田 正雄',kana:'よしだ まさお',tier:'Platinum',age:49,job:'弁護士',co:'吉田法律事務所',dept:'法務',family:{s:true,k:2,p:false},assets:'3,100',income:'2,100',invest:2,last:'2026/04/05',mgr:'田中 誠',score:78,phone:'090-8901-2345',email:'yoshida@ylf.jp',addr:'横浜市神奈川区',ltv:1640,ltvH:[120,160,200,260,320,380,200],contracts:5,tags:['法律家','CF利用中'],note:''},
+  {id:'C009',name:'山本 健二',kana:'やまもと けんじ',tier:'Silver',age:56,job:'公認会計士',co:'山本会計事務所',dept:'会計',family:{s:true,k:0,p:false},assets:'1,500',income:'1,100',invest:1,last:'2026/04/02',mgr:'山田 誠',score:61,phone:'090-9012-3456',email:'yamamoto@yac.jp',addr:'横浜市栄区',ltv:520,ltvH:[40,60,80,90,110,140,0],contracts:3,tags:['税務専門家'],note:''},
+  {id:'C010',name:'中村 由美',kana:'なかむら ゆみ',tier:'Gold',age:45,job:'代表取締役',co:'(株)中村食品',dept:'経営',family:{s:true,k:2,p:false},assets:'3,500',income:'1,950',invest:3,last:'2026/04/08',mgr:'佐藤 一郎',score:80,phone:'090-0123-4567',email:'nakamura@nf.co.jp',addr:'横浜市戸塚区',ltv:1780,ltvH:[130,180,220,280,320,380,270],contracts:6,tags:['食品業','相続検討'],note:''},
+  {id:'C011',name:'林 剛',kana:'はやし つよし',tier:'Standard',age:41,job:'代表',co:'(株)林システム',dept:'IT',family:{s:true,k:1,p:false},assets:'620',income:'720',invest:1,last:'2026/03/28',mgr:'田中 誠',score:48,phone:'090-1111-2222',email:'hayashi@hs.jp',addr:'横浜市緑区',ltv:190,ltvH:[10,20,30,40,50,40,0],contracts:1,tags:['IT経営者'],note:''},
+  {id:'C012',name:'清水 正志',kana:'しみず まさし',tier:'Platinum',age:53,job:'税理士',co:'清水税理士法人',dept:'税務',family:{s:true,k:1,p:false},assets:'2,500',income:'1,680',invest:2,last:'2026/04/04',mgr:'山田 誠',score:73,phone:'090-3333-4444',email:'shimizu@sta.jp',addr:'横浜市泉区',ltv:1260,ltvH:[100,140,170,210,240,280,120],contracts:4,tags:['税理士','節税ニーズ'],note:''},
+];
+
+const TABS = [
+  {id:'customers',label:'顧客一覧',sec:'基本',d:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'},
+  {id:'profile',label:'顧客情報',sec:'基本',d:'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'},
+  {id:'apt',label:'投資アパートFA',sec:'物件種別',d:'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'},
+  {id:'mansion',label:'投資マンションFC',sec:'物件種別',d:'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'},
+  {id:'combined',label:'賃貸併用住宅AR',sec:'物件種別',d:'M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z'},
+  {id:'cf',label:'不動産CF',sec:'物件種別',d:'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'},
+  {id:'fin2',label:'金融二種',sec:'物件種別',d:'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'},
+  {id:'leasing',label:'賃貸リーシング',sec:'運用管理',d:'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'},
+  {id:'pm',label:'PM 賃貸管理',sec:'運用管理',d:'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M15 13a3 3 0 11-6 0 3 3 0 016 0'},
+  {id:'assets',label:'資産背景',sec:'資産分析',d:'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6'},
+  {id:'services',label:'提案サービス',sec:'提案',d:'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'},
+  {id:'prospects',label:'見込み顧客/MA',sec:'営業',d:'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'},
+  {id:'contact',label:'コンタクト履歴',sec:'履歴',d:'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z'},
+  {id:'callcenter',label:'コールセンター',sec:'履歴',d:'M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z'},
+  {id:'reform',label:'リフォーム提案',sec:'履歴',d:'M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z'},
+  {id:'trust',label:'家族信託',sec:'相談',d:'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'},
+  {id:'finproposal',label:'金融提案',sec:'提案',d:'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21H5a2 2 0 01-2-2V5a2 2 0 012-2h8l6 6v12a2 2 0 01-2 2h-2'},
+  {id:'kpi',label:'KPI ダッシュボード',sec:'管理',d:'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'},
+  {id:'inheritance',label:'相続相談',sec:'相談',d:'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5'},
+];
+
+// Chart defaults
+Chart.defaults.color = 'rgba(180,160,120,.6)';
+Chart.defaults.borderColor = 'rgba(212,170,58,.08)';
+Chart.defaults.font.family = 'Outfit';
+Chart.defaults.font.size = 11;
+
+let curTab='customers', selCx=CX[0], filterTier='all', srch='', charts={};
+
+const ico = (d,sz=14) =>
+  `<svg width="${sz}" height="${sz}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="${d}"/></svg>`;
+
+const mkBadge = t => `<span class="badge ${TCLS[t]||'b-gray'}">${t}</span>`;
+
+const mkDot = c => `<span class="dot" style="background:${c};"></span>`;
+
+const pbar = (pct,col) =>
+  `<div class="pbar"><div class="pfill" style="width:${Math.min(pct,100)}%;background:${col};"></div></div>`;
+
+const ltvCol = v => v>5000?'#e2bc52':v>2000?'#c8922a':v>1000?'#2a9d6e':v>500?'#3a7abd':'#6b7280';
+
+function initCh(id,cfg){
+  const el=document.getElementById(id);
+  if(!el)return null;
+  if(charts[id]){try{charts[id].destroy();}catch(e){}}
+  charts[id]=new Chart(el,cfg);
+  return charts[id];
+}
+
+function drawRing(cvs,score,sz=60){
+  if(!cvs)return;
+  const ctx=cvs.getContext('2d');
+  ctx.clearRect(0,0,sz,sz);
+  const r=sz/2-5,cx=sz/2,cy=sz/2;
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.strokeStyle='rgba(212,170,58,.12)';ctx.lineWidth=4;ctx.stroke();
+  const p=score/100;
+  ctx.beginPath();ctx.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+p*Math.PI*2);
+  const col=score>=80?'#d4aa3a':score>=60?'#c8922a':'#d45a4a';
+  ctx.strokeStyle=col;ctx.lineWidth=4;ctx.lineCap='round';ctx.stroke();
+  ctx.fillStyle='rgba(224,204,160,.9)';
+  ctx.font=`600 ${sz>=56?13:11}px Outfit`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(score,cx,cy);
+}
+
+// NAV
+function buildNav(){
+  let html='',lastSec='';
+  TABS.forEach(t=>{
+    if(t.sec!==lastSec){html+=`<div class="sb-section">${t.sec}</div>`;lastSec=t.sec;}
+    html+=`<div class="sb-item${curTab===t.id?' active':''}" onclick="goto('${t.id}')">
+      <svg class="ico" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="${t.d}"/></svg>
+      <span>${t.label}</span>
+    </div>`;
+  });
+  document.getElementById('sb-nav').innerHTML=html;
+  document.getElementById('tb-title').textContent=TABS.find(t=>t.id===curTab)?.label||'';
+}
+
+function goto(id){
+  curTab=id;
+  buildNav();
+  Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}});
+  charts={};
+  (R[id]||R.customers)();
+  document.getElementById('content').scrollTop=0;
+}
+
+function onSearch(v){srch=v;if(curTab==='customers')R.customers();}
+function setFilter(t){filterTier=t;R.customers();}
+function selCxGo(id){selCx=CX.find(c=>c.id===id)||selCx;goto('profile');}
+
+function fxCx(){
+  return CX.filter(c=>{
+    const tm=filterTier==='all'||c.tier===filterTier;
+    const sm=!srch||c.name.includes(srch)||c.co.includes(srch)||c.id.includes(srch);
+    return tm&&sm;
+  });
+}
+
+// ── RENDERS ──
+const R = {
+
+customers(){
+  const cnt={VIP:0,Gold:0,Platinum:0,Silver:0,Standard:0};
+  CX.forEach(c=>cnt[c.tier]++);
+  const tot=CX.length;
+  const lst=fxCx();
+  const totLTV=CX.reduce((s,c)=>s+c.ltv,0);
+  document.getElementById('content').innerHTML=`
+<div style="display:grid;grid-template-columns:270px 1fr;gap:16px;margin-bottom:16px;">
+  <div class="anim">
+    <div class="card" style="height:100%;">
+      <div class="card-body">
+        <div class="card-title" style="margin-bottom:10px;">ランク別構成</div>
+        <div style="position:relative;width:170px;height:170px;margin:0 auto 16px;">
+          <canvas id="tierChart"></canvas>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <div style="font-family:var(--serif);font-size:32px;font-weight:700;color:var(--t1);">${tot}</div>
+            <div style="font-size:9.5px;color:var(--t3);letter-spacing:.5px;">総顧客数</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          ${['VIP','Gold','Platinum','Silver','Standard'].map(t=>`
+          <div class="flex items-c gap8" style="cursor:pointer;" onclick="setFilter('${t}')">
+            <div style="width:8px;height:8px;border-radius:50%;background:${TC[t]};flex-shrink:0;"></div>
+            <span class="fs12 tc-t2" style="flex:1;">${t}</span>
+            <span style="font-family:var(--serif);font-size:14px;font-weight:600;color:var(--t1);">${cnt[t]}</span>
+            ${pbar(Math.round(cnt[t]/tot*100),TC[t])}
+            <span class="fs11 tc-t3" style="min-width:26px;">${Math.round(cnt[t]/tot*100)}%</span>
+          </div>`).join('')}
+        </div>
+        <div class="gold-divider"></div>
+        <div class="flex items-c j-bw">
+          <span class="fs11 tc-t3">総LTV合計</span>
+          <span style="font-family:var(--serif);font-size:16px;font-weight:700;color:var(--g5);">¥${totLTV.toLocaleString()}<span style="font-size:11px;font-weight:400;color:var(--g3);">万</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-col gap12 anim anim-d1">
+    <div class="g4">
+      <div class="metric"><div class="metric-label">総顧客数</div><div class="metric-value">${tot}<span class="metric-unit">名</span></div><div class="metric-sub">アクティブ管理中</div></div>
+      <div class="metric"><div class="metric-label">総LTV</div><div class="metric-value metric-gold" style="font-size:22px;">¥${(totLTV/10000).toFixed(1)}<span class="metric-unit">億</span></div><div class="metric-sub">顧客生涯価値累計</div></div>
+      <div class="metric"><div class="metric-label">今月コンタクト</div><div class="metric-value">38<span class="metric-unit">件</span></div><div class="metric-sub metric-up">↑ 前月比+12%</div></div>
+      <div class="metric"><div class="metric-label">平均スコア</div><div class="metric-value">${Math.round(CX.reduce((s,c)=>s+c.score,0)/CX.length)}</div><div class="metric-sub">ポテンシャル</div></div>
+    </div>
+    <div class="card card-body" style="padding:10px 16px;">
+      <div class="flex items-c gap8">
+        <span class="fs11 tc-t3" style="margin-right:4px;">ランク絞込</span>
+        <div class="pill-group">
+          ${['all','VIP','Gold','Platinum','Silver','Standard'].map(t=>`<button class="pill${filterTier===t?' on':''}" onclick="setFilter('${t}')">${t==='all'?'すべて':t}</button>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card anim anim-d2 scroll-x">
+  <div class="card-header">
+    <div class="card-title-sm">顧客リスト</div>
+    <span class="fs11 tc-t3">${lst.length}件 表示</span>
+  </div>
+  <table class="tbl">
+    <thead><tr>
+      <th>ID</th><th>氏名</th><th>ランク</th><th>勤務先</th><th>年収</th>
+      <th>LTV</th><th>物件</th><th>スコア</th><th>最終接触</th><th>担当</th><th></th>
+    </tr></thead>
+    <tbody>
+    ${lst.length===0?`<tr><td colspan="11" style="text-align:center;padding:28px;color:var(--t3);">該当する顧客がいません</td></tr>`:
+    lst.map(c=>`<tr style="cursor:pointer;" onclick="selCxGo('${c.id}')">
+      <td><span class="mono fs11 tc-t3">${c.id}</span></td>
+      <td>
+        <div class="flex items-c gap8">
+          <div style="width:34px;height:34px;border-radius:50%;background:${TB[c.tier]};border:1.5px solid ${TC[c.tier]}40;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:14px;font-weight:700;color:${TC[c.tier]};flex-shrink:0;">${c.name.charAt(0)}</div>
+          <div><div class="name">${c.name}</div><div class="sub">${c.kana}</div></div>
+        </div>
+      </td>
+      <td>${mkBadge(c.tier)}</td>
+      <td><div class="name">${c.co}</div><div class="sub">${c.job}</div></td>
+      <td class="fw5">¥${c.income}<span class="fs11 tc-t3">万</span></td>
+      <td>
+        <div>
+          <div style="font-family:var(--serif);font-size:15px;font-weight:700;color:${ltvCol(c.ltv)};">¥${c.ltv.toLocaleString()}<span style="font-size:11px;font-weight:400;color:var(--t3);">万</span></div>
+          <div class="fs10 tc-t3">生涯価値</div>
+        </div>
+      </td>
+      <td style="font-family:var(--serif);font-size:16px;font-weight:600;">${c.invest}<span class="fs11 tc-t3">棟</span></td>
+      <td>
+        <div class="flex items-c gap8">
+          <canvas id="sring${c.id}" width="36" height="36"></canvas>
+        </div>
+      </td>
+      <td class="fs11 tc-t3">${c.last}</td>
+      <td class="fs12 tc-t2">${c.mgr}</td>
+      <td><button class="act act-s fs11" onclick="event.stopPropagation();selCxGo('${c.id}')">詳細 →</button></td>
+    </tr>`).join('')}
+    </tbody>
+  </table>
+</div>`;
+  setTimeout(()=>{
+    initCh('tierChart',{type:'doughnut',data:{labels:['VIP','Gold','Platinum','Silver','Standard'],datasets:[{data:['VIP','Gold','Platinum','Silver','Standard'].map(t=>cnt[t]),backgroundColor:['VIP','Gold','Platinum','Silver','Standard'].map(t=>TC[t]+'cc'),borderWidth:2,borderColor:'rgba(6,14,26,.8)',hoverOffset:4}]},options:{cutout:'64%',plugins:{legend:{display:false}},animation:{duration:600}}});
+    lst.forEach(c=>{
+      const el=document.getElementById('sring'+c.id);
+      if(el)drawRing(el,c.score,36);
+    });
+  },60);
+},
+
+profile(){
+  const c=selCx;
+  const lc=ltvCol(c.ltv);
+  document.getElementById('content').innerHTML=`
+<div style="display:grid;grid-template-columns:290px 1fr;gap:16px;">
+  <div class="flex flex-col gap12">
+    <div class="card card-body anim">
+      <div class="flex gap12 mb14" style="align-items:flex-start;">
+        <div class="p-avatar" style="background:${TB[c.tier]};border-color:${TC[c.tier]}60;color:${TC[c.tier]};">${c.name.charAt(0)}</div>
+        <div style="flex:1;">
+          <div style="font-family:var(--serif);font-size:20px;font-weight:700;color:var(--t1);line-height:1.1;">${c.name}</div>
+          <div class="fs11 tc-t3 mb8">${c.kana}</div>
+          ${mkBadge(c.tier)}
+        </div>
+        <canvas id="scoreRing" width="56" height="56"></canvas>
+      </div>
+      <div>
+        ${[['顧客ID',`<span class="mono fs12">${c.id}</span>`],['年齢',`${c.age}歳`],['住所',c.addr],['電話',c.phone],['メール',`<span class="fs11">${c.email}</span>`],['担当FA',c.mgr],['最終接触',c.last],['契約総数',`<span style="font-family:var(--serif);font-size:16px;font-weight:700;color:var(--g5);">${c.contracts}</span>件`]].map(([k,v])=>`<div class="kv"><span class="kk">${k}</span><span class="kvv">${v}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="card card-body anim anim-d1">
+      <div class="card-title">家族構成</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+        ${[['本人','👤','always'],['配偶者','👫',c.family.s?'yes':'no'],['子供','👶',c.family.k>0?'yes':'no'],['親','🧓',c.family.p?'yes':'no']].map(([l,e,st])=>`
+        <div style="text-align:center;padding:8px 4px;border-radius:8px;background:rgba(212,170,58,${st!=='no'?'.06':'0'});border:1px solid rgba(212,170,58,${st!=='no'?'.15':'.04'});">
+          <div style="font-size:18px;margin-bottom:3px;opacity:${st==='no'?.3:1};">${e}</div>
+          <div class="fs10 tc-t3">${l}</div>
+          ${l==='子供'?`<div class="fs11 fw6 tc-g">${c.family.k>0?c.family.k+'名':''}</div>`:''}
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="card card-body anim anim-d2">
+      <div class="card-title">タグ・メモ</div>
+      <div class="flex gap6 mb10" style="flex-wrap:wrap;">
+        ${c.tags.map(t=>`<span class="badge b-gray">${t}</span>`).join('')}
+      </div>
+      <textarea id="cxNote" style="height:68px;" placeholder="メモを入力...">${c.note}</textarea>
+      <button class="act act-p" style="margin-top:8px;font-size:11.5px;" onclick="saveNote()">保存</button>
+    </div>
+  </div>
+  <div class="flex flex-col gap12">
+    <div class="ltv-banner anim">
+      <div class="ltv-eyebrow">Lifetime Value</div>
+      <div class="ltv-number">¥${c.ltv.toLocaleString()}<span>万</span></div>
+      <div class="ltv-sub2">顧客生涯価値 — ${c.name} 様の累計取引実績</div>
+      <div class="ltv-grid">
+        <div class="ltv-mini"><div class="ltv-mini-l">年収</div><div class="ltv-mini-v">¥${c.income}万</div></div>
+        <div class="ltv-mini"><div class="ltv-mini-l">保有資産</div><div class="ltv-mini-v">¥${c.assets}万</div></div>
+        <div class="ltv-mini"><div class="ltv-mini-l">契約件数</div><div class="ltv-mini-v">${c.contracts}件</div></div>
+        <div class="ltv-mini"><div class="ltv-mini-l">保有物件</div><div class="ltv-mini-v">${c.invest}棟</div></div>
+        <div class="ltv-mini"><div class="ltv-mini-l">スコア</div><div class="ltv-mini-v">${c.score} pt</div></div>
+        <div class="ltv-mini"><div class="ltv-mini-l">担当FA</div><div class="ltv-mini-v">${c.mgr}</div></div>
+      </div>
+    </div>
+    <div class="card card-body anim anim-d1">
+      <div class="card-title">LTV 推移（過去7期）</div>
+      <div class="ch-wrap" style="height:140px;"><canvas id="ltvChart"></canvas></div>
+    </div>
+    <div class="card card-body anim anim-d2">
+      <div class="card-title">勤務先情報</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+        ${[['会社名',c.co],['役職',c.job],['部署',c.dept],['年収',`¥${c.income}万`]].map(([k,v])=>`<div class="kv"><span class="kk">${k}</span><span class="kvv">${v}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="card card-body anim anim-d3">
+      <div class="card-title">資産サマリー</div>
+      <div class="g3" style="gap:10px;">
+        <div class="metric"><div class="metric-label">金融資産目安</div><div class="metric-value" style="font-size:18px;">¥${c.assets}<span class="metric-unit">万</span></div></div>
+        <div class="metric"><div class="metric-label">保有物件</div><div class="metric-value">${c.invest}<span class="metric-unit">棟</span></div></div>
+        <div class="metric"><div class="metric-label">LTV/年収比</div><div class="metric-value metric-gold" style="font-size:18px;">${(c.ltv/parseInt(c.income.replace(',',''))).toFixed(1)}<span class="metric-unit">x</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>`;
+  setTimeout(()=>{
+    drawRing(document.getElementById('scoreRing'),c.score,56);
+    initCh('ltvChart',{type:'bar',data:{labels:['20期','21期','22期','23期','24期','25期','26期'],datasets:[{label:'LTV(万)',data:c.ltvH,backgroundColor:lc+'33',borderColor:lc,borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v+'万',font:{size:10}},grid:{color:'rgba(212,170,58,.06)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}});
+  },60);
+},
+
+apt(){
+  document.getElementById('content').innerHTML=`
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">管理棟数</div><div class="metric-value">8<span class="metric-unit">棟</span></div><div class="metric-sub">木造・軽量鉄骨</div></div>
+  <div class="metric"><div class="metric-label">総投資額</div><div class="metric-value" style="font-size:20px;">¥18.4<span class="metric-unit">億</span></div></div>
+  <div class="metric"><div class="metric-label">平均表面利回り</div><div class="metric-value metric-gold">6.8<span class="metric-unit">%</span></div><div class="metric-sub metric-up">目標6.5%を達成</div></div>
+  <div class="metric"><div class="metric-label">平均稼働率</div><div class="metric-value">94.2<span class="metric-unit">%</span></div></div>
+</div>
+<div class="card mb16 scroll-x anim anim-d1">
+  <div class="card-header">
+    <div class="card-title-sm">投資アパートFA 物件一覧</div>
+    <button class="act act-p">＋ 物件登録</button>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>物件名</th><th>所在地</th><th>構造</th><th>戸数</th><th>取得額</th><th>表面利回り</th><th>稼働率</th><th>月間賃料</th><th>購入日</th><th>担当FA</th><th>状態</th></tr></thead>
+    <tbody>
+    ${[
+      ['横浜港北アパートA','横浜市港北区','木造2階','8戸','¥8,200万','7.2%',100,'¥49.3万','2021/06/15','佐藤','運用中'],
+      ['川崎中原アパートB','川崎市中原区','軽量鉄骨3階','12戸','¥1.2億','6.8%',91.7,'¥68万','2022/03/20','田中','運用中'],
+      ['横浜都筑アパートC','横浜市都筑区','木造2階','6戸','¥6,500万','7.5%',100,'¥40.6万','2023/01/10','山田','運用中'],
+      ['相模原アパートD','相模原市中央区','軽量鉄骨2階','10戸','¥9,800万','6.5%',90,'¥53.1万','2023/09/01','佐藤','運用中'],
+      ['川崎高津アパートE','川崎市高津区','木造3階','9戸','¥8,900万','6.9%',88.9,'¥51.2万','2024/02/15','田中','空室対応中'],
+    ].map(r=>`<tr>
+      <td class="name">${r[0]}</td><td class="fs11 tc-t3">${r[1]}</td>
+      <td><span class="badge b-gray">${r[2]}</span></td>
+      <td class="fw5">${r[3]}</td><td class="fw5">${r[4]}</td>
+      <td style="font-family:var(--serif);font-size:15px;font-weight:700;color:var(--g5);">${r[5]}</td>
+      <td>
+        <div class="flex items-c gap8">
+          ${pbar(r[6],r[6]>=95?'#2a9d6e':r[6]>=85?'#c8922a':'#d45a4a')}
+          <span class="fs11">${r[6]}%</span>
+        </div>
+      </td>
+      <td class="fw5">${r[7]}</td><td class="fs11 tc-t3">${r[8]}</td><td class="fs12">${r[9]}</td>
+      <td><div class="flex items-c gap6">${mkDot(r[10]==='運用中'?'var(--s-green)':'var(--s-amber)')}<span class="fs12">${r[10]}</span></div></td>
+    </tr>`).join('')}
+    </tbody>
+  </table>
+</div>
+<div class="g2 anim anim-d2">
+  <div class="card card-body">
+    <div class="card-title">利回り分布</div>
+    <div class="ch-wrap" style="height:160px;"><canvas id="aptY"></canvas></div>
+  </div>
+  <div class="card card-body">
+    <div class="card-title">稼働率推移（6ヶ月）</div>
+    <div class="ch-wrap" style="height:160px;"><canvas id="aptO"></canvas></div>
+  </div>
+</div>`;
+  setTimeout(()=>{
+    const gold='rgba(212,170,58,';
+    initCh('aptY',{type:'bar',data:{labels:['港北A','中原B','都筑C','相模原D','高津E'],datasets:[{data:[7.2,6.8,7.5,6.5,6.9],backgroundColor:gold+'.2)',borderColor:gold+'.8)',borderWidth:1.5,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:5,ticks:{callback:v=>v+'%'},grid:{color:'rgba(212,170,58,.06)'}},x:{grid:{display:false}}}}});
+    initCh('aptO',{type:'line',data:{labels:['11月','12月','1月','2月','3月','4月'],datasets:[{data:[91,93,94,93,95,94],borderColor:'#2a9d6e',backgroundColor:'rgba(42,157,110,.1)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#2a9d6e'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:80,ticks:{callback:v=>v+'%'},grid:{color:'rgba(212,170,58,.06)'}},x:{grid:{display:false}}}}});
+  },60);
+},
+
+mansion(){
+  document.getElementById('content').innerHTML=`
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">管理棟数</div><div class="metric-value">12<span class="metric-unit">棟</span></div><div class="metric-sub">RC・SRC造</div></div>
+  <div class="metric"><div class="metric-label">総投資額</div><div class="metric-value" style="font-size:20px;">¥32.8<span class="metric-unit">億</span></div></div>
+  <div class="metric"><div class="metric-label">平均利回り</div><div class="metric-value metric-gold">5.4<span class="metric-unit">%</span></div></div>
+  <div class="metric"><div class="metric-label">稼働率</div><div class="metric-value">96.8<span class="metric-unit">%</span></div><div class="metric-sub metric-up">高稼働維持中</div></div>
+</div>
+<div class="card scroll-x mb16 anim anim-d1">
+  <div class="card-header">
+    <div class="card-title-sm">投資マンションFC 物件一覧</div>
+    <button class="act act-p">＋ 物件登録</button>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>物件名</th><th>所在地</th><th>構造</th><th>総戸数</th><th>FC取得額</th><th>利回り</th><th>稼働率</th><th>月間賃料</th><th>購入日</th><th>担当FC</th></tr></thead>
+    <tbody>
+    ${[
+      ['横浜グランドタワー','横浜市西区','RC造15階','42戸','¥6.2億','5.8%',97.6,'¥378万','2020/04/01','山田'],
+      ['川崎ビジネスコート','川崎市川崎区','SRC造10階','28戸','¥3.8億','5.2%',96.4,'¥224万','2021/11/15','佐藤'],
+      ['横浜センターコート','横浜市中区','RC造8階','20戸','¥2.8億','5.5%',100,'¥154万','2022/06/20','田中'],
+      ['相鉄ライナーレジデンス','横浜市旭区','RC造12階','35戸','¥4.5億','5.1%',94.3,'¥229万','2023/03/10','山田'],
+      ['川崎プレミアコート','川崎市幸区','RC造18階','58戸','¥8.2億','5.6%',98.3,'¥459万','2024/07/01','佐藤'],
+    ].map(r=>`<tr>
+      <td class="name">${r[0]}</td><td class="fs11 tc-t3">${r[1]}</td>
+      <td><span class="badge b-blue">${r[2]}</span></td>
+      <td class="fw5">${r[3]}</td><td class="fw5">${r[4]}</td>
+      <td style="font-family:var(--serif);font-size:15px;font-weight:700;color:var(--g5);">${r[5]}</td>
+      <td>
+        <div class="flex items-c gap8">${pbar(r[6],'#3a7abd')}<span class="fs11">${r[6]}%</span></div>
+      </td>
+      <td class="fw5">${r[7]}</td><td class="fs11 tc-t3">${r[8]}</td><td class="fs12">${r[9]}</td>
+    </tr>`).join('')}
+    </tbody>
+  </table>
+</div>`;
+},
+
+combined(){
+  document.getElementById('content').innerHTML=`
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">管理棟数</div><div class="metric-value">6<span class="metric-unit">棟</span></div></div>
+  <div class="metric"><div class="metric-label">平均居住割合</div><div class="metric-value">42<span class="metric-unit">%</span></div></div>
+  <div class="metric"><div class="metric-label">実質利回り</div><div class="metric-value metric-gold">4.8<span class="metric-unit">%</span></div></div>
+  <div class="metric"><div class="metric-label">ローン残高計</div><div class="metric-value" style="font-size:20px;">¥8.2<span class="metric-unit">億</span></div></div>
+</div>
+<div class="card scroll-x anim anim-d1">
+  <div class="card-header">
+    <div class="card-title-sm">賃貸併用住宅AR 一覧</div>
+    <button class="act act-p">＋ 新規登録</button>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>物件名</th><th>所在地</th><th>構造</th><th>居住割合</th><th>賃貸戸数</th><th>取得額</th><th>ローン残</th><th>金利</th><th>実質利回り</th><th>担当AR</th></tr></thead>
+    <tbody>
+    ${[
+      ['横浜港北コンビネーション','横浜市港北区','木造3階','35%','4戸','¥8,500万','¥5,200万','0.725%','4.9%','佐藤'],
+      ['川崎高津ミックス','川崎市高津区','RC造4階','42%','6戸','¥1.1億','¥7,800万','0.625%','4.7%','田中'],
+      ['都筑ファミリーハウス','横浜市都筑区','木造2階','50%','3戸','¥7,200万','¥3,500万','0.875%','5.1%','山田'],
+      ['相模原ARホーム','相模原市南区','木造3階','38%','5戸','¥9,200万','¥6,100万','0.725%','4.6%','佐藤'],
+    ].map(r=>`<tr>
+      <td class="name">${r[0]}</td><td class="fs11 tc-t3">${r[1]}</td>
+      <td><span class="badge b-gray">${r[2]}</span></td>
+      <td>
+        <div class="flex items-c gap8">${pbar(parseInt(r[3]),'#c8922a')}<span class="fs11 fw5">${r[3]}</span></div>
+      </td>
+      <td>${r[4]}</td><td class="fw5">${r[5]}</td>
+      <td class="tc-red fw5">${r[6]}</td>
+      <td class="fs11 tc-t3">${r[7]}</td>
+      <td style="font-family:var(--serif);font-size:14px;font-weight:700;color:var(--g5);">${r[8]}</td>
+      <td class="fs12">${r[9]}</td>
+    </tr>`).join('')}
+    </tbody>
+  </table>
+</div>`;
+},
+
+cf(){
+  document.getElementById('content').innerHTML=`
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">出資総額</div><div class="metric-value" style="font-size:20px;">¥4,200<span class="metric-unit">万</span></div></div>
+  <div class="metric"><div class="metric-label">運用案件数</div><div class="metric-value">7<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">平均利回り</div><div class="metric-value metric-gold">4.2<span class="metric-unit">%</span></div></div>
+  <div class="metric"><div class="metric-label">累計分配金</div><div class="metric-value" style="font-size:20px;">¥312<span class="metric-unit">万</span></div></div>
+</div>
+<div class="card scroll-x anim anim-d1">
+  <div class="card-header">
+    <div class="card-title-sm">不動産クラウドファンディング 出資一覧</div>
+    <button class="act act-p">新規案件を探す →</button>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>案件名</th><th>種別</th><th>出資額</th><th>利回り</th><th>運用期間</th><th>開始日</th><th>終了予定</th><th>分配金</th><th>状態</th></tr></thead>
+    <tbody>
+    ${[
+      ['渋谷区オフィスファンド1号','オフィス','¥500万','4.0%','12ヶ月','2025/04/01','2026/03/31','¥20.0万','完了'],
+      ['横浜みなとみらいホテル2号','ホテル','¥800万','4.5%','18ヶ月','2025/06/01','2026/11/30','¥18.0万','運用中'],
+      ['大阪北区マンション3号','住宅','¥600万','3.8%','12ヶ月','2025/09/01','2026/08/31','¥11.4万','運用中'],
+      ['東京都心レジデンス5号','住宅','¥1,000万','4.2%','24ヶ月','2026/01/15','2028/01/14','未発生','運用中'],
+      ['名古屋商業施設6号','商業','¥700万','5.0%','18ヶ月','2026/03/01','2027/08/31','未発生','運用中'],
+      ['福岡博多物流7号','物流','¥600万','4.8%','12ヶ月','2026/04/01','2027/03/31','未発生','募集中'],
+    ].map(r=>{
+      const sc={完了:'var(--t3)',運用中:'var(--s-green)',募集中:'var(--s-amber)'}[r[8]]||'var(--t3)';
+      return `<tr>
+        <td class="name">${r[0]}</td>
+        <td><span class="badge b-gray">${r[1]}</span></td>
+        <td class="fw5">${r[2]}</td>
+        <td style="font-family:var(--serif);font-size:14px;font-weight:700;color:var(--g5);">${r[3]}</td>
+        <td class="fs11 tc-t3">${r[4]}</td>
+        <td class="fs11 tc-t3">${r[5]}</td>
+        <td class="fs11 tc-t3">${r[6]}</td>
+        <td class="fw5" style="color:${r[7]==='未発生'?'var(--t3)':'var(--s-amber)'};">${r[7]}</td>
+        <td><div class="flex items-c gap6">${mkDot(sc)}<span class="fs12">${r[8]}</span></div></td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>
+</div>`;
+},
+
+fin2(){
+  document.getElementById('content').innerHTML=`
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">金融商品残高</div><div class="metric-value" style="font-size:20px;">¥2,850<span class="metric-unit">万</span></div></div>
+  <div class="metric"><div class="metric-label">保有件数</div><div class="metric-value">5<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">加重平均利回り</div><div class="metric-value metric-gold">3.8<span class="metric-unit">%</span></div></div>
+  <div class="metric"><div class="metric-label">含み益合計</div><div class="metric-value tc-green">+¥121<span class="metric-unit">万</span></div><div class="metric-sub metric-up">+4.4%</div></div>
+</div>
+<div class="card scroll-x anim anim-d1">
+  <div class="card-header">
+    <div class="card-title-sm">金融二種 商品保有明細</div>
+    <button class="act act-p">＋ 商品追加</button>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>商品名</th><th>種別</th><th>購入額</th><th>現在価値</th><th>含み損益</th><th>利回り</th><th>購入日</th><th>満期</th><th>担当</th></tr></thead>
+    <tbody>
+    ${[
+      ['東京地区不動産ファンドA','私募REIT','¥500万','¥542万','+¥42万(+8.4%)','3.8%','2024/06/01','2027/05/31','田中'],
+      ['首都圏住宅ファンドB','私募ファンド','¥800万','¥832万','+¥32万(+4.0%)','3.6%','2024/09/15','2028/09/14','山田'],
+      ['商業施設ファンドC','私募REIT','¥600万','¥615万','+¥15万(+2.5%)','4.2%','2025/01/20','2027/01/19','佐藤'],
+      ['物流不動産ファンドD','私募ファンド','¥950万','¥982万','+¥32万(+3.4%)','4.0%','2025/06/01','2028/05/31','田中'],
+    ].map(r=>`<tr>
+      <td class="name">${r[0]}</td>
+      <td><span class="badge b-blue">${r[1]}</span></td>
+      <td class="fw5">${r[2]}</td><td class="fw5">${r[3]}</td>
+      <td class="fw5 tc-green">${r[4]}</td>
+      <td style="font-family:var(--serif);font-size:14px;font-weight:700;color:var(--g5);">${r[5]}</td>
+      <td class="fs11 tc-t3">${r[6]}</td><td class="fs11 tc-t3">${r[7]}</td><td class="fs12">${r[8]}</td>
+    </tr>`).join('')}
+    </tbody>
+  </table>
+</div>`;
+},
+
+leasing(){
+  // ── データ定義 ──
+  const CANCEL = [
+    {cx:'田中 健一',prop:'川崎中原アパートB 201号',occ:91.7,rent:'¥78,000',date:'2026/05/31',reason:'転勤',mgr:'田中 誠',urgency:'high'},
+    {cx:'渡辺 隆',prop:'川崎ビジネスコート 302号',occ:96.4,rent:'¥95,000',date:'2026/05/15',reason:'退職',mgr:'佐藤 一郎',urgency:'high'},
+    {cx:'小林 直樹',prop:'横浜グランドタワー 801号',occ:97.6,rent:'¥125,000',date:'2026/06/30',reason:'更新拒否',mgr:'山田 誠',urgency:'mid'},
+    {cx:'山田 美咲',prop:'川崎ビジネスコート 508号',occ:96.4,rent:'¥88,000',date:'2026/06/30',reason:'契約満了',mgr:'田中 誠',urgency:'mid'},
+    {cx:'伊藤 花子',prop:'横浜グランドタワー 415号',occ:97.6,rent:'¥112,000',date:'2026/07/31',reason:'家族増員・転居',mgr:'佐藤 一郎',urgency:'low'},
+    {cx:'吉田 正雄',prop:'横浜都筑アパートC 103号',occ:100,rent:'¥68,000',date:'2026/08/31',reason:'購入予定',mgr:'山田 誠',urgency:'low'},
+    {cx:'清水 正志',prop:'川崎高津アパートE 201号',occ:88.9,rent:'¥72,000',date:'2026/05/31',reason:'更新意思未確認',mgr:'佐藤 一郎',urgency:'high'},
+  ];
+  const FOCUS = [
+    {cx:'田中 健一',prop:'川崎中原アパートB',occ:91.7,vacant:1,loss:'¥78,000/月',action:'即時募集・賃料見直し検討',priority:1,mgr:'田中 誠'},
+    {cx:'清水 正志',prop:'川崎高津アパートE',occ:88.9,vacant:1,loss:'¥72,000/月',action:'既存入居者フォロー・更新促進',priority:2,mgr:'佐藤 一郎'},
+    {cx:'渡辺 隆',prop:'川崎ビジネスコート',occ:96.4,vacant:1,loss:'¥95,000/月',action:'5月退去後の即時広告掲載',priority:3,mgr:'佐藤 一郎'},
+    {cx:'小林 直樹',prop:'横浜グランドタワー',occ:97.6,vacant:1,loss:'¥125,000/月',action:'6月更新交渉・条件見直し提案',priority:4,mgr:'山田 誠'},
+    {cx:'山田 美咲',prop:'川崎アパートB 空室201号',occ:91.7,vacant:1,loss:'¥78,000/月',action:'ポータル掲載・内見対応強化',priority:5,mgr:'田中 誠'},
+  ];
+  const ALERTS = [
+    {cx:'清水 正志',prop:'川崎高津アパートE',occ:88.9,vacant:1,total:9,threshold:90,status:'critical',reason:'稼働率90%未満・解約予定重複',action:'緊急対応要'},
+    {cx:'田中 健一',prop:'川崎中原アパートB',occ:91.7,vacant:1,total:12,threshold:93,status:'warning',reason:'来月解約予定あり・連続空室リスク',action:'優先対応'},
+    {cx:'渡辺 隆',prop:'川崎ビジネスコート',occ:96.4,vacant:1,total:28,threshold:97,status:'warning',reason:'2戸退去予定・稼働率低下見込み',action:'準備開始'},
+    {cx:'小林 直樹',prop:'横浜グランドタワー',occ:97.6,vacant:1,total:42,threshold:98,status:'caution',reason:'更新拒否1件・目標稼働率98%に接近',action:'要モニタリング'},
+    {cx:'山田 美咲',prop:'川崎アパートB 空室',occ:91.7,vacant:1,total:12,threshold:95,status:'caution',reason:'既存空室1戸・長期未充足',action:'広告強化'},
+  ];
+
+  document.getElementById('content').innerHTML=`
+<!-- KPI TOP ROW -->
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">管理棟数</div><div class="metric-value">26<span class="metric-unit">棟</span></div></div>
+  <div class="metric"><div class="metric-label">管理総戸数</div><div class="metric-value">284<span class="metric-unit">戸</span></div></div>
+  <div class="metric"><div class="metric-label">現在稼働率</div><div class="metric-value metric-gold">95.4<span class="metric-unit">%</span></div><div class="metric-sub">271戸入居中</div></div>
+  <div class="metric" style="border-color:rgba(212,90,74,.25);"><div class="metric-label" style="color:var(--s-red);">解約予定件数</div><div class="metric-value tc-red">7<span class="metric-unit">件</span></div><div class="metric-sub metric-down">うち緊急 3件</div></div>
+</div>
+
+<!-- 稼働率推移 + 空室 -->
+<div class="g2 mb16 anim anim-d1">
+  <div class="card card-body">
+    <div class="card-title">稼働率推移（12ヶ月）</div>
+    <div class="ch-wrap" style="height:150px;"><canvas id="occChart"></canvas></div>
+  </div>
+  <div class="card card-body">
+    <div class="card-title">空室状況サマリー</div>
+    ${[['満室物件','19棟',73,'var(--s-green)'],['空室1戸','5棟',19,'var(--s-amber)'],['空室2戸以上','2棟',8,'var(--s-red)']].map(r=>`
+    <div class="flex items-c gap10 mb8">
+      ${mkDot(r[3])}
+      <span class="fs12 tc-t2" style="flex:1;">${r[0]}</span>
+      <span class="fw5">${r[1]}</span>
+      ${pbar(r[2],r[3])}
+      <span class="fs11 tc-t3" style="min-width:28px;">${r[2]}%</span>
+    </div>`).join('')}
+    <div class="gold-divider"></div>
+    ${[['今月退去予定','3件','tc-red'],['次月更新予定','8件',''],['最終更新','2026/04/12','tc-t3']].map(([k,v,cl])=>`<div class="kv"><span class="kk">${k}</span><span class="kvv ${cl}">${v}</span></div>`).join('')}
+  </div>
+</div>
+
+<!-- ★ 稼働率アラート ★ -->
+<div class="card mb16 anim anim-d1" style="border-color:rgba(212,90,74,.2);">
+  <div class="card-header" style="background:rgba(212,90,74,.06);border-bottom-color:rgba(212,90,74,.15);">
+    <div class="flex items-c gap10">
+      <svg width="14" height="14" fill="none" stroke="var(--s-red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div class="card-title-sm" style="color:var(--s-red);">稼働率アラート</div>
+    </div>
+    <span class="badge b-red">${ALERTS.length}件 要対応</span>
+  </div>
+  <table class="tbl">
+    <thead><tr>
+      <th>優先度</th><th>顧客名</th><th>物件名</th><th>稼働率</th><th>空室</th><th>総戸</th><th>アラート理由</th><th>推奨アクション</th>
+    </tr></thead>
+    <tbody>
+    ${ALERTS.map((a,i)=>{
+      const col=a.status==='critical'?'var(--s-red)':a.status==='warning'?'var(--s-amber)':'var(--g5)';
+      const bcl=a.status==='critical'?'b-red':a.status==='warning'?'b-amber':'b-vip';
+      const lbl=a.status==='critical'?'緊急':a.status==='warning'?'警告':'注意';
+      const occCol=a.occ<90?'var(--s-red)':a.occ<95?'var(--s-amber)':'var(--g5)';
+      return `<tr style="border-left:2px solid ${col};">
+        <td><span class="badge ${bcl}">${lbl}</span></td>
+        <td>
+          <div class="fw5">${a.cx}</div>
+          <div class="fs10 tc-t3">${a.mgr||''}</div>
+        </td>
+        <td class="fw5">${a.prop}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="position:relative;width:44px;height:44px;flex-shrink:0;">
+              <canvas id="aring${i}" width="44" height="44"></canvas>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;color:${occCol};">${a.occ}%</div>
+            </div>
+            <div>
+              <div class="fs10 tc-t3">目標 ${a.threshold}%</div>
+              <div class="fs10" style="color:${occCol};">▼ ${(a.threshold-a.occ).toFixed(1)}pt差</div>
+            </div>
+          </div>
+        </td>
+        <td class="fw5 tc-red">${a.vacant}戸</td>
+        <td class="tc-t2">${a.total}戸</td>
+        <td class="fs11 tc-t2" style="max-width:160px;">${a.reason}</td>
+        <td><button class="act act-p" style="font-size:10.5px;padding:4px 10px;border-color:${col};color:${col};background:${col}18;">${a.action}</button></td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>
+</div>
+
+<!-- ★ 解約予定 ★ -->
+<div class="card mb16 anim anim-d2" style="border-color:rgba(200,146,42,.2);">
+  <div class="card-header" style="background:rgba(200,146,42,.05);border-bottom-color:rgba(200,146,42,.15);">
+    <div class="flex items-c gap10">
+      <svg width="14" height="14" fill="none" stroke="var(--s-amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <div class="card-title-sm" style="color:var(--s-amber);">解約予定 — 顧客名・物件名・稼働率</div>
+    </div>
+    <div class="flex items-c gap8">
+      <span class="badge b-red">緊急 3件</span>
+      <span class="badge b-amber">通常 4件</span>
+    </div>
+  </div>
+  <table class="tbl">
+    <thead><tr>
+      <th>緊急度</th><th>顧客名</th><th>物件名（号室）</th><th>現在稼働率</th><th>解約後稼働率</th><th>賃料損失/月</th><th>解約予定日</th><th>解約理由</th><th>担当</th><th></th>
+    </tr></thead>
+    <tbody>
+    ${CANCEL.map(r=>{
+      const urgCol=r.urgency==='high'?'var(--s-red)':r.urgency==='mid'?'var(--s-amber)':'var(--t3)';
+      const urgLbl=r.urgency==='high'?'緊急':r.urgency==='mid'?'通常':'低';
+      const urgBcl=r.urgency==='high'?'b-red':r.urgency==='mid'?'b-amber':'b-gray';
+      const propParts=r.prop.split(' ');
+      const propName=propParts.slice(0,propParts.length-1).join(' ');
+      const roomNum=propParts[propParts.length-1];
+      // 解約後稼働率（1戸減）
+      const propData={
+        '川崎中原アパートB':{total:12,current:11},
+        '川崎ビジネスコート':{total:28,current:27},
+        '横浜グランドタワー':{total:42,current:41},
+        '川崎高津アパートE':{total:9,current:8},
+        '横浜都筑アパートC':{total:6,current:6},
+      };
+      const pd=propData[propName]||{total:10,current:9};
+      const afterOcc=Math.round((pd.current-1)/pd.total*1000)/10;
+      return `<tr style="border-left:2px solid ${urgCol}22;">
+        <td><span class="badge ${urgBcl}">${urgLbl}</span></td>
+        <td>
+          <div class="fw5">${r.cx}</div>
+        </td>
+        <td>
+          <div class="fw5">${propName}</div>
+          <div class="fs10 tc-t3">${roomNum}</div>
+        </td>
+        <td>
+          <div class="flex items-c gap8">
+            ${pbar(r.occ,r.occ>=95?'var(--s-green)':r.occ>=90?'var(--s-amber)':'var(--s-red)')}
+            <span class="fs11 fw5">${r.occ}%</span>
+          </div>
+        </td>
+        <td>
+          <div class="flex items-c gap8">
+            ${pbar(afterOcc,afterOcc>=90?'var(--s-amber)':'var(--s-red)')}
+            <span class="fs11 fw5" style="color:${afterOcc<90?'var(--s-red)':'var(--s-amber)'};">${afterOcc}%</span>
+          </div>
+        </td>
+        <td class="fw5 tc-red">${r.rent}/月</td>
+        <td>
+          <div class="fw5" style="color:${r.urgency==='high'?'var(--s-red)':'var(--t1)'};">${r.date}</div>
+        </td>
+        <td class="fs11 tc-t2">${r.reason}</td>
+        <td class="fs12 tc-t2">${r.mgr}</td>
+        <td><button class="act act-s" style="font-size:10.5px;padding:3px 9px;">対応記録</button></td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>
+</div>
+
+<!-- ★ リーシング注力リスト ★ -->
+<div class="card mb16 anim anim-d2" style="border-color:rgba(212,170,58,.2);">
+  <div class="card-header" style="background:rgba(212,170,58,.04);border-bottom-color:rgba(212,170,58,.15);">
+    <div class="flex items-c gap10">
+      <svg width="14" height="14" fill="none" stroke="var(--g5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <div class="card-title-sm" style="color:var(--g5);">リーシング注力リスト — 優先対応顧客・物件</div>
+    </div>
+    <button class="act act-p" style="font-size:11px;">全件CSVエクスポート</button>
+  </div>
+  <table class="tbl">
+    <thead><tr>
+      <th>優先順位</th><th>顧客名</th><th>物件名</th><th>稼働率</th><th>空室数</th><th>賃料損失/月</th><th>推奨アクション</th><th>担当FA</th><th></th>
+    </tr></thead>
+    <tbody>
+    ${FOCUS.map(f=>{
+      const pCol=['var(--s-red)','var(--s-red)','var(--s-amber)','var(--s-amber)','var(--g5)'][f.priority-1];
+      const pBg=['rgba(212,90,74,.08)','rgba(212,90,74,.05)','rgba(200,146,42,.06)','rgba(200,146,42,.04)','rgba(212,170,58,.04)'][f.priority-1];
+      return `<tr style="background:${pBg};">
+        <td>
+          <div style="width:26px;height:26px;border-radius:50%;background:${pCol}22;border:1.5px solid ${pCol}55;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:14px;font-weight:700;color:${pCol};">${f.priority}</div>
+        </td>
+        <td class="fw5">${f.cx}</td>
+        <td>
+          <div class="fw5">${f.prop}</div>
+        </td>
+        <td>
+          <div class="flex items-c gap8">
+            ${pbar(f.occ,f.occ>=95?'var(--s-green)':f.occ>=90?'var(--s-amber)':'var(--s-red)')}
+            <span class="fs11 fw5" style="color:${f.occ>=95?'var(--s-green)':f.occ>=90?'var(--s-amber)':'var(--s-red)'};">${f.occ}%</span>
+          </div>
+        </td>
+        <td class="fw5 tc-red">${f.vacant}戸</td>
+        <td class="fw5" style="color:var(--s-amber);">${f.loss}</td>
+        <td class="fs11 tc-t2" style="max-width:180px;">${f.action}</td>
+        <td class="fs12 tc-t2">${f.mgr}</td>
+        <td>
+          <button class="act act-p" style="font-size:10.5px;padding:4px 10px;">対応開始</button>
+        </td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>
+</div>
+
+<!-- 物件別リーシング一覧 -->
+<div class="card scroll-x mb16 anim anim-d3">
+  <div class="card-header">
+    <div class="card-title-sm">全物件 リーシング状況一覧</div>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>物件名</th><th>総戸</th><th>入居</th><th>空室</th><th>稼働率</th><th>月間賃料</th><th>直近退去</th><th>次回更新</th><th>状態</th></tr></thead>
+    <tbody>
+    ${[
+      ['横浜港北アパートA','8','8','0',100,'¥64万','—','2026/06','満室'],
+      ['川崎アパートB','12','11','1',91.7,'¥86万','2026/03/31','2026/05','募集中'],
+      ['横浜グランドタワー','42','41','1',97.6,'¥378万','2026/04/05','2026/04','要確認'],
+      ['川崎ビジネスコート','28','27','1',96.4,'¥224万','2026/03/25','2026/07','募集中'],
+      ['都筑ファミリーハウス','3','3','0',100,'¥28.5万','—','2026/08','満室'],
+      ['横浜都筑アパートC','6','6','0',100,'¥45万','—','2026/09','満室'],
+      ['川崎高津アパートE','9','8','1',88.9,'¥57.6万','—','2026/05','緊急募集'],
+    ].map(r=>{
+      const full=r[8]==='満室';
+      const crit=r[8]==='緊急募集';
+      const col=crit?'var(--s-red)':full?'var(--s-green)':r[8]==='要確認'?'var(--s-amber)':'var(--s-blue)';
+      return `<tr style="${crit?'background:rgba(212,90,74,.04);border-left:2px solid var(--s-red);':''}">
+        <td class="name">${r[0]}</td>
+        <td class="tc-t2 fw5">${r[1]}</td>
+        <td class="tc-green fw6">${r[2]}</td>
+        <td class="fw6" style="color:${r[3]==='0'?'var(--t3)':'var(--s-red)'};">${r[3]}</td>
+        <td>
+          <div class="flex items-c gap8">${pbar(r[4],r[4]>=95?'var(--s-green)':r[4]>=90?'var(--s-amber)':'var(--s-red)')}<span class="fs11 fw5" style="color:${r[4]>=95?'var(--s-green)':r[4]>=90?'var(--s-amber)':'var(--s-red)'};">${r[4]}%</span></div>
+        </td>
+        <td class="fw5">${r[5]}</td>
+        <td style="color:${r[6]==='—'?'var(--t3)':'var(--s-red)'};" class="fs11">${r[6]}</td>
+        <td class="fs11 tc-t3">${r[7]}</td>
+        <td><div class="flex items-c gap6">${mkDot(col)}<span class="fs12" style="color:${col};">${r[8]}</span></div></td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>
+</div>
+
+<!-- 履歴 -->
+<div class="card card-body anim" style="animation-delay:.35s;">
+  <div class="card-title">リーシング 直近履歴</div>
+  ${[
+    {d:'2026/04/08',p:'横浜グランドタワー 302号',t:'契約締結',n:'新規入居・2年契約・¥89,000/月',m:'田中 誠',c:'var(--s-green)'},
+    {d:'2026/03/31',p:'川崎ビジネスコート 508号',t:'退去',n:'3年契約更新せず退去・原状回復手配済',m:'佐藤 一郎',c:'var(--s-red)'},
+    {d:'2026/03/28',p:'川崎アパートB 201号',t:'退去',n:'転居のため退去・清掃業者手配済',m:'山田 誠',c:'var(--s-red)'},
+    {d:'2026/03/25',p:'横浜都筑アパートC 103号',t:'更新完了',n:'2年更新・賃料据置き',m:'佐藤 一郎',c:'var(--s-blue)'},
+  ].map((h,i,arr)=>`<div class="tl-item">
+    <div class="tl-dot-wrap">
+      <div class="tl-dot2" style="background:${h.c};"></div>
+      ${i<arr.length-1?`<div class="tl-line"></div>`:''}
+    </div>
+    <div class="tl-content">
+      <div class="tl-hdr">
+        <div class="flex items-c gap8"><span class="tl-title">${h.p}</span><span class="badge ${h.t==='契約締結'?'b-green':h.t==='退去'?'b-red':'b-blue'}">${h.t}</span></div>
+        <span class="tl-date">${h.d}</span>
+      </div>
+      <div class="tl-body">${h.n} — 担当: ${h.m}</div>
+    </div>
+  </div>`).join('')}
+</div>`;
+
+  setTimeout(()=>{
+    initCh('occChart',{type:'line',data:{labels:['5月','6月','7月','8月','9月','10月','11月','12月','1月','2月','3月','4月'],datasets:[{data:[93,94,95,93,94,95,96,95,94,95,95,95.4],borderColor:'var(--g5)',backgroundColor:'rgba(212,170,58,.06)',fill:true,tension:0.4,pointRadius:2,pointBackgroundColor:'var(--g5)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:85,ticks:{callback:v=>v+'%'},grid:{color:'rgba(212,170,58,.06)'}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
+    // アラートリング描画
+    ALERTS.forEach((a,i)=>{
+      const el=document.getElementById('aring'+i);
+      if(!el)return;
+      const ctx=el.getContext('2d');
+      const sz=44,r=16,cx=22,cy=22;
+      ctx.clearRect(0,0,sz,sz);
+      // 目標ライン
+      ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);
+      ctx.strokeStyle='rgba(212,170,58,.1)';ctx.lineWidth=4;ctx.stroke();
+      // 実績
+      const col=a.occ<90?'#d45a4a':a.occ<95?'#c8922a':'#d4aa3a';
+      const pct=a.occ/100;
+      ctx.beginPath();ctx.arc(cx,cy,r,-Math.PI/2,-Math.PI/2+pct*Math.PI*2);
+      ctx.strokeStyle=col;ctx.lineWidth=4;ctx.lineCap='round';ctx.stroke();
+    });
+  },60);
+},
+
+
+
+pm(){
+  if(!window._pmTab) window._pmTab = 'renewal';
+  const pmTab = window._pmTab;
+
+  const RENEWAL = [
+    {cx:'小林 直樹',tenant:'山田 太郎',prop:'横浜グランドタワー 801号',oldRent:125000,newRent:128000,renewDate:'2026/05/31',status:'交渉中',mgr:'山田 誠',months:2},
+    {cx:'田中 健一',tenant:'鈴木 次郎',prop:'川崎中原アパートB 305号',oldRent:78000,newRent:78000,renewDate:'2026/05/31',status:'更新確定',mgr:'田中 誠',months:2},
+    {cx:'清水 正志',tenant:'伊藤 三郎',prop:'川崎高津アパートE 201号',oldRent:72000,newRent:null,renewDate:'2026/05/31',status:'未確認',mgr:'佐藤 一郎',months:2},
+    {cx:'渡辺 隆',tenant:'高橋 四郎',prop:'川崎ビジネスコート 302号',oldRent:95000,newRent:92000,renewDate:'2026/06/30',status:'値下交渉',mgr:'佐藤 一郎',months:3},
+    {cx:'山田 美咲',tenant:'松本 五郎',prop:'川崎アパートB 102号',oldRent:74000,newRent:75000,renewDate:'2026/06/30',status:'更新確定',mgr:'田中 誠',months:3},
+    {cx:'吉田 正雄',tenant:'木村 六郎',prop:'横浜グランドタワー 415号',oldRent:112000,newRent:112000,renewDate:'2026/07/31',status:'更新確定',mgr:'佐藤 一郎',months:4},
+    {cx:'中村 由美',tenant:'渡辺 七郎',prop:'相鉄ライナーレジデンス 508号',oldRent:88000,newRent:90000,renewDate:'2026/08/31',status:'交渉中',mgr:'山田 誠',months:5},
+    {cx:'伊藤 花子',tenant:'石川 八郎',prop:'横浜グランドタワー 210号',oldRent:105000,newRent:null,renewDate:'2026/09/30',status:'未着手',mgr:'佐藤 一郎',months:6},
+  ];
+  const REPAIR = [
+    {id:'R-2026-041',prop:'横浜グランドタワー',room:'共用部EV',type:'定期点検',vendor:'三菱電機サービス',cost:'¥48,000',date:'2026/04/10',next:'2026/07/10',status:'完了',cat:'設備'},
+    {id:'R-2026-040',prop:'川崎中原アパートB',room:'201号',type:'給湯器交換',vendor:'リンナイ正規代理店',cost:'¥185,000',date:'2026/04/08',next:'—',status:'完了',cat:'緊急'},
+    {id:'R-2026-039',prop:'川崎ビジネスコート',room:'屋上',type:'防水補修',vendor:'日本防水工業',cost:'¥320,000',date:'2026/04/05',next:'2031/04/01',status:'完了',cat:'予防'},
+    {id:'R-2026-038',prop:'川崎高津アパートE',room:'外壁全体',type:'外壁塗装',vendor:'ニッペ塗装(株)',cost:'¥850,000',date:'2026/03/20',next:'2031/03/01',status:'施工中',cat:'計画'},
+    {id:'R-2026-037',prop:'横浜グランドタワー',room:'駐輪場',type:'照明LED化',vendor:'パナソニック電工',cost:'¥95,000',date:'2026/03/15',next:'—',status:'完了',cat:'改善'},
+    {id:'R-2026-036',prop:'横浜都筑アパートC',room:'103号',type:'畳・クロス交換',vendor:'大和ハウスリフォーム',cost:'¥125,000',date:'2026/03/01',next:'—',status:'完了',cat:'原状回復'},
+    {id:'R-2026-035',prop:'川崎アパートB',room:'配管全体',type:'排水管高圧洗浄',vendor:'東急ファシリティ',cost:'¥68,000',date:'2026/02/20',next:'2027/02/01',status:'完了',cat:'予防'},
+    {id:'R-2026-PL1',prop:'川崎中原アパートB',room:'屋根全体',type:'屋根修繕（予定）',vendor:'未定',cost:'¥420,000',date:'2026/06/01',next:'—',status:'計画中',cat:'計画'},
+  ];
+  const RENT = [
+    {cx:'田中 健一',tenant:'鈴木 次郎',prop:'川崎中原アパートB 305号',rent:78000,apr:'入金済',mar:'入金済',feb:'入金済',delay:0,paid:78000,status:'正常'},
+    {cx:'小林 直樹',tenant:'山田 太郎',prop:'横浜グランドタワー 801号',rent:125000,apr:'入金済',mar:'入金済',feb:'入金済',delay:0,paid:125000,status:'正常'},
+    {cx:'渡辺 隆',tenant:'高橋 四郎',prop:'川崎ビジネスコート 302号',rent:95000,apr:'未入金',mar:'入金済',feb:'入金済',delay:1,paid:0,status:'滞納'},
+    {cx:'清水 正志',tenant:'伊藤 三郎',prop:'川崎高津アパートE 201号',rent:72000,apr:'一部入金',mar:'未入金',feb:'入金済',delay:2,paid:36000,status:'要督促'},
+    {cx:'山田 美咲',tenant:'松本 五郎',prop:'川崎アパートB 102号',rent:74000,apr:'入金済',mar:'入金済',feb:'入金済',delay:0,paid:74000,status:'正常'},
+    {cx:'中村 由美',tenant:'渡辺 七郎',prop:'相鉄ライナーレジデンス 508号',rent:88000,apr:'入金済',mar:'入金済',feb:'遅延入金',delay:0,paid:88000,status:'要注意'},
+    {cx:'吉田 正雄',tenant:'木村 六郎',prop:'横浜グランドタワー 415号',rent:112000,apr:'入金済',mar:'入金済',feb:'入金済',delay:0,paid:112000,status:'正常'},
+    {cx:'伊藤 花子',tenant:'石川 八郎',prop:'横浜グランドタワー 210号',rent:105000,apr:'未入金',mar:'未入金',feb:'未入金',delay:3,paid:0,status:'長期滞納'},
+  ];
+  const OWNERS = [
+    {cx:'小林 直樹',props:6,income:'¥248万',expense:'¥32万',net:'¥216万',occ:97.6,lastRpt:'2026/03/31',nextRpt:'2026/04/30',rptStatus:'作成中'},
+    {cx:'田中 健一',props:4,income:'¥182万',expense:'¥24万',net:'¥158万',occ:94.2,lastRpt:'2026/03/31',nextRpt:'2026/04/30',rptStatus:'作成中'},
+    {cx:'山田 美咲',props:2,income:'¥86万',expense:'¥11万',net:'¥75万',occ:91.7,lastRpt:'2026/03/31',nextRpt:'2026/04/30',rptStatus:'完成'},
+    {cx:'清水 正志',props:2,income:'¥78万',expense:'¥18万',net:'¥60万',occ:88.9,lastRpt:'2026/03/31',nextRpt:'2026/04/30',rptStatus:'完成'},
+    {cx:'渡辺 隆',props:1,income:'¥57万',expense:'¥8万',net:'¥49万',occ:96.4,lastRpt:'2026/03/31',nextRpt:'2026/04/30',rptStatus:'未着手'},
+    {cx:'吉田 正雄',props:2,income:'¥124万',expense:'¥15万',net:'¥109万',occ:97.6,lastRpt:'2026/03/31',nextRpt:'2026/04/30',rptStatus:'完成'},
+  ];
+  const VENDORS = [
+    {name:'三菱電機サービス(株)',cat:'設備・EV',tel:'045-XXX-1111',orders:8,lastOrder:'2026/04/10',amount:'¥384,000',stars:5,contract:'年間保守'},
+    {name:'リンナイ正規代理店',cat:'給湯器',tel:'044-XXX-2222',orders:12,lastOrder:'2026/04/08',amount:'¥1,320,000',stars:5,contract:'スポット'},
+    {name:'日本防水工業(株)',cat:'防水・屋根',tel:'045-XXX-3333',orders:4,lastOrder:'2026/04/05',amount:'¥2,100,000',stars:4,contract:'スポット'},
+    {name:'ニッペ塗装(株)',cat:'塗装・外壁',tel:'042-XXX-4444',orders:3,lastOrder:'2026/03/20',amount:'¥1,680,000',stars:4,contract:'スポット'},
+    {name:'東急ファシリティ(株)',cat:'設備管理',tel:'045-XXX-5555',orders:18,lastOrder:'2026/02/20',amount:'¥892,000',stars:5,contract:'年間管理'},
+    {name:'大和ハウスリフォーム',cat:'リフォーム',tel:'045-XXX-6666',orders:7,lastOrder:'2026/03/01',amount:'¥2,450,000',stars:4,contract:'スポット'},
+    {name:'パナソニック電工',cat:'電気設備',tel:'044-XXX-7777',orders:5,lastOrder:'2026/03/15',amount:'¥620,000',stars:4,contract:'スポット'},
+  ];
+  const CONTRACTS = [
+    {cx:'小林 直樹',props:6,plan:'フルPM',rate:'3.0%',fee:'¥74,000/月',start:'2020/04/01',expire:'2028/03/31',cStatus:'有効',note:'24h緊急対応・年次報告書付き'},
+    {cx:'田中 健一',props:4,plan:'フルPM',rate:'3.0%',fee:'¥55,000/月',start:'2021/06/01',expire:'2027/05/31',cStatus:'有効',note:'月次報告・リーシング込み'},
+    {cx:'山田 美咲',props:2,plan:'標準PM',rate:'3.5%',fee:'¥30,000/月',start:'2022/01/01',expire:'2026/12/31',cStatus:'更新要',note:'—'},
+    {cx:'清水 正志',props:2,plan:'標準PM',rate:'3.0%',fee:'¥23,000/月',start:'2023/04/01',expire:'2027/03/31',cStatus:'有効',note:'—'},
+    {cx:'渡辺 隆',props:1,plan:'リーシングPM',rate:'4.0%',fee:'¥23,000/月',start:'2023/09/01',expire:'2027/08/31',cStatus:'有効',note:'入居者対応のみ'},
+    {cx:'吉田 正雄',props:2,plan:'フルPM',rate:'3.0%',fee:'¥34,000/月',start:'2024/01/01',expire:'2028/12/31',cStatus:'有効',note:'法律相談連携あり'},
+  ];
+  const INSPECT = [
+    {prop:'横浜グランドタワー',type:'定期巡回',date:'2026/04/12',inspector:'田中 誠',items:24,issues:1,severity:'軽微',note:'3階廊下蛍光灯1本切れ→交換依頼済み',next:'2026/05/12'},
+    {prop:'川崎中原アパートB',type:'外観点検',date:'2026/04/10',inspector:'佐藤 一郎',items:18,issues:2,severity:'中程度',note:'外壁ひび割れ2箇所確認・補修見積依頼',next:'2026/05/10'},
+    {prop:'川崎ビジネスコート',type:'設備点検',date:'2026/04/08',inspector:'山田 誠',items:32,issues:0,severity:'異常なし',note:'全設備正常動作確認',next:'2026/07/08'},
+    {prop:'川崎高津アパートE',type:'定期巡回',date:'2026/04/05',inspector:'佐藤 一郎',items:16,issues:3,severity:'要対応',note:'駐輪場鍵故障・共用灯切れ2箇所・排水詰まり疑い',next:'2026/05/05'},
+    {prop:'横浜都筑アパートC',type:'消防設備点検',date:'2026/03/28',inspector:'外部委託',items:12,issues:0,severity:'異常なし',note:'消防署提出書類作成完了',next:'2026/09/28'},
+    {prop:'横浜港北アパートA',type:'定期巡回',date:'2026/03/25',inspector:'田中 誠',items:14,issues:1,severity:'軽微',note:'ポスト錠ゆるみ→即日対応完了',next:'2026/04/25'},
+  ];
+
+  const SUB_LABELS = {renewal:'更新契約予定',repair:'修繕・メンテナンス',rent:'家賃収納管理',report:'オーナーレポート',vendor:'業者管理',contract:'PM契約管理',inspect:'巡回・点検記録'};
+  const SUB_IDS = Object.keys(SUB_LABELS);
+
+  function renderStars(n){
+    var s='';
+    for(var i=0;i<5;i++) s+='<span style="color:'+(i<n?'var(--g5)':'var(--t4)')+';">★</span>';
+    return s;
+  }
+
+  function cellCol(v){ return v==='入金済'?'var(--s-green)':v==='未入金'?'var(--s-red)':v==='一部入金'||v==='遅延入金'?'var(--s-amber)':'var(--t3)'; }
+
+  function renderRenewal(){
+    return '<div class="card anim scroll-x" style="border-color:rgba(212,170,58,.18);">'
+      +'<div class="card-header" style="background:rgba(212,170,58,.04);border-bottom-color:rgba(212,170,58,.12);">'
+      +'<div class="card-title-sm">更新契約予定リスト — 更新予定日順</div>'
+      +'<div class="flex items-c gap8"><span class="badge b-red">未確認 1件</span><span class="badge b-amber">交渉中 2件</span><span class="badge b-green">確定 3件</span>'
+      +'<button class="act act-p" style="font-size:11px;">一括通知送信</button></div></div>'
+      +'<table class="tbl"><thead><tr><th>残り</th><th>更新予定日</th><th>顧客名</th><th>入居者名</th><th>物件・号室</th><th>旧家賃</th><th>新家賃</th><th>増減</th><th>ステータス</th><th>担当</th><th>アクション</th></tr></thead><tbody>'
+      +RENEWAL.map(function(r){
+        var diff = r.newRent ? r.newRent - r.oldRent : null;
+        var sc = {交渉中:'b-amber',更新確定:'b-green',未確認:'b-red',値下交渉:'b-red',未着手:'b-gray'}[r.status]||'b-gray';
+        var uc = r.months<=2?'var(--s-red)':r.months<=4?'var(--s-amber)':'var(--t3)';
+        var bg = r.months<=2?'background:rgba(212,90,74,.04);border-left:2px solid rgba(212,90,74,.3);':'';
+        var diffStr = diff===null?'—':diff>0?'+¥'+diff.toLocaleString():diff<0?'▼¥'+Math.abs(diff).toLocaleString():'±0';
+        var diffCol = diff===null?'var(--t3)':diff>0?'var(--s-green)':diff<0?'var(--s-red)':'var(--t3)';
+        var newRentStr = r.newRent?'¥'+r.newRent.toLocaleString():'未定';
+        var newRentCol = r.newRent?(r.newRent>r.oldRent?'var(--s-green)':r.newRent<r.oldRent?'var(--s-red)':'var(--t1)'):'var(--t3)';
+        var actionBtn = r.status==='未確認'||r.status==='未着手'
+          ?'<button class="act" style="font-size:10.5px;padding:4px 9px;border-color:var(--s-red);color:var(--s-red);background:rgba(212,90,74,.08);">連絡する</button>'
+          :r.status==='交渉中'||r.status==='値下交渉'
+          ?'<button class="act act-p" style="font-size:10.5px;padding:4px 9px;">交渉記録</button>'
+          :'<button class="act act-s" style="font-size:10.5px;padding:4px 9px;">契約書作成</button>';
+        return '<tr style="'+bg+'">'
+          +'<td><span style="font-family:var(--serif);font-size:16px;font-weight:700;color:'+uc+';">'+r.months+'<span style="font-size:10px;font-weight:400;color:var(--t3);">ヶ月後</span></span></td>'
+          +'<td class="fw5" style="color:'+uc+';">'+r.renewDate+'</td>'
+          +'<td class="fw5">'+r.cx+'</td>'
+          +'<td class="tc-t2">'+r.tenant+'</td>'
+          +'<td class="fs12">'+r.prop+'</td>'
+          +'<td class="fw5">¥'+r.oldRent.toLocaleString()+'</td>'
+          +'<td class="fw5" style="color:'+newRentCol+';">'+newRentStr+'</td>'
+          +'<td class="fw5 fs12" style="color:'+diffCol+';">'+diffStr+'</td>'
+          +'<td><span class="badge '+sc+'">'+r.status+'</span></td>'
+          +'<td class="fs12 tc-t2">'+r.mgr+'</td>'
+          +'<td>'+actionBtn+'</td>'
+          +'</tr>';
+      }).join('')
+      +'</tbody></table></div>';
+  }
+
+  function renderRepair(){
+    return '<div class="g4 mb14 anim"><div class="metric"><div class="metric-label">今年度工事件数</div><div class="metric-value">8<span class="metric-unit">件</span></div></div>'
+      +'<div class="metric"><div class="metric-label">工事費合計</div><div class="metric-value" style="font-size:18px;">¥211<span class="metric-unit">万</span></div></div>'
+      +'<div class="metric"><div class="metric-label">計画中</div><div class="metric-value tc-amber">2<span class="metric-unit">件</span></div></div>'
+      +'<div class="metric"><div class="metric-label">緊急対応</div><div class="metric-value tc-red">1<span class="metric-unit">件</span></div></div></div>'
+      +'<div class="card scroll-x anim anim-d1"><div class="card-header"><div class="card-title-sm">工事履歴・予防保全管理</div>'
+      +'<button class="act act-p" style="font-size:11px;">＋ 工事登録</button></div>'
+      +'<table class="tbl"><thead><tr><th>工事番号</th><th>物件名</th><th>対象箇所</th><th>工事種別</th><th>カテゴリ</th><th>施工業者</th><th>費用</th><th>施工日</th><th>次回予定</th><th>状態</th></tr></thead><tbody>'
+      +REPAIR.map(function(r){
+        var catCls = {緊急:'b-red',予防:'b-green',計画:'b-blue',改善:'b-vip',設備:'b-amber',原状回復:'b-gray'}[r.cat]||'b-gray';
+        var stCol = {完了:'var(--t3)',施工中:'var(--s-blue)',計画中:'var(--s-amber)'}[r.status]||'var(--t3)';
+        var bg = r.cat==='緊急'?'background:rgba(212,90,74,.04);':'';
+        return '<tr style="'+bg+'">'
+          +'<td class="mono fs11 tc-t3">'+r.id+'</td>'
+          +'<td class="fw5">'+r.prop+'</td>'
+          +'<td class="tc-t2 fs12">'+r.room+'</td>'
+          +'<td class="fw5">'+r.type+'</td>'
+          +'<td><span class="badge '+catCls+'">'+r.cat+'</span></td>'
+          +'<td class="fs12 tc-t2">'+r.vendor+'</td>'
+          +'<td class="fw5 tc-amber">'+r.cost+'</td>'
+          +'<td class="fs11 tc-t3">'+r.date+'</td>'
+          +'<td class="fs11" style="color:'+(r.next==='—'?'var(--t3)':'var(--s-blue)')+';">'+r.next+'</td>'
+          +'<td><div class="flex items-c gap6">'+mkDot(stCol)+'<span class="fs12">'+r.status+'</span></div></td>'
+          +'</tr>';
+      }).join('')+'</tbody></table></div>';
+  }
+
+  function renderRent(){
+    var totalRent = RENT.reduce(function(s,r){return s+r.rent;},0);
+    var totalPaid = RENT.reduce(function(s,r){return s+r.paid;},0);
+    var totalLoss = totalRent - totalPaid;
+    var delinquent = RENT.filter(function(r){return r.status!=='正常'&&r.status!=='要注意';}).length;
+    return '<div class="g4 mb14 anim">'
+      +'<div class="metric"><div class="metric-label">今月徴収予定</div><div class="metric-value" style="font-size:18px;">¥'+totalRent.toLocaleString()+'</div></div>'
+      +'<div class="metric"><div class="metric-label">入金済</div><div class="metric-value tc-green" style="font-size:18px;">¥'+totalPaid.toLocaleString()+'</div></div>'
+      +'<div class="metric"><div class="metric-label">滞納額</div><div class="metric-value tc-red" style="font-size:18px;">¥'+totalLoss.toLocaleString()+'</div></div>'
+      +'<div class="metric"><div class="metric-label">要督促件数</div><div class="metric-value tc-red">'+delinquent+'<span class="metric-unit">件</span></div></div></div>'
+      +'<div class="card scroll-x mb14 anim anim-d1" style="border-color:rgba(212,90,74,.15);">'
+      +'<div class="card-header" style="background:rgba(212,90,74,.04);border-bottom-color:rgba(212,90,74,.12);">'
+      +'<div class="flex items-c gap8"><svg width="13" height="13" fill="none" stroke="var(--s-red)" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+      +'<div class="card-title-sm" style="color:var(--s-red);">滞納・入金状況一覧</div></div>'
+      +'<button class="act" style="font-size:11px;border-color:var(--s-red);color:var(--s-red);background:rgba(212,90,74,.08);padding:4px 12px;">督促状一括送付</button></div>'
+      +'<table class="tbl"><thead><tr><th>顧客名</th><th>入居者名</th><th>物件・号室</th><th>月額家賃</th><th>4月</th><th>3月</th><th>2月</th><th>滞納月数</th><th>未収額</th><th>状態</th><th>アクション</th></tr></thead><tbody>'
+      +RENT.map(function(r){
+        var sc = {正常:'b-green',要注意:'b-amber',滞納:'b-red',要督促:'b-amber',長期滞納:'b-red'}[r.status]||'b-gray';
+        var stCol = {正常:'var(--s-green)',要注意:'var(--s-amber)',滞納:'var(--s-red)',要督促:'var(--s-amber)',長期滞納:'var(--s-red)'}[r.status]||'var(--t3)';
+        var bg = r.status==='長期滞納'||r.status==='滞納'?'background:rgba(212,90,74,.05);border-left:2px solid rgba(212,90,74,.4);':'';
+        var loss = r.rent - r.paid;
+        var btn = r.status!=='正常'
+          ?'<button class="act" style="font-size:10.5px;padding:4px 9px;border-color:'+stCol+';color:'+stCol+';background:'+stCol+'18;">督促送付</button>'
+          :'<span class="fs11 tc-t3">—</span>';
+        return '<tr style="'+bg+'">'
+          +'<td class="fw5">'+r.cx+'</td>'
+          +'<td class="tc-t2">'+r.tenant+'</td>'
+          +'<td class="fs12">'+r.prop+'</td>'
+          +'<td class="fw5">¥'+r.rent.toLocaleString()+'</td>'
+          +'<td class="fw5" style="color:'+cellCol(r.apr)+';">'+r.apr+'</td>'
+          +'<td class="fw5" style="color:'+cellCol(r.mar)+';">'+r.mar+'</td>'
+          +'<td class="fw5" style="color:'+cellCol(r.feb)+';">'+r.feb+'</td>'
+          +'<td class="fw5" style="color:'+(r.delay>0?'var(--s-red)':'var(--t3)')+';font-family:var(--serif);font-size:16px;">'+(r.delay>0?r.delay+'ヶ月':'—')+'</td>'
+          +'<td class="fw5" style="color:'+(loss>0?'var(--s-red)':'var(--s-green)')+';">¥'+loss.toLocaleString()+'</td>'
+          +'<td><span class="badge '+sc+'">'+r.status+'</span></td>'
+          +'<td>'+btn+'</td>'
+          +'</tr>';
+      }).join('')+'</tbody></table></div>';
+  }
+
+  function renderReport(){
+    return '<div class="g4 mb14 anim">'
+      +'<div class="metric"><div class="metric-label">月次報告対象</div><div class="metric-value">'+OWNERS.length+'<span class="metric-unit">名</span></div></div>'
+      +'<div class="metric"><div class="metric-label">作成完了</div><div class="metric-value tc-green">3<span class="metric-unit">件</span></div></div>'
+      +'<div class="metric"><div class="metric-label">作成中</div><div class="metric-value tc-amber">2<span class="metric-unit">件</span></div></div>'
+      +'<div class="metric"><div class="metric-label">未着手</div><div class="metric-value tc-red">1<span class="metric-unit">件</span></div></div></div>'
+      +'<div class="card scroll-x anim anim-d1"><div class="card-header"><div class="card-title-sm">オーナーレポート管理（2026年4月）</div>'
+      +'<button class="act act-p" style="font-size:11px;">一括PDF出力</button></div>'
+      +'<table class="tbl"><thead><tr><th>顧客名</th><th>管理棟数</th><th>今月収入</th><th>今月経費</th><th>手取り収益</th><th>稼働率</th><th>前回報告</th><th>次回報告</th><th>状態</th><th></th></tr></thead><tbody>'
+      +OWNERS.map(function(r){
+        var sc = {完成:'b-green',作成中:'b-amber',未着手:'b-red'}[r.rptStatus]||'b-gray';
+        var occCol = r.occ>=95?'var(--s-green)':r.occ>=90?'var(--s-amber)':'var(--s-red)';
+        var btn = r.rptStatus==='完成'
+          ?'<button class="act act-s" style="font-size:10.5px;padding:4px 9px;">送付する</button>'
+          :r.rptStatus==='作成中'
+          ?'<button class="act act-p" style="font-size:10.5px;padding:4px 9px;">編集</button>'
+          :'<button class="act" style="font-size:10.5px;padding:4px 9px;border-color:var(--s-red);color:var(--s-red);background:rgba(212,90,74,.08);">作成開始</button>';
+        return '<tr>'
+          +'<td class="fw5">'+r.cx+'</td>'
+          +'<td class="fw5">'+r.props+'棟</td>'
+          +'<td class="fw5 tc-green">'+r.income+'</td>'
+          +'<td class="fw5 tc-red">'+r.expense+'</td>'
+          +'<td class="fw5 tc-g" style="font-family:var(--serif);font-size:15px;">'+r.net+'</td>'
+          +'<td><div class="flex items-c gap8">'+pbar(r.occ,occCol)+'<span class="fs11">'+r.occ+'%</span></div></td>'
+          +'<td class="fs11 tc-t3">'+r.lastRpt+'</td>'
+          +'<td class="fs11 tc-t3">'+r.nextRpt+'</td>'
+          +'<td><span class="badge '+sc+'">'+r.rptStatus+'</span></td>'
+          +'<td>'+btn+'</td>'
+          +'</tr>';
+      }).join('')+'</tbody></table></div>';
+  }
+
+  function renderVendor(){
+    return '<div class="g4 mb14 anim">'
+      +'<div class="metric"><div class="metric-label">提携業者数</div><div class="metric-value">'+VENDORS.length+'<span class="metric-unit">社</span></div></div>'
+      +'<div class="metric"><div class="metric-label">今年度発注総額</div><div class="metric-value" style="font-size:18px;">¥744<span class="metric-unit">万</span></div></div>'
+      +'<div class="metric"><div class="metric-label">年間保守契約</div><div class="metric-value">2<span class="metric-unit">社</span></div></div>'
+      +'<div class="metric"><div class="metric-label">今月発注件数</div><div class="metric-value">4<span class="metric-unit">件</span></div></div></div>'
+      +'<div class="card scroll-x anim anim-d1"><div class="card-header"><div class="card-title-sm">提携業者一覧・発注履歴</div>'
+      +'<button class="act act-p" style="font-size:11px;">＋ 業者登録</button></div>'
+      +'<table class="tbl"><thead><tr><th>業者名</th><th>カテゴリ</th><th>連絡先</th><th>年間発注数</th><th>直近発注</th><th>累計発注額</th><th>評価</th><th>契約形態</th><th></th></tr></thead><tbody>'
+      +VENDORS.map(function(r){
+        var conCls = r.contract.indexOf('年間')>=0?'b-green':'b-gray';
+        return '<tr>'
+          +'<td class="fw5">'+r.name+'</td>'
+          +'<td><span class="badge b-gray">'+r.cat+'</span></td>'
+          +'<td class="mono fs11 tc-t2">'+r.tel+'</td>'
+          +'<td class="fw5">'+r.orders+'件</td>'
+          +'<td class="fs11 tc-t3">'+r.lastOrder+'</td>'
+          +'<td class="fw5 tc-amber">'+r.amount+'</td>'
+          +'<td><div class="flex items-c" style="gap:1px;">'+renderStars(r.stars)+'</div></td>'
+          +'<td><span class="badge '+conCls+'">'+r.contract+'</span></td>'
+          +'<td><button class="act act-s" style="font-size:10.5px;padding:4px 9px;">発注</button></td>'
+          +'</tr>';
+      }).join('')+'</tbody></table></div>';
+  }
+
+  function renderContract(){
+    return '<div class="g4 mb14 anim">'
+      +'<div class="metric"><div class="metric-label">PM契約件数</div><div class="metric-value">'+CONTRACTS.length+'<span class="metric-unit">件</span></div></div>'
+      +'<div class="metric"><div class="metric-label">月額手数料計</div><div class="metric-value" style="font-size:18px;">¥239<span class="metric-unit">万</span></div></div>'
+      +'<div class="metric"><div class="metric-label">更新要</div><div class="metric-value tc-amber">1<span class="metric-unit">件</span></div></div>'
+      +'<div class="metric"><div class="metric-label">フルPMプラン</div><div class="metric-value">3<span class="metric-unit">件</span></div></div></div>'
+      +'<div class="card scroll-x anim anim-d1"><div class="card-header"><div class="card-title-sm">PM契約条件・手数料一覧</div>'
+      +'<button class="act act-p" style="font-size:11px;">＋ 新規契約</button></div>'
+      +'<table class="tbl"><thead><tr><th>顧客名</th><th>管理棟数</th><th>プラン</th><th>PM手数料率</th><th>月額手数料</th><th>契約開始</th><th>契約満了</th><th>特記事項</th><th>状態</th><th></th></tr></thead><tbody>'
+      +CONTRACTS.map(function(r){
+        var sc = {有効:'b-green',更新要:'b-amber'}[r.cStatus]||'b-gray';
+        var bg = r.cStatus==='更新要'?'background:rgba(200,146,42,.04);border-left:2px solid rgba(200,146,42,.4);':'';
+        var expCol = r.cStatus==='更新要'?'var(--s-amber)':'var(--t3)';
+        var btn = r.cStatus==='更新要'
+          ?'<button class="act" style="font-size:10.5px;padding:4px 9px;border-color:var(--s-amber);color:var(--s-amber);background:rgba(200,146,42,.08);">更新手続き</button>'
+          :'<button class="act act-s" style="font-size:10.5px;padding:4px 9px;">閲覧</button>';
+        return '<tr style="'+bg+'">'
+          +'<td class="fw5">'+r.cx+'</td>'
+          +'<td class="fw5">'+r.props+'棟</td>'
+          +'<td><span class="badge b-blue">'+r.plan+'</span></td>'
+          +'<td class="fw5 tc-g" style="font-family:var(--serif);font-size:15px;">'+r.rate+'</td>'
+          +'<td class="fw5 tc-amber">'+r.fee+'</td>'
+          +'<td class="fs11 tc-t3">'+r.start+'</td>'
+          +'<td class="fs11" style="color:'+expCol+';">'+r.expire+'</td>'
+          +'<td class="fs11 tc-t2" style="max-width:150px;">'+r.note+'</td>'
+          +'<td><span class="badge '+sc+'">'+r.cStatus+'</span></td>'
+          +'<td>'+btn+'</td>'
+          +'</tr>';
+      }).join('')+'</tbody></table></div>';
+  }
+
+  function renderInspect(){
+    return '<div class="g4 mb14 anim">'
+      +'<div class="metric"><div class="metric-label">今月点検件数</div><div class="metric-value">'+INSPECT.length+'<span class="metric-unit">件</span></div></div>'
+      +'<div class="metric"><div class="metric-label">異常検出</div><div class="metric-value tc-red">2<span class="metric-unit">件</span></div></div>'
+      +'<div class="metric"><div class="metric-label">軽微問題</div><div class="metric-value tc-amber">2<span class="metric-unit">件</span></div></div>'
+      +'<div class="metric"><div class="metric-label">正常</div><div class="metric-value tc-green">2<span class="metric-unit">件</span></div></div></div>'
+      +'<div class="card scroll-x anim anim-d1"><div class="card-header"><div class="card-title-sm">巡回・点検記録</div>'
+      +'<button class="act act-p" style="font-size:11px;">＋ 点検記録追加</button></div>'
+      +'<table class="tbl"><thead><tr><th>物件名</th><th>点検種別</th><th>点検日</th><th>担当者</th><th>点検項目数</th><th>問題件数</th><th>重要度</th><th>特記事項</th><th>次回予定</th><th></th></tr></thead><tbody>'
+      +INSPECT.map(function(r){
+        var sc = {異常なし:'b-green',軽微:'b-amber',中程度:'b-red',要対応:'b-red'}[r.severity]||'b-gray';
+        var issueCol = r.issues>0?'var(--s-red)':'var(--s-green)';
+        var bg = r.severity==='要対応'||r.severity==='中程度'?'background:rgba(212,90,74,.04);border-left:2px solid rgba(212,90,74,.3);':'';
+        return '<tr style="'+bg+'">'
+          +'<td class="fw5">'+r.prop+'</td>'
+          +'<td><span class="badge b-gray">'+r.type+'</span></td>'
+          +'<td class="fs11 tc-t3">'+r.date+'</td>'
+          +'<td class="fs12 tc-t2">'+r.inspector+'</td>'
+          +'<td class="fw5">'+r.items+'項目</td>'
+          +'<td class="fw5" style="color:'+issueCol+';">'+r.issues+'件</td>'
+          +'<td><span class="badge '+sc+'">'+r.severity+'</span></td>'
+          +'<td class="fs11 tc-t2" style="max-width:180px;">'+r.note+'</td>'
+          +'<td class="fs11 tc-t3">'+r.next+'</td>'
+          +'<td><button class="act act-s" style="font-size:10.5px;padding:4px 9px;">詳細</button></td>'
+          +'</tr>';
+      }).join('')+'</tbody></table></div>';
+  }
+
+  function renderSubContent(tab){
+    if(tab==='renewal') return renderRenewal();
+    if(tab==='repair')  return renderRepair();
+    if(tab==='rent')    return renderRent();
+    if(tab==='report')  return renderReport();
+    if(tab==='vendor')  return renderVendor();
+    if(tab==='contract')return renderContract();
+    if(tab==='inspect') return renderInspect();
+    return '';
+  }
+
+  window.switchPMTab = function(tab){
+    window._pmTab = tab;
+    document.querySelectorAll('.pm-itab').forEach(function(el){
+      el.classList.toggle('on', el.dataset.tab===tab);
+    });
+    document.getElementById('pm-subcontent').innerHTML = renderSubContent(tab);
+  };
+
+  document.getElementById('content').innerHTML =
+    '<div class="g4 mb16 anim">'
+    +'<div class="metric"><div class="metric-label">PM契約オーナー数</div><div class="metric-value">6<span class="metric-unit">名</span></div></div>'
+    +'<div class="metric"><div class="metric-label">管理総棟数</div><div class="metric-value">17<span class="metric-unit">棟</span></div></div>'
+    +'<div class="metric"><div class="metric-label">月額手数料計</div><div class="metric-value metric-gold" style="font-size:20px;">¥239<span class="metric-unit">万</span></div></div>'
+    +'<div class="metric"><div class="metric-label">要対応タスク</div><div class="metric-value tc-red">8<span class="metric-unit">件</span></div><div class="metric-sub metric-down">滞納2・修繕3・更新3</div></div></div>'
+    +'<div class="card mb16 anim anim-d1"><div class="card-header" style="padding:10px 16px;">'
+    +'<div class="flex items-c gap6 w100" style="overflow-x:auto;padding-bottom:2px;">'
+    +SUB_IDS.map(function(id){return '<button class="itab pm-itab'+(pmTab===id?' on':'')+'" data-tab="'+id+'" onclick="switchPMTab(\''+id+'\')">'+SUB_LABELS[id]+'</button>';}).join('')
+    +'</div></div></div>'
+    +'<div id="pm-subcontent">'+renderSubContent(pmTab)+'</div>';
+},
+
+
+assets(){
+  const c=selCx;
+  document.getElementById('content').innerHTML=`
+<div class="flex items-c gap10 mb14 anim">
+  <span class="badge b-gray">対象: ${c.name} (${c.id})</span>
+  <button class="act act-s fs11" onclick="goto('customers')">顧客変更</button>
+</div>
+<div class="g2 mb16 anim anim-d1">
+  <div class="card card-body">
+    <div class="card-title">金融資産内訳</div>
+    <div style="position:relative;width:160px;height:160px;margin:0 auto 14px;">
+      <canvas id="assetPie"></canvas>
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div style="font-family:var(--serif);font-size:13px;font-weight:700;">¥${c.assets}<span style="font-size:10px;color:var(--t3);">万</span></div>
+        <div class="fs10 tc-t3">総資産</div>
+      </div>
+    </div>
+    ${[['不動産',72,'#d4aa3a'],['預貯金',13,'#3a7abd'],['株式・投信',10,'#c8922a'],['保険',4,'#2a9d6e'],['その他',1,'#6b7280']].map(a=>`
+    <div class="flex items-c gap8 mb8">
+      ${mkDot(a[2])}
+      <span class="fs12 tc-t2" style="flex:1;">${a[0]}</span>
+      <span class="fs12 fw5">${a[1]}%</span>
+      ${pbar(a[1],a[2])}
+    </div>`).join('')}
+  </div>
+  <div class="card card-body">
+    <div class="card-title">収入・負債サマリー</div>
+    <div class="fs11 fw6 tc-t3 mb8" style="letter-spacing:.8px;text-transform:uppercase;">収入</div>
+    ${[['給与・事業収入','¥3,200万/年','tc-green'],['不動産収入','¥920万/年','tc-green'],['配当・分配金','¥148万/年','tc-green'],['総収入','¥4,268万/年','tc-g']].map(([k,v,cl])=>`<div class="kv"><span class="kk">${k}</span><span class="kvv ${cl}">${v}</span></div>`).join('')}
+    <div class="gold-divider"></div>
+    <div class="fs11 fw6 tc-t3 mb8" style="letter-spacing:.8px;text-transform:uppercase;">負債</div>
+    ${[['住宅ローン残高','¥1,850万','tc-red'],['投資ローン残高','¥4,200万','tc-red'],['月間返済額','¥38.5万','tc-amber'],['返済比率','14.4%','']].map(([k,v,cl])=>`<div class="kv"><span class="kk">${k}</span><span class="kvv ${cl}">${v}</span></div>`).join('')}
+  </div>
+</div>
+<div class="card card-body mb16 anim anim-d2">
+  <div class="card-title">投資シミュレーション（複利 5.8%/年）</div>
+  <div class="flex gap12 mb12" style="flex-wrap:wrap;">
+    ${[['現在','¥8,600万',''],['5年後','¥11,408万','tc-g'],['10年後','¥15,198万','tc-g'],['20年後','¥26,975万','tc-g']].map(([l,v,cl])=>`<div><div class="fs10 tc-t3 mb8">${l}</div><div style="font-family:var(--serif);font-size:16px;font-weight:700;" class="${cl}">${v}</div></div>`).join('')}
+  </div>
+  <div class="ch-wrap" style="height:170px;"><canvas id="simChart"></canvas></div>
+</div>
+<div class="card card-body anim anim-d3">
+  <div class="card-title">節税・税務情報</div>
+  <div class="g3" style="gap:10px;">
+    ${[['所得税率','33%','tc-red'],['不動産減価償却','¥180万/年','tc-g'],['節税効果','¥59万/年','tc-green'],['法人活用','資産管理会社','tc-blue'],['相続税試算','¥4,200万','tc-amber'],['対策余地','¥1,800万削減可','tc-green']].map(([k,v,cl])=>`<div class="metric"><div class="metric-label">${k}</div><div class="${cl}" style="font-family:var(--serif);font-size:15px;font-weight:700;margin-top:4px;">${v}</div></div>`).join('')}
+  </div>
+</div>`;
+  setTimeout(()=>{
+    initCh('assetPie',{type:'doughnut',data:{labels:['不動産','預貯金','株式・投信','保険','その他'],datasets:[{data:[72,13,10,4,1],backgroundColor:['#d4aa3a','#3a7abd','#c8922a','#2a9d6e','#6b7280'],borderWidth:2,borderColor:'rgba(6,14,26,.9)'}]},options:{cutout:'64%',plugins:{legend:{display:false}},animation:{duration:600}}});
+    const yrs=Array.from({length:21},(_,i)=>i);
+    const vals=yrs.map(y=>Math.round(8600*Math.pow(1.058,y)));
+    initCh('simChart',{type:'line',data:{labels:yrs.map(y=>y===0?'現在':y+'年後'),datasets:[{data:vals,borderColor:'#d4aa3a',backgroundColor:'rgba(212,170,58,.06)',fill:true,tension:0.3,pointRadius:2,pointBackgroundColor:'#d4aa3a'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>Math.round(v/10000)+'億',font:{size:10}},grid:{color:'rgba(212,170,58,.06)'}},x:{ticks:{font:{size:9},maxTicksLimit:11},grid:{display:false}}}}});
+  },60);
+},
+
+services(){
+  document.getElementById('content').innerHTML=`
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">契約中</div><div class="metric-value">4<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">提案中</div><div class="metric-value">3<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">未提案機会</div><div class="metric-value tc-amber">4<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">年間売上</div><div class="metric-value metric-gold" style="font-size:20px;">¥1,737<span class="metric-unit">万</span></div></div>
+</div>
+<div class="card scroll-x anim anim-d1">
+  <div class="card-header">
+    <div class="card-title-sm">提案可能サービス一覧（${selCx.name}）</div>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>カテゴリ</th><th>サービス名</th><th>説明</th><th>ステータス</th><th>年間売上</th><th>担当</th><th></th></tr></thead>
+    <tbody>
+    ${[
+      ['不動産','投資アパートFA','新築・中古アパート紹介','契約中','¥320万','佐藤'],
+      ['不動産','投資マンションFC','RC・SRCマンション紹介','契約中','¥680万','山田'],
+      ['不動産','賃貸併用住宅AR','自宅兼賃貸設計','提案中','—','田中'],
+      ['金融','不動産CF','クラウドファンディング','利用中','¥42万','佐藤'],
+      ['金融','金融二種商品','私募REIT・ファンド','利用中','¥95万','田中'],
+      ['金融','投資信託','国内外ファンド','未提案','—','—'],
+      ['金融','保険','生命・損害保険','提案中','—','佐藤'],
+      ['管理','賃貸管理PM','プロパティマネジメント','契約中','¥420万','田中'],
+      ['管理','リフォーム提案','物件バリューアップ','受注済','¥180万','山田'],
+      ['相談','家族信託','信託スキーム設計','相談中','—','山田'],
+      ['相談','相続相談','相続対策プランニング','未提案','—','—'],
+    ].map(r=>{
+      const dc={契約中:'var(--s-green)',利用中:'var(--s-blue)',提案中:'var(--s-amber)',相談中:'var(--g5)',受注済:'var(--s-green)',未提案:'var(--t3)'}[r[3]];
+      return `<tr>
+        <td><span class="badge b-gray">${r[0]}</span></td>
+        <td class="fw5">${r[1]}</td>
+        <td class="fs11 tc-t3">${r[2]}</td>
+        <td><div class="flex items-c gap6">${mkDot(dc)}<span class="fs12">${r[3]}</span></div></td>
+        <td class="fw5" style="color:${r[4]==='—'?'var(--t3)':'var(--t1)'};">${r[4]}</td>
+        <td class="fs12 tc-t2">${r[5]}</td>
+        <td>${r[3]==='未提案'?`<button class="act act-p fs11" style="padding:4px 10px;">提案する</button>`:r[3]==='提案中'?`<button class="act act-s fs11" style="padding:4px 10px;">フォロー</button>`:`<span class="fs11 tc-t3">—</span>`}</td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>
+</div>`;
+},
+
+prospects(){
+  document.getElementById('content').innerHTML=`
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">見込み顧客総数</div><div class="metric-value">156<span class="metric-unit">名</span></div></div>
+  <div class="metric"><div class="metric-label">今月新規リード</div><div class="metric-value">24<span class="metric-unit">名</span></div><div class="metric-sub metric-up">↑ 前月+8名</div></div>
+  <div class="metric"><div class="metric-label">ナーチャリング中</div><div class="metric-value">89<span class="metric-unit">名</span></div></div>
+  <div class="metric"><div class="metric-label">商談化率</div><div class="metric-value metric-gold">18.3<span class="metric-unit">%</span></div><div class="metric-sub metric-up">↑ +2.1pt</div></div>
+</div>
+<div class="g2 mb16 anim anim-d1">
+  <div class="card card-body">
+    <div class="card-title">リードファネル</div>
+    ${[['リード獲得',156],['初回接触',98],['資料送付',67],['面談実施',34],['提案中',19],['商談/成約',8]].map((f,i,arr)=>`
+    <div class="funnel-row">
+      <div class="funnel-label">${f[0]}</div>
+      <div style="flex:1;height:20px;border-radius:4px;background:rgba(212,170,58,${.05+i*.02});border:1px solid rgba(212,170,58,${.1+i*.04});display:flex;align-items:center;padding:0 10px;width:${Math.round(f[1]/arr[0][1]*100)}%;">
+        <span style="font-size:11px;font-weight:600;color:rgba(212,170,58,${.5+i*.1});">${f[1]}名</span>
+      </div>
+      ${i>0?`<span class="fs10 tc-t3" style="min-width:36px;text-align:right;">${Math.round(f[1]/arr[i-1][1]*100)}%</span>`:''}
+    </div>`).join('')}
+  </div>
+  <div class="card card-body">
+    <div class="card-title">MAシナリオ</div>
+    ${[
+      ['投資アパート検討者向け','32名','週1配信','稼働中','var(--s-green)'],
+      ['マンション購入検討者','28名','隔週配信','稼働中','var(--s-green)'],
+      ['相続・節税ニーズ層','21名','月2回配信','稼働中','var(--s-green)'],
+      ['CF興味ありリスト','18名','月1配信','一時停止','var(--s-amber)'],
+      ['新規リード育成','43名','週2配信','設定中','var(--s-blue)'],
+    ].map(m=>`<div class="flex items-c gap10 mb8">
+      <div style="flex:1;">
+        <div class="fs13 fw5">${m[0]}</div>
+        <div class="fs11 tc-t3">${m[1]} · ${m[2]}</div>
+      </div>
+      <div class="flex items-c gap6">${mkDot(m[4])}<span class="fs12">${m[3]}</span></div>
+      <button class="act act-s fs11" style="padding:3px 8px;">編集</button>
+    </div>`).join('')}
+    <button class="act act-p" style="margin-top:8px;font-size:11.5px;width:100%;">＋ シナリオ追加</button>
+  </div>
+</div>`;
+},
+
+contact(){
+  document.getElementById('content').innerHTML=`
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">今月コンタクト</div><div class="metric-value">38<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">訪問</div><div class="metric-value">14<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">電話</div><div class="metric-value">16<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">メール</div><div class="metric-value">8<span class="metric-unit">件</span></div></div>
+</div>
+<div class="g2 mb16 anim anim-d1">
+  <div class="card card-body">
+    <div class="card-title">担当者別件数</div>
+    <div class="ch-wrap" style="height:150px;"><canvas id="contBar"></canvas></div>
+  </div>
+  <div class="card card-body">
+    <div class="card-title">種別内訳</div>
+    <div class="ch-wrap" style="height:150px;"><canvas id="contPie"></canvas></div>
+  </div>
+</div>
+<div class="card card-body anim anim-d2">
+  <div class="flex items-c j-bw mb14">
+    <div class="card-title" style="margin:0;">社員別コンタクト履歴</div>
+    <button class="act act-p fs11">＋ 記録追加</button>
+  </div>
+  ${[
+    {m:'佐藤 一郎',d:'2026/04/10',t:'訪問',cx:'田中 健一',n:'投資アパート追加購入の面談。横浜市内で2棟追加の意向あり。次回5月に物件提案予定。',r:'次回提案',c:'var(--g5)'},
+    {m:'山田 誠',d:'2026/04/10',t:'電話',cx:'小林 直樹',n:'相続対策スキームについて電話相談。家族信託設立に前向き。弁護士連携確認。',r:'相談継続',c:'var(--s-blue)'},
+    {m:'田中 誠',d:'2026/04/09',t:'訪問',cx:'山田 美咲',n:'運用中マンションの賃貸状況報告。302号室空室対応の打ち合わせ。',r:'対応中',c:'var(--g5)'},
+    {m:'佐藤 一郎',d:'2026/04/07',t:'メール',cx:'伊藤 花子',n:'CF新案件の概要資料送付。東京都心レジデンス5号への追加出資打診。',r:'返信待ち',c:'var(--s-green)'},
+    {m:'田中 誠',d:'2026/04/05',t:'訪問',cx:'吉田 正雄',n:'金融二種商品の運用報告。私募REIT評価額説明。追加投資に前向き。',r:'検討中',c:'var(--g5)'},
+  ].map((h,i,arr)=>`<div class="tl-item">
+    <div class="tl-dot-wrap">
+      <div class="tl-dot2" style="background:${h.c};"></div>
+      ${i<arr.length-1?`<div class="tl-line"></div>`:''}
+    </div>
+    <div class="tl-content">
+      <div class="tl-hdr">
+        <div class="flex items-c gap8">
+          <span class="tl-title">${h.m}</span>
+          <span class="badge ${h.t==='訪問'?'b-vip':h.t==='電話'?'b-blue':'b-green'}">${h.t}</span>
+          <span class="fs11 tc-t3">→ ${h.cx}</span>
+        </div>
+        <span class="tl-date">${h.d}</span>
+      </div>
+      <div class="tl-body mb8">${h.n}</div>
+      <span class="badge b-gray">${h.r}</span>
+    </div>
+  </div>`).join('')}
+</div>`;
+  setTimeout(()=>{
+    const gold='rgba(212,170,58,';
+    initCh('contBar',{type:'bar',data:{labels:['佐藤 一郎','田中 誠','山田 誠'],datasets:[{label:'訪問',data:[6,5,3],backgroundColor:gold+'.7)',borderRadius:3},{label:'電話',data:[5,6,5],backgroundColor:'rgba(58,122,189,.7)',borderRadius:3},{label:'メール',data:[3,2,3],backgroundColor:'rgba(42,157,110,.7)',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10}}},y:{stacked:true,grid:{color:'rgba(212,170,58,.06)'},ticks:{font:{size:10}}}}}});
+    initCh('contPie',{type:'doughnut',data:{labels:['訪問','電話','メール'],datasets:[{data:[14,16,8],backgroundColor:['rgba(212,170,58,.8)','rgba(58,122,189,.8)','rgba(42,157,110,.8)'],borderWidth:2,borderColor:'rgba(6,14,26,.9)'}]},options:{cutout:'55%',plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:10}}}}}});
+  },60);
+},
+
+callcenter(){
+  document.getElementById('content').innerHTML=`
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">今月受電</div><div class="metric-value">124<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">今月発信</div><div class="metric-value">87<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">平均通話時間</div><div class="metric-value">4.2<span class="metric-unit">分</span></div></div>
+  <div class="metric"><div class="metric-label">解決率</div><div class="metric-value metric-gold">91.4<span class="metric-unit">%</span></div></div>
+</div>
+<div class="card scroll-x anim anim-d1">
+  <div class="card-header"><div class="card-title-sm">通話履歴</div></div>
+  <table class="tbl">
+    <thead><tr><th>日時</th><th>種別</th><th>顧客名</th><th>オペレーター</th><th>内容</th><th>通話時間</th><th>結果</th></tr></thead>
+    <tbody>
+    ${[
+      ['2026/04/12 14:23','受電','田中 健一','CC 鈴木','物件紹介希望。横浜北部エリアアパート希望。担当FAへ転送。','7分12秒','転送完了'],
+      ['2026/04/12 11:08','受電','渡辺 隆','CC 加藤','入居者からの水漏れ連絡。緊急修繕手配。','3分45秒','修繕手配'],
+      ['2026/04/11 16:35','発信','山田 美咲','CC 田村','新案件セミナー案内。出席確認。','2分18秒','出席確定'],
+      ['2026/04/11 10:12','受電','伊藤 花子','CC 鈴木','CF案件問い合わせ。資料送付依頼。','4分50秒','資料送付'],
+      ['2026/04/10 15:44','発信','小林 直樹','CC 加藤','家族信託セミナー案内。秘書経由で伝達確認。','1分20秒','伝達完了'],
+    ].map(r=>`<tr>
+      <td class="fs11 tc-t3">${r[0]}</td>
+      <td><span class="badge ${r[1]==='受電'?'b-blue':'b-vip'}">${r[1]}</span></td>
+      <td class="fw5">${r[2]}</td>
+      <td class="fs12">${r[3]}</td>
+      <td class="fs11 tc-t2" style="max-width:180px;">${r[4]}</td>
+      <td class="mono fs11">${r[5]}</td>
+      <td><span class="badge b-green">${r[6]}</span></td>
+    </tr>`).join('')}
+    </tbody>
+  </table>
+</div>`;
+},
+
+reform(){
+  document.getElementById('content').innerHTML=`
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">今年度提案</div><div class="metric-value">18<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">受注件数</div><div class="metric-value">11<span class="metric-unit">件</span></div><div class="metric-sub">受注率 61.1%</div></div>
+  <div class="metric"><div class="metric-label">受注売上計</div><div class="metric-value metric-gold" style="font-size:20px;">¥2,380<span class="metric-unit">万</span></div></div>
+  <div class="metric"><div class="metric-label">減価償却活用</div><div class="metric-value">4<span class="metric-unit">件</span></div></div>
+</div>
+<div class="card scroll-x anim anim-d1">
+  <div class="card-header">
+    <div class="card-title-sm">リフォーム提案・受注履歴</div>
+    <button class="act act-p">＋ 提案登録</button>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>物件名</th><th>工事内容</th><th>提案日</th><th>提案額</th><th>受注日</th><th>受注額</th><th>減価償却</th><th>節税効果/年</th><th>状態</th></tr></thead>
+    <tbody>
+    ${[
+      ['川崎アパートB','外壁塗装・防水工事','2026/02/10','¥380万','2026/02/28','¥355万','15年','¥23.7万','完了'],
+      ['横浜グランドタワー','共用部リニューアル','2026/03/01','¥580万','2026/03/20','¥550万','13年','¥42.3万','施工中'],
+      ['川崎ビジネスコート','ユニットバス交換(5戸)','2026/03/15','¥225万','2026/04/01','¥210万','8年','¥26.3万','施工中'],
+      ['横浜都筑アパートC','給湯器全交換','2026/04/05','¥95万','—','—','—','—','提案中'],
+      ['渡辺不動産 管理物件','屋根修繕','2026/04/08','¥140万','2026/04/12','¥135万','20年','¥6.8万','受注済'],
+    ].map(r=>{
+      const sc={完了:'var(--t3)',施工中:'var(--s-blue)',提案中:'var(--s-amber)',受注済:'var(--s-green)'}[r[8]];
+      return `<tr>
+        <td class="name">${r[0]}</td>
+        <td class="fs12 tc-t2">${r[1]}</td>
+        <td class="fs11 tc-t3">${r[2]}</td>
+        <td class="fw5">${r[3]}</td>
+        <td class="fs11 tc-t3">${r[4]}</td>
+        <td class="fw5 tc-green">${r[5]}</td>
+        <td class="fs11 tc-t3">${r[6]}</td>
+        <td class="fw5 tc-g">${r[7]}</td>
+        <td><div class="flex items-c gap6">${mkDot(sc)}<span class="fs12">${r[8]}</span></div></td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>
+</div>`;
+},
+
+trust(){
+  document.getElementById('content').innerHTML=`
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">相談案件数</div><div class="metric-value">8<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">設立完了</div><div class="metric-value">3<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">信託財産総額</div><div class="metric-value" style="font-size:20px;">¥28.5<span class="metric-unit">億</span></div></div>
+  <div class="metric"><div class="metric-label">提携弁護士</div><div class="metric-value">4<span class="metric-unit">名</span></div></div>
+</div>
+<div class="card scroll-x mb16 anim anim-d1">
+  <div class="card-header">
+    <div class="card-title-sm">家族信託 案件一覧</div>
+    <button class="act act-p">＋ 新規登録</button>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>顧客名</th><th>信託財産</th><th>目的</th><th>受託者</th><th>担当弁護士</th><th>初回相談</th><th>状態</th><th>次回</th></tr></thead>
+    <tbody>
+    ${[
+      ['小林 直樹','不動産5棟+預金','認知症対策・相続対策','長男 小林太郎','吉田法律事務所','2026/01/15','契約準備中','2026/04/20'],
+      ['田中 健一','不動産3棟','財産承継','配偶者','山田法律事務所','2026/03/08','設計中','2026/05/10'],
+      ['山本 健二','収益不動産1棟','認知症リスク対策','長女','田中法律事務所','2026/02/20','初回相談済','2026/04/18'],
+    ].map(r=>`<tr>
+      <td class="fw5">${r[0]}</td>
+      <td class="fs12 tc-t2">${r[1]}</td>
+      <td class="fs11 tc-t3">${r[2]}</td>
+      <td class="fs12">${r[3]}</td>
+      <td class="fs11">${r[4]}</td>
+      <td class="fs11 tc-t3">${r[5]}</td>
+      <td><div class="flex items-c gap6">${mkDot(r[6]==='契約準備中'?'var(--g5)':r[6]==='設計中'?'var(--s-blue)':'var(--s-amber)')}<span class="fs12">${r[6]}</span></div></td>
+      <td class="fs11 tc-t3">${r[7]}</td>
+    </tr>`).join('')}
+    </tbody>
+  </table>
+</div>
+<div class="card card-body anim anim-d2">
+  <div class="card-title">信託スキーム図（小林 直樹 様）</div>
+  <div class="flex items-c j-bw gap10" style="padding:12px 0;flex-wrap:wrap;">
+    ${[['委託者','小林 直樹（本人）','#d4aa3a'],['受託者','長男 小林太郎','#3a7abd'],['受益者','直樹→配偶者→子','#2a9d6e'],['信託監督人','吉田弁護士','#c8922a'],['信託財産','不動産5棟+¥3億','#6b7280']].map((b,i,arr)=>`
+    <div style="flex:1;min-width:100px;text-align:center;background:rgba(${b[2]==='#d4aa3a'?'212,170,58':b[2]==='#3a7abd'?'58,122,189':b[2]==='#2a9d6e'?'42,157,110':b[2]==='#c8922a'?'200,146,42':'107,114,128'},.06);border:1px solid ${b[2]}40;border-radius:10px;padding:12px 8px;">
+      <div style="font-size:9px;font-weight:700;color:${b[2]};letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;">${b[0]}</div>
+      <div style="font-size:11.5px;color:${b[2]};font-weight:500;">${b[1]}</div>
+    </div>
+    ${i<arr.length-1?`<div style="color:var(--t3);font-size:16px;">→</div>`:''}`).join('')}
+  </div>
+</div>`;
+},
+
+finproposal(){
+  document.getElementById('content').innerHTML=`
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">投資信託残高</div><div class="metric-value" style="font-size:20px;">¥850<span class="metric-unit">万</span></div></div>
+  <div class="metric"><div class="metric-label">保険契約数</div><div class="metric-value">5<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">含み益</div><div class="metric-value tc-green">+¥102<span class="metric-unit">万</span></div><div class="metric-sub metric-up">+12.0%</div></div>
+  <div class="metric"><div class="metric-label">保険料合計/月</div><div class="metric-value" style="font-size:20px;">¥14.7<span class="metric-unit">万</span></div></div>
+</div>
+<div class="g2 mb16 anim anim-d1">
+  <div class="card card-body">
+    <div class="card-title">投資信託 保有状況</div>
+    <table class="tbl">
+      <thead><tr><th>ファンド名</th><th>保有額</th><th>損益</th><th>利回り</th></tr></thead>
+      <tbody>
+      ${[['SBI世界株式ファンド','¥320万','+¥48万','+15.0%'],['東京海上世界REITファンド','¥250万','+¥18万','+7.2%'],['ひふみプラス','¥180万','+¥22万','+12.2%'],['NISA口座 米国株式','¥100万','+¥14万','+14.0%']].map(r=>`<tr>
+        <td class="fs12">${r[0]}</td><td class="fw5">${r[1]}</td>
+        <td class="fw5 tc-green">${r[2]}</td>
+        <td style="font-family:var(--serif);font-size:14px;font-weight:700;color:var(--g5);">${r[3]}</td>
+      </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+  <div class="card card-body">
+    <div class="card-title">保険 契約状況</div>
+    <table class="tbl">
+      <thead><tr><th>種類</th><th>保険会社</th><th>保険料/月</th><th>保障額</th></tr></thead>
+      <tbody>
+      ${[['終身生命保険','日本生命','¥8.5万','¥1億'],['医療保険','アフラック','¥1.2万','日額¥10,000'],['収入保障保険','住友生命','¥2.3万','月¥50万'],['火災(自宅)','東京海上','¥0.9万','¥3,500万'],['火災(投資用)','損保ジャパン','¥1.8万','全棟一括']].map(r=>`<tr>
+        <td class="fs12 fw5">${r[0]}</td><td class="fs11 tc-t3">${r[1]}</td>
+        <td class="fw5">${r[2]}</td><td class="fs11 tc-t3">${r[3]}</td>
+      </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="card card-body anim anim-d2">
+  <div class="card-title">ポートフォリオ構成</div>
+  <div class="ch-wrap" style="height:160px;"><canvas id="fundChart"></canvas></div>
+</div>`;
+  setTimeout(()=>{
+    initCh('fundChart',{type:'doughnut',data:{labels:['SBI世界株式','東京海上REIT','ひふみプラス','NISA米国株'],datasets:[{data:[320,250,180,100],backgroundColor:['rgba(212,170,58,.8)','rgba(58,122,189,.8)','rgba(200,146,42,.8)','rgba(42,157,110,.8)'],borderWidth:2,borderColor:'rgba(6,14,26,.9)'}]},options:{cutout:'55%',plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:11}}}}}});
+  },60);
+},
+
+kpi(){
+  document.getElementById('content').innerHTML=`
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">今月売上</div><div class="metric-value metric-gold" style="font-size:22px;">¥3,840<span class="metric-unit">万</span></div><div class="metric-sub metric-up">↑ 予算比 108%</div></div>
+  <div class="metric"><div class="metric-label">新規顧客</div><div class="metric-value">6<span class="metric-unit">名</span></div><div class="metric-sub metric-up">↑ 目標比 120%</div></div>
+  <div class="metric"><div class="metric-label">物件成約</div><div class="metric-value">3<span class="metric-unit">件</span></div><div class="metric-sub">累計 78件</div></div>
+  <div class="metric"><div class="metric-label">顧客満足度</div><div class="metric-value">4.6<span class="metric-unit">/5</span></div><div class="metric-sub">NPS +42</div></div>
+</div>
+<div class="g2 mb16 anim anim-d1">
+  <div class="card card-body">
+    <div class="card-title">月次売上 vs 目標</div>
+    <div class="ch-wrap" style="height:180px;"><canvas id="kpiBar"></canvas></div>
+  </div>
+  <div class="card card-body">
+    <div class="card-title">サービス別売上構成</div>
+    <div class="ch-wrap" style="height:180px;"><canvas id="kpiPie"></canvas></div>
+  </div>
+</div>
+<div class="card scroll-x anim anim-d2">
+  <div class="card-header"><div class="card-title-sm">担当者別KPI</div></div>
+  <table class="tbl">
+    <thead><tr><th>担当者</th><th>顧客数</th><th>今月売上</th><th>目標進捗</th><th>コンタクト</th><th>新規</th><th>平均LTV</th><th>評価</th></tr></thead>
+    <tbody>
+    ${[
+      ['佐藤 一郎','32名','¥1,240万',85,'12件','2名','¥1,840万','A'],
+      ['田中 誠','28名','¥1,380万',112,'14件','3名','¥2,120万','S'],
+      ['山田 誠','30名','¥1,220万',98,'12件','1名','¥1,760万','A'],
+    ].map(r=>`<tr>
+      <td class="fw5">${r[0]}</td><td>${r[1]}</td><td class="fw5">${r[2]}</td>
+      <td>
+        <div class="flex items-c gap8">
+          ${pbar(Math.min(r[3],100),r[3]>=100?'var(--s-green)':r[3]>=80?'var(--s-amber)':'var(--s-red)')}
+          <span class="fs12 fw5" style="color:${r[3]>=100?'var(--s-green)':r[3]>=80?'var(--s-amber)':'var(--s-red)'};">${r[3]}%</span>
+        </div>
+      </td>
+      <td>${r[4]}</td><td>${r[5]}</td>
+      <td style="font-family:var(--serif);font-size:14px;font-weight:700;color:var(--g5);">${r[6]}</td>
+      <td><span class="badge ${r[7]==='S'?'b-vip':'b-blue'}" style="font-size:13px;font-family:var(--serif);">${r[7]}</span></td>
+    </tr>`).join('')}
+    </tbody>
+  </table>
+</div>`;
+  setTimeout(()=>{
+    initCh('kpiBar',{type:'bar',data:{labels:['10月','11月','12月','1月','2月','3月','4月'],datasets:[{label:'実績',data:[2800,3100,4200,2900,3400,3650,3840],backgroundColor:'rgba(212,170,58,.7)',borderRadius:5},{label:'目標',data:[3000,3200,4000,3000,3500,3800,3550],backgroundColor:'rgba(255,255,255,.06)',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:10}}}},scales:{x:{ticks:{font:{size:10}},grid:{display:false}},y:{ticks:{callback:v=>v/10000+'億',font:{size:10}},grid:{color:'rgba(212,170,58,.06)'}}}}});
+    initCh('kpiPie',{type:'doughnut',data:{labels:['不動産FA/FC','賃貸管理','リフォーム','CF/金融二種','投信/保険'],datasets:[{data:[58,22,10,6,4],backgroundColor:['rgba(212,170,58,.8)','rgba(58,122,189,.8)','rgba(200,146,42,.8)','rgba(42,157,110,.8)','rgba(107,114,128,.8)'],borderWidth:2,borderColor:'rgba(6,14,26,.9)'}]},options:{cutout:'55%',plugins:{legend:{position:'right',labels:{boxWidth:10,font:{size:10}}}}}});
+  },60);
+},
+
+inheritance(){
+  document.getElementById('content').innerHTML=`
+<div class="g4 mb16 anim">
+  <div class="metric"><div class="metric-label">相続相談案件</div><div class="metric-value">12<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">今年度完了</div><div class="metric-value">5<span class="metric-unit">件</span></div></div>
+  <div class="metric"><div class="metric-label">対象資産総額</div><div class="metric-value" style="font-size:20px;">¥48.2<span class="metric-unit">億</span></div></div>
+  <div class="metric"><div class="metric-label">提携税理士</div><div class="metric-value">6<span class="metric-unit">名</span></div></div>
+</div>
+<div class="card scroll-x mb16 anim anim-d1">
+  <div class="card-header">
+    <div class="card-title-sm">相続相談 案件一覧</div>
+    <button class="act act-p">＋ 新規登録</button>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>顧客名</th><th>相続対象資産</th><th>推定相続税</th><th>対策方針</th><th>担当税理士</th><th>初回相談</th><th>進捗</th><th>次回</th></tr></thead>
+    <tbody>
+    ${[
+      ['小林 直樹','不動産6棟+金融資産','¥8,200万','生前贈与+法人化+家族信託','清水税理士法人','2026/01/20','対策実行中','2026/04/18'],
+      ['田中 健一','不動産4棟+預金','¥4,600万','不動産活用による評価減','山本会計事務所','2026/02/15','提案中','2026/05/10'],
+      ['山田 美咲','預金+医院設備','¥2,800万','医療法人化検討','清水税理士法人','2026/03/10','初回相談済','2026/04/20'],
+      ['山本 健二','自宅+収益不動産','¥1,800万','配偶者控除活用','外部提携税理士','2026/03/25','ヒアリング中','2026/04/22'],
+    ].map(r=>`<tr>
+      <td class="fw5">${r[0]}</td>
+      <td class="fs12 tc-t2">${r[1]}</td>
+      <td class="fw5 tc-red">${r[2]}</td>
+      <td class="fs11 tc-t3">${r[3]}</td>
+      <td class="fs11">${r[4]}</td>
+      <td class="fs11 tc-t3">${r[5]}</td>
+      <td><div class="flex items-c gap6">${mkDot(r[6]==='対策実行中'?'var(--s-green)':r[6]==='提案中'?'var(--g5)':r[6]==='初回相談済'?'var(--s-amber)':'var(--s-blue)')}<span class="fs12">${r[6]}</span></div></td>
+      <td class="fs11 tc-t3">${r[7]}</td>
+    </tr>`).join('')}
+    </tbody>
+  </table>
+</div>
+<div class="card card-body anim anim-d2">
+  <div class="card-title">相続対策チェックリスト（小林 直樹 様）</div>
+  <div class="g2" style="gap:8px;">
+    ${[
+      ['財産評価・棚卸し','完了','var(--s-green)'],['相続税試算','完了','var(--s-green)'],
+      ['小規模宅地評価減活用','対応中','var(--s-amber)'],['生前贈与計画策定','対応中','var(--s-amber)'],
+      ['資産管理法人設立','完了','var(--s-green)'],['家族信託設計','契約準備中','var(--g5)'],
+      ['遺言書作成','未着手','var(--t3)'],['生命保険活用','完了','var(--s-green)'],
+    ].map(([l,s,c])=>`
+    <div class="flex items-c j-bw" style="padding:9px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(212,170,58,.06);">
+      <span class="fs12 tc-t2">${l}</span>
+      <div class="flex items-c gap6">${mkDot(c)}<span class="fs12 fw5" style="color:${c};">${s}</span></div>
+    </div>`).join('')}
+  </div>
+</div>`;
+}
+};
+
+function saveNote(){
+  const n=document.getElementById('cxNote').value;
+  selCx.note=n;
+  alert('メモを保存しました。');
+}
+
+buildNav();
+R.customers();
+</script>
+</body>
+</html>

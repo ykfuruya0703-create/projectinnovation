@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frontier Dashboard | 不動産デベロッパー向け 次世代経営ダッシュボード</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg0:#020810;--bg1:#050e1e;--bg2:#081428;
+  --accent:#00d4ff;--accent2:#0066ff;--accent3:#00ff88;
+  --gold:#f5c842;--purple:#8b5cf6;--pink:#ec4899;--teal:#00c8a0;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#475569;
+  --border:rgba(0,212,255,0.1);--border2:rgba(0,212,255,0.22);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Hiragino Sans','Yu Gothic UI','Noto Sans JP',sans-serif;background:var(--bg0);color:var(--text);overflow-x:hidden;line-height:1.6}
+
+/* ─── GRID BG ─── */
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse 80% 60% at 15% 10%,rgba(0,100,255,0.07) 0%,transparent 60%),
+  radial-gradient(ellipse 60% 50% at 85% 80%,rgba(0,200,160,0.06) 0%,transparent 60%),
+  radial-gradient(ellipse 40% 40% at 50% 50%,rgba(0,212,255,0.03) 0%,transparent 70%);
+  pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
+  background-size:60px 60px;pointer-events:none;z-index:0}
+
+/* ─── SCROLL BAR ─── */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.2);border-radius:2px}
+
+/* ─── UTILITY ─── */
+.container{max-width:1200px;margin:0 auto;padding:0 40px;position:relative;z-index:1}
+.tag-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.tag-cyan{background:rgba(0,212,255,0.1);color:var(--accent);border:1px solid rgba(0,212,255,0.25)}
+.tag-green{background:rgba(0,255,136,0.08);color:var(--accent3);border:1px solid rgba(0,255,136,0.2)}
+.tag-gold{background:rgba(245,200,66,0.1);color:var(--gold);border:1px solid rgba(245,200,66,0.25)}
+.gradient-text{background:linear-gradient(135deg,var(--accent) 0%,var(--accent3) 50%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gradient-text-gold{background:linear-gradient(135deg,var(--gold) 0%,#ffaa00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInLeft{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 20px rgba(0,212,255,0.2)}50%{box-shadow:0 0 40px rgba(0,212,255,0.5)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes scanLine{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes numberUp{from{opacity:0;transform:scale(0.7)}to{opacity:1;transform:scale(1)}}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+
+.animate-fadeInUp{animation:fadeInUp .7s ease both}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.2s}.delay-3{animation-delay:.3s}
+.delay-4{animation-delay:.4s}.delay-5{animation-delay:.5s}.delay-6{animation-delay:.6s}
+
+/* ─── HEADER ─── */
+header{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 40px;height:64px;display:flex;align-items:center;background:rgba(2,8,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.header-inner{display:flex;align-items:center;width:100%;max-width:1200px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--teal));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;color:#000;letter-spacing:-1px;flex-shrink:0;position:relative;overflow:hidden}
+.logo-mark::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.2));pointer-events:none}
+.logo-text b{font-size:15px;color:#fff;letter-spacing:.5px;display:block}
+.logo-text span{font-size:9px;color:var(--accent);letter-spacing:3px;text-transform:uppercase}
+nav{display:flex;align-items:center;gap:32px;margin-left:60px}
+nav a{font-size:12px;color:var(--text2);text-decoration:none;letter-spacing:.5px;transition:.2s;position:relative}
+nav a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:var(--accent);transition:.3s}
+nav a:hover{color:var(--accent)}nav a:hover::after{width:100%}
+.header-cta{margin-left:auto;display:flex;align-items:center;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 22px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s;letter-spacing:.5px;border:none}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--accent)}
+.btn-outline:hover{background:rgba(0,212,255,0.08);border-color:var(--accent)}
+.btn-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#000;position:relative;overflow:hidden}
+.btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent),var(--accent3));opacity:0;transition:.3s}
+.btn-primary:hover::before{opacity:1}
+.btn-primary span{position:relative;z-index:1}
+.btn-lg{padding:14px 32px;font-size:14px;border-radius:10px}
+
+/* ─── HERO ─── */
+#hero{min-height:100vh;display:flex;align-items:center;padding:100px 0 80px;overflow:hidden;position:relative}
+.hero-scan{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hero-scan::after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,212,255,0.4),transparent);animation:scanLine 6s linear infinite}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:20px;background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);font-size:11px;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:28px}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent3);animation:blink 1.5s infinite}
+.hero-title{font-size:clamp(36px,5vw,68px);font-weight:900;line-height:1.12;letter-spacing:-2px;margin-bottom:24px}
+.hero-title .line2{color:var(--text2);font-size:.6em;font-weight:400;letter-spacing:0;display:block;margin-top:8px}
+.hero-desc{font-size:16px;color:var(--text2);max-width:580px;line-height:1.9;margin-bottom:40px}
+.hero-actions{display:flex;align-items:center;gap:16px;margin-bottom:56px;flex-wrap:wrap}
+.hero-stats{display:flex;gap:32px;flex-wrap:wrap}
+.hero-stat{display:flex;flex-direction:column;gap:4px}
+.hero-stat-val{font-size:28px;font-weight:900;letter-spacing:-1px}
+.hero-stat-label{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase}
+.hero-divider{width:1px;height:48px;background:var(--border2);align-self:center}
+
+/* ─── DASHBOARD PREVIEW ─── */
+.preview-wrap{position:relative;margin-top:0;animation:float 6s ease-in-out infinite}
+.preview-frame{background:rgba(5,14,28,0.9);border:1px solid var(--border2);border-radius:16px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,0.8),0 0 60px rgba(0,212,255,0.08),inset 0 1px 0 rgba(0,212,255,0.15)}
+.preview-bar{height:36px;background:rgba(2,8,16,0.95);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px}
+.preview-dots{display:flex;gap:6px}
+.preview-dots span{width:10px;height:10px;border-radius:50%}
+.preview-dots span:nth-child(1){background:#ff5f57}.preview-dots span:nth-child(2){background:#febc2e}.preview-dots span:nth-child(3){background:#28c840}
+.preview-url{flex:1;background:rgba(15,32,64,0.6);border-radius:6px;height:20px;display:flex;align-items:center;padding:0 10px;font-size:9px;color:var(--text3)}
+.preview-screen{padding:14px;display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.preview-kpi{background:rgba(10,22,40,0.9);border:1px solid rgba(0,212,255,0.08);border-radius:8px;padding:10px;position:relative;overflow:hidden}
+.preview-kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.preview-kpi .pk-label{font-size:7px;color:#475569;margin-bottom:4px;letter-spacing:.5px}
+.preview-kpi .pk-val{font-size:16px;font-weight:800;letter-spacing:-1px}
+.preview-kpi .pk-sub{font-size:7px;color:#334155;margin-top:2px}
+.preview-chart{grid-column:1/4;background:rgba(10,22,40,0.9);border:1px solid rgba(0,212,255,0.08);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:6px}
+.preview-chart .pc-title{font-size:8px;color:#475569;letter-spacing:.5px}
+.chart-bars{display:flex;align-items:flex-end;gap:3px;height:80px}
+.chart-bar{border-radius:2px 2px 0 0;transition:.3s}
+.preview-pie{background:rgba(10,22,40,0.9);border:1px solid rgba(0,212,255,0.08);border-radius:8px;padding:10px;grid-column:4/6;display:flex;align-items:center;justify-content:center;gap:8px}
+.pie-svg{width:70px;height:70px;flex-shrink:0}
+.pie-legend{display:flex;flex-direction:column;gap:4px}
+.pie-legend-item{display:flex;align-items:center;gap:4px;font-size:7.5px;color:var(--text2)}
+.pie-legend-item .pdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.preview-table-full{grid-column:1/6;background:rgba(10,22,40,0.9);border:1px solid rgba(0,212,255,0.08);border-radius:8px;overflow:hidden}
+.pt-head{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr;gap:0;background:rgba(15,32,64,0.8);padding:5px 10px}
+.pt-head span,.pt-row span{font-size:7.5px;color:#475569;letter-spacing:.3px}
+.pt-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr;padding:5px 10px;border-top:1px solid rgba(0,212,255,0.05)}
+.pt-row:hover{background:rgba(0,212,255,0.03)}
+.pt-row .pname{color:#94a3b8;font-size:7.5px}
+.pt-row .pval{color:#e2e8f0;font-size:7.5px;text-align:right}
+.pt-row .ppos{color:#22c55e;font-size:7.5px;text-align:right}
+.pt-row .pneg{color:#ef4444;font-size:7.5px;text-align:right}
+.glow-ring{position:absolute;inset:-40px;border-radius:50%;border:1px solid rgba(0,212,255,0.06);animation:spin 20s linear infinite}
+
+/* ─── SECTION BASE ─── */
+section{padding:100px 0;position:relative;z-index:1}
+.section-badge{margin-bottom:16px}
+.section-title{font-size:clamp(28px,3.5vw,44px);font-weight:900;letter-spacing:-1.5px;line-height:1.2;margin-bottom:16px}
+.section-desc{font-size:15px;color:var(--text2);max-width:600px;line-height:1.9}
+.section-header{margin-bottom:60px}
+
+/* ─── DIVIDER ─── */
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:0 40px}
+
+/* ─── NUMBERS ─── */
+#numbers{background:linear-gradient(180deg,var(--bg0) 0%,rgba(0,30,60,0.3) 50%,var(--bg0) 100%);padding:80px 0}
+.numbers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--border)}
+.number-card{background:var(--bg1);padding:48px 32px;text-align:center;position:relative;overflow:hidden;transition:.3s}
+.number-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent),transparent);opacity:0;transition:.3s}
+.number-card:hover::before{opacity:.04}
+.number-card:hover{background:rgba(5,18,36,0.95)}
+.nc-val{font-size:clamp(36px,4vw,56px);font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:8px}
+.nc-label{font-size:12px;color:var(--text2);letter-spacing:.5px}
+.nc-sub{font-size:10px;color:var(--text3);margin-top:6px}
+
+/* ─── FEATURES ─── */
+#features{background:var(--bg0)}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.feature-card{background:rgba(5,14,28,0.8);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;overflow:hidden;transition:all .3s;cursor:default}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c,var(--accent)),transparent);transition:.3s}
+.feature-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0 0,rgba(var(--cr,0,212,255),0.05) 0%,transparent 60%);opacity:0;transition:.3s}
+.feature-card:hover{border-color:rgba(var(--cr,0,212,255),0.3);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.feature-card:hover::after{opacity:1}
+.fc-icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px;position:relative;z-index:1}
+.fc-title{font-size:18px;font-weight:800;margin-bottom:10px;position:relative;z-index:1}
+.fc-desc{font-size:13px;color:var(--text2);line-height:1.8;position:relative;z-index:1}
+.fc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;position:relative;z-index:1}
+.fc-tag{font-size:9px;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,0.05);color:var(--text3);border:1px solid var(--border)}
+
+/* ─── OVERVIEW SECTION ─── */
+#overview-section{background:linear-gradient(180deg,var(--bg0),var(--bg1))}
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.ov-screen{position:relative}
+.ov-mockup{background:rgba(5,14,28,0.95);border:1px solid var(--border2);border-radius:14px;padding:16px;box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 40px rgba(0,212,255,0.06)}
+.ov-topbar{height:28px;background:rgba(2,8,16,0.9);border-radius:6px;display:flex;align-items:center;padding:0 10px;gap:6px;margin-bottom:10px}
+.ov-topbar-dot{width:6px;height:6px;border-radius:50%;background:rgba(0,212,255,0.4)}
+.ov-topbar-line{flex:1;height:10px;background:rgba(0,212,255,0.06);border-radius:3px;margin-left:8px}
+.ov-tabs{display:flex;gap:2px;margin-bottom:10px;overflow:hidden;font-size:7px}
+.ov-tab{padding:3px 8px;border-radius:4px;color:var(--text3);background:rgba(15,32,64,0.5);white-space:nowrap}
+.ov-tab.active{background:rgba(0,212,255,0.12);color:var(--accent)}
+.ov-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:8px}
+.ov-kpi{background:rgba(10,22,40,0.8);border-radius:5px;padding:6px 5px;border-top:1px solid}
+.ov-kpi .ok-l{font-size:5.5px;color:#334155;margin-bottom:2px}
+.ov-kpi .ok-v{font-size:11px;font-weight:800;letter-spacing:-0.5px}
+.ov-body{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ov-card{background:rgba(10,22,40,0.7);border:1px solid rgba(0,212,255,0.06);border-radius:6px;padding:8px}
+.ov-card-title{font-size:6px;color:#475569;letter-spacing:.5px;margin-bottom:6px;text-transform:uppercase}
+.mini-bars{display:flex;align-items:flex-end;gap:2px;height:50px}
+.mini-bar{border-radius:1px 1px 0 0;min-width:6px}
+.mini-table{width:100%}
+.mini-table tr td{font-size:6px;padding:2px 3px;color:#94a3b8;border-bottom:1px solid rgba(0,212,255,0.04)}
+.mini-table tr td:last-child{color:#22c55e;text-align:right}
+.ov-badge{position:absolute;top:-16px;right:-16px;background:rgba(0,200,160,0.1);border:1px solid rgba(0,200,160,0.3);border-radius:10px;padding:8px 14px;font-size:10px;color:var(--teal);font-weight:700;backdrop-filter:blur(10px)}
+
+/* ─── TABS SHOWCASE ─── */
+#tabs-showcase{background:var(--bg1)}
+.tabs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.tab-showcase-card{background:rgba(5,14,28,0.8);border:1px solid var(--border);border-radius:14px;padding:24px;transition:all .3s;position:relative;overflow:hidden}
+.tab-showcase-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--c,var(--accent)),transparent);transform:scaleX(0);transition:.3s}
+.tab-showcase-card:hover{border-color:rgba(0,212,255,0.2);transform:translateY(-3px)}
+.tab-showcase-card:hover::before{transform:scaleX(1)}
+.tsc-num{font-size:11px;color:var(--text3);letter-spacing:2px;margin-bottom:12px;font-weight:600}
+.tsc-icon{font-size:28px;margin-bottom:12px;display:block}
+.tsc-title{font-size:15px;font-weight:800;margin-bottom:8px;color:#fff}
+.tsc-items{list-style:none;display:flex;flex-direction:column;gap:5px}
+.tsc-items li{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:6px}
+.tsc-items li::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--accent);flex-shrink:0;opacity:.6}
+
+/* ─── FORECAST ─── */
+#forecast-section{background:var(--bg0);position:relative;overflow:hidden}
+#forecast-section::before{content:'';position:absolute;top:-200px;left:-200px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,0.06),transparent 70%);pointer-events:none}
+.forecast-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.forecast-card{background:rgba(5,14,28,0.9);border:1px solid var(--border2);border-radius:16px;padding:24px;position:relative;overflow:hidden}
+.forecast-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+.fc-kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.fc-kpi{background:rgba(10,22,40,0.9);border-radius:8px;padding:10px;text-align:center;border:1px solid rgba(139,92,246,0.1)}
+.fc-kpi-label{font-size:8px;color:#475569;margin-bottom:4px;letter-spacing:.5px}
+.fc-kpi-val{font-size:16px;font-weight:800;letter-spacing:-0.5px}
+.fc-bars-label{font-size:9px;color:#334155;margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase}
+.fc-bars{display:flex;align-items:flex-end;gap:2px;height:80px;background:rgba(10,22,40,0.5);border-radius:6px;padding:8px 6px 0}
+.fc-bar-wrap{display:flex;flex-direction:column;align-items:center;flex:1;gap:1px}
+.fc-bar{border-radius:2px 2px 0 0;width:100%}
+.fc-bar-label{font-size:6px;color:#334155;white-space:nowrap}
+.fc-table{width:100%;margin-top:12px}
+.fc-table tr{border-bottom:1px solid rgba(0,212,255,0.06)}
+.fc-table td{font-size:10px;padding:5px 4px;color:var(--text2)}
+.fc-table td:last-child{color:#22c55e;text-align:right;font-weight:700}
+.fc-table .fc-thead td{color:#475569;font-size:9px;font-weight:600}
+
+/* ─── FLOW ─── */
+#flow{background:linear-gradient(180deg,var(--bg1),var(--bg0))}
+.flow-steps{display:flex;flex-direction:column;gap:0;position:relative}
+.flow-steps::before{content:'';position:absolute;left:23px;top:24px;bottom:24px;width:1px;background:linear-gradient(180deg,var(--accent),var(--teal),var(--purple))}
+.flow-step{display:flex;gap:24px;align-items:flex-start;padding:28px 0;position:relative}
+.flow-num{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;flex-shrink:0;position:relative;z-index:1}
+.flow-body{flex:1}
+.flow-title{font-size:18px;font-weight:800;margin-bottom:6px}
+.flow-desc{font-size:13px;color:var(--text2);line-height:1.8;max-width:600px}
+.flow-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.flow-tag{font-size:9px;padding:3px 9px;border-radius:4px;font-weight:600}
+
+/* ─── TESTIMONIAL / QUOTE ─── */
+#quote{background:var(--bg0);text-align:center;padding:80px 0}
+.quote-inner{max-width:800px;margin:0 auto;padding:0 40px}
+.quote-text{font-size:clamp(18px,2.5vw,26px);font-weight:700;line-height:1.7;color:#fff;margin-bottom:24px;position:relative}
+.quote-text::before{content:'"';position:absolute;top:-20px;left:-20px;font-size:80px;color:rgba(0,212,255,0.1);font-family:serif;line-height:1}
+.quote-author{font-size:12px;color:var(--text2);letter-spacing:1px}
+
+/* ─── CTA ─── */
+#cta{padding:120px 0;text-align:center;position:relative;overflow:hidden}
+#cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(0,100,255,0.08),transparent 70%)}
+.cta-title{font-size:clamp(32px,4vw,52px);font-weight:900;letter-spacing:-2px;margin-bottom:20px}
+.cta-desc{font-size:16px;color:var(--text2);max-width:500px;margin:0 auto 44px;line-height:1.8}
+.cta-actions{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+.cta-note{font-size:11px;color:var(--text3);margin-top:20px;letter-spacing:.5px}
+.glow-btn{position:relative;overflow:hidden;animation:pulseGlow 3s ease-in-out infinite}
+
+/* ─── FOOTER ─── */
+footer{background:rgba(2,5,12,0.9);border-top:1px solid var(--border);padding:60px 0 32px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;margin-bottom:48px}
+.footer-brand .logo-text b{font-size:18px}
+.footer-desc{font-size:12px;color:var(--text3);margin-top:12px;line-height:1.8;max-width:260px}
+.footer-col h4{font-size:11px;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-col ul li a{font-size:12px;color:var(--text3);text-decoration:none;transition:.2s}
+.footer-col ul li a:hover{color:var(--accent)}
+.footer-bottom{border-top:1px solid var(--border);padding-top:24px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text3)}
+
+/* ─── LIVE BADGE ─── */
+.live-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);font-size:10px;color:#4ade80;font-weight:700}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 1.5s infinite}
+
+/* ─── SCREEN GLOW ─── */
+.screen-glow{position:absolute;inset:-20px;border-radius:24px;background:radial-gradient(ellipse 60% 40% at 50% 50%,rgba(0,212,255,0.06),transparent 70%);pointer-events:none}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:1024px){.features-grid{grid-template-columns:repeat(2,1fr)}.tabs-grid{grid-template-columns:repeat(2,1fr)}.numbers-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){.hero-title{font-size:32px}.overview-grid,.forecast-grid{grid-template-columns:1fr}.container{padding:0 20px}header{padding:0 20px}nav{display:none}.features-grid,.tabs-grid{grid-template-columns:1fr}.numbers-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- ─── HEADER ─── -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-mark">FD</div>
+      <div class="logo-text">
+        <b>Frontier Dashboard</b>
+        <span>Real Estate Intelligence</span>
+      </div>
+    </div>
+    <nav>
+      <a href="#features">機能</a>
+      <a href="#overview-section">概要</a>
+      <a href="#tabs-showcase">モジュール</a>
+      <a href="#forecast-section">フォーキャスト</a>
+      <a href="#flow">導入フロー</a>
+    </nav>
+    <div class="header-cta">
+      <div class="live-badge"><div class="live-dot"></div>LIVE DEMO</div>
+      <a href="index.html" class="btn btn-primary btn-outline"><span>ダッシュボードを開く</span> →</a>
+    </div>
+  </div>
+</header>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-scan"></div>
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center">
+
+      <!-- LEFT -->
+      <div>
+        <div class="hero-badge animate-fadeInUp">
+          <span class="dot"></span>
+          不動産デベロッパー向け 次世代経営システム
+        </div>
+        <h1 class="hero-title animate-fadeInUp delay-1">
+          <span class="gradient-text">Frontier</span><br>
+          Dashboard
+          <span class="line2">経営判断を、インテリジェンスへ。</span>
+        </h1>
+        <p class="hero-desc animate-fadeInUp delay-2">
+          物件仕入から販売決済まで、全プロジェクトのリアルタイム収支・
+          資金繰り・フォーキャストを一画面に集約。
+          不動産デベロッパー経営に特化した、次世代インテリジェンス・プラットフォーム。
+        </p>
+        <div class="hero-actions animate-fadeInUp delay-3">
+          <a href="index.html" class="btn btn-primary btn-lg glow-btn">
+            <span>🚀 デモを体験する</span>
+          </a>
+          <a href="#features" class="btn btn-outline btn-lg">機能を見る →</a>
+        </div>
+        <div class="hero-stats animate-fadeInUp delay-4">
+          <div class="hero-stat">
+            <div class="nc-val gradient-text" style="font-size:32px">138<span style="font-size:18px">件</span></div>
+            <div class="hero-stat-label">管理プロジェクト</div>
+          </div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat">
+            <div class="nc-val" style="font-size:32px;color:var(--accent3)">129<span style="font-size:18px">億</span></div>
+            <div class="hero-stat-label">今期フォーキャスト売上高</div>
+          </div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat">
+            <div class="nc-val" style="font-size:32px;color:var(--gold)">12<span style="font-size:18px">モジュール</span></div>
+            <div class="hero-stat-label">統合管理領域</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: MOCKUP -->
+      <div class="preview-wrap animate-fadeInUp delay-2">
+        <div class="screen-glow"></div>
+        <div class="preview-frame">
+          <div class="preview-bar">
+            <div class="preview-dots"><span></span><span></span><span></span></div>
+            <div class="preview-url">frontier-dashboard.app / overview</div>
+            <div class="live-badge" style="font-size:8px;padding:2px 8px"><div class="live-dot"></div>LIVE</div>
+          </div>
+          <!-- Mini Dashboard Screen -->
+          <div style="padding:10px 12px">
+            <!-- KPI row -->
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px">
+              <div class="preview-kpi" style="border-top-color:#00d4ff">
+                <div class="pk-label">総プロジェクト</div>
+                <div class="pk-val" style="color:#00d4ff">138件</div>
+                <div class="pk-sub">全ステータス</div>
+              </div>
+              <div class="preview-kpi" style="border-top-color:#00ff88">
+                <div class="pk-label">総売上規模</div>
+                <div class="pk-val" style="color:#00ff88">215億</div>
+                <div class="pk-sub">全物件合計</div>
+              </div>
+              <div class="preview-kpi" style="border-top-color:#f5c842">
+                <div class="pk-label">総粗利益</div>
+                <div class="pk-val" style="color:#f5c842">62億</div>
+                <div class="pk-sub">粗利率 28.8%</div>
+              </div>
+              <div class="preview-kpi" style="border-top-color:#f5c842">
+                <div class="pk-label">完了・決済済</div>
+                <div class="pk-val" style="color:#f5c842">46件</div>
+                <div class="pk-sub">販売決済完了</div>
+              </div>
+              <div class="preview-kpi" style="border-top-color:#8b5cf6">
+                <div class="pk-label">進行中案件</div>
+                <div class="pk-val" style="color:#8b5cf6">92件</div>
+                <div class="pk-sub">仕入〜契約済</div>
+              </div>
+            </div>
+            <!-- Charts row -->
+            <div style="display:grid;grid-template-columns:3fr 2fr;gap:6px;margin-bottom:8px">
+              <div style="background:rgba(10,22,40,0.9);border:1px solid rgba(0,212,255,0.08);border-radius:8px;padding:8px">
+                <div style="font-size:7px;color:#475569;margin-bottom:5px;letter-spacing:.5px">月次売上・粗利トレンド（百万円）</div>
+                <div style="display:flex;align-items:flex-end;gap:2px;height:60px">
+                  <!-- Bars -->
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
+                    <div style="width:100%;border-radius:2px 2px 0 0;background:rgba(0,212,255,0.5);height:25px"></div>
+                    <div style="font-size:5.5px;color:#334155">8月</div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
+                    <div style="width:100%;border-radius:2px 2px 0 0;background:rgba(0,212,255,0.5);height:38px"></div>
+                    <div style="font-size:5.5px;color:#334155">9月</div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
+                    <div style="width:100%;border-radius:2px 2px 0 0;background:rgba(0,212,255,0.5);height:45px"></div>
+                    <div style="font-size:5.5px;color:#334155">10月</div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
+                    <div style="width:100%;border-radius:2px 2px 0 0;background:rgba(0,212,255,0.5);height:55px"></div>
+                    <div style="font-size:5.5px;color:#334155">11月</div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
+                    <div style="width:100%;border-radius:2px 2px 0 0;background:rgba(0,212,255,0.6);height:60px"></div>
+                    <div style="font-size:5.5px;color:#334155">12月</div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
+                    <div style="width:100%;border-radius:2px 2px 0 0;background:rgba(0,212,255,0.4);height:32px"></div>
+                    <div style="font-size:5.5px;color:#334155">1月</div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
+                    <div style="width:100%;border-radius:2px 2px 0 0;background:rgba(0,212,255,0.5);height:50px"></div>
+                    <div style="font-size:5.5px;color:#334155">2月</div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
+                    <div style="width:100%;border-radius:2px 2px 0 0;background:rgba(0,212,255,0.55);height:57px"></div>
+                    <div style="font-size:5.5px;color:#334155">3月</div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
+                    <div style="width:100%;border-radius:2px 2px 0 0;background:rgba(0,212,255,0.6);height:60px"></div>
+                    <div style="font-size:5.5px;color:#334155">4月</div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
+                    <div style="width:100%;border-radius:2px 2px 0 0;background:rgba(0,212,255,0.45);height:42px"></div>
+                    <div style="font-size:5.5px;color:#334155">5月</div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
+                    <div style="width:100%;border-radius:2px 2px 0 0;background:rgba(0,212,255,0.4);height:36px"></div>
+                    <div style="font-size:5.5px;color:#334155">6月</div>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
+                    <div style="width:100%;border-radius:2px 2px 0 0;background:rgba(0,212,255,0.5);height:48px"></div>
+                    <div style="font-size:5.5px;color:#334155">7月</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Mini Table -->
+              <div style="background:rgba(10,22,40,0.9);border:1px solid rgba(0,212,255,0.08);border-radius:8px;padding:8px">
+                <div style="font-size:7px;color:#475569;margin-bottom:5px;letter-spacing:.5px">商品種別 売上・粗利</div>
+                <table style="width:100%;border-collapse:collapse">
+                  <tr style="border-bottom:1px solid rgba(0,212,255,0.06)">
+                    <td style="font-size:6.5px;padding:2px 2px;color:#64748b">FA 新築AP</td>
+                    <td style="font-size:6.5px;text-align:right;color:#00d4ff;font-weight:700">55.2億</td>
+                    <td style="font-size:6.5px;text-align:right;color:#22c55e">28.4%</td>
+                  </tr>
+                  <tr style="border-bottom:1px solid rgba(0,212,255,0.06)">
+                    <td style="font-size:6.5px;padding:2px 2px;color:#64748b">FC 新築MS</td>
+                    <td style="font-size:6.5px;text-align:right;color:#8b5cf6;font-weight:700">49.3億</td>
+                    <td style="font-size:6.5px;text-align:right;color:#22c55e">36.2%</td>
+                  </tr>
+                  <tr style="border-bottom:1px solid rgba(0,212,255,0.06)">
+                    <td style="font-size:6.5px;padding:2px 2px;color:#64748b">PR 建売</td>
+                    <td style="font-size:6.5px;text-align:right;color:#f59e0b;font-weight:700">8.6億</td>
+                    <td style="font-size:6.5px;text-align:right;color:#ef4444">6.1%</td>
+                  </tr>
+                  <tr style="border-bottom:1px solid rgba(0,212,255,0.06)">
+                    <td style="font-size:6.5px;padding:2px 2px;color:#64748b">PG 土地</td>
+                    <td style="font-size:6.5px;text-align:right;color:#f97316;font-weight:700">15.6億</td>
+                    <td style="font-size:6.5px;text-align:right;color:#22c55e">14.8%</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <!-- Stage viz row -->
+            <div style="background:rgba(10,22,40,0.9);border:1px solid rgba(0,212,255,0.08);border-radius:8px;padding:8px">
+              <div style="font-size:7px;color:#475569;margin-bottom:5px;letter-spacing:.5px">ステータス別 件数・売上規模</div>
+              <div style="display:flex;gap:4px">
+                <div style="flex:1;background:rgba(100,116,139,0.1);border-radius:4px;padding:4px 5px;border-left:2px solid #64748b">
+                  <div style="font-size:6px;color:#64748b;margin-bottom:1px">仕入契約予定</div>
+                  <div style="font-size:9px;font-weight:700;color:#94a3b8">3件</div>
+                </div>
+                <div style="flex:1;background:rgba(245,158,11,0.1);border-radius:4px;padding:4px 5px;border-left:2px solid #f59e0b">
+                  <div style="font-size:6px;color:#f59e0b;margin-bottom:1px">仕入契約済</div>
+                  <div style="font-size:9px;font-weight:700;color:#fbbf24">48件</div>
+                </div>
+                <div style="flex:1;background:rgba(37,99,235,0.1);border-radius:4px;padding:4px 5px;border-left:2px solid #2563eb">
+                  <div style="font-size:6px;color:#60a5fa;margin-bottom:1px">建築請負済</div>
+                  <div style="font-size:9px;font-weight:700;color:#60a5fa">22件</div>
+                </div>
+                <div style="flex:1;background:rgba(0,200,160,0.1);border-radius:4px;padding:4px 5px;border-left:2px solid #00c8a0">
+                  <div style="font-size:6px;color:#00c8a0;margin-bottom:1px">販売中</div>
+                  <div style="font-size:9px;font-weight:700;color:#00e8b8">7件</div>
+                </div>
+                <div style="flex:1;background:rgba(139,92,246,0.1);border-radius:4px;padding:4px 5px;border-left:2px solid #8b5cf6">
+                  <div style="font-size:6px;color:#8b5cf6;margin-bottom:1px">販売契約済</div>
+                  <div style="font-size:9px;font-weight:700;color:#a78bfa">12件</div>
+                </div>
+                <div style="flex:1;background:rgba(245,200,66,0.1);border-radius:4px;padding:4px 5px;border-left:2px solid #f5c842">
+                  <div style="font-size:6px;color:#f5c842;margin-bottom:1px">販売決済済</div>
+                  <div style="font-size:9px;font-weight:700;color:#fde68a">46件</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Floating labels -->
+        <div style="position:absolute;top:50px;right:-120px;background:rgba(0,200,160,0.1);border:1px solid rgba(0,200,160,0.3);border-radius:10px;padding:8px 14px;font-size:10px;color:var(--teal);font-weight:700;backdrop-filter:blur(10px);white-space:nowrap">
+          ✓ リアルタイム更新
+        </div>
+        <div style="position:absolute;bottom:60px;right:-100px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);border-radius:10px;padding:8px 14px;font-size:10px;color:var(--purple);font-weight:700;backdrop-filter:blur(10px);white-space:nowrap">
+          ✓ ドリルダウン分析
+        </div>
+        <div style="position:absolute;bottom:-20px;left:-80px;background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);border-radius:10px;padding:8px 14px;font-size:10px;color:var(--gold);font-weight:700;backdrop-filter:blur(10px);white-space:nowrap">
+          ✓ 138プロジェクト一元管理
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── NUMBERS ─── -->
+<div class="divider"></div>
+<section id="numbers">
+  <div class="container">
+    <div class="numbers-grid">
+      <div class="number-card">
+        <div class="nc-val gradient-text">138</div>
+        <div class="nc-label">管理プロジェクト数</div>
+        <div class="nc-sub">全ステータス・全種別を統合管理</div>
+      </div>
+      <div class="number-card">
+        <div class="nc-val" style="color:var(--accent3)">12</div>
+        <div class="nc-label">管理モジュール</div>
+        <div class="nc-sub">概要〜CRMまで業務を網羅</div>
+      </div>
+      <div class="number-card">
+        <div class="nc-val gradient-text-gold">129億</div>
+        <div class="nc-label">今期フォーキャスト売上高</div>
+        <div class="nc-sub">月次P&L・セグメント別分析</div>
+      </div>
+      <div class="number-card">
+        <div class="nc-val" style="color:var(--purple)">7段階</div>
+        <div class="nc-label">事業収支ステージ可視化</div>
+        <div class="nc-sub">仕入〜最終収支まで推移追跡</div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="divider"></div>
+
+<!-- ─── FEATURES ─── -->
+<section id="features">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge"><span class="tag-pill tag-cyan">Core Features</span></div>
+      <h2 class="section-title">不動産事業経営に<br>必要な機能をすべて</h2>
+      <p class="section-desc">複雑な不動産開発プロジェクトの収益管理から、資金繰り、金融機関管理、フォーキャストまで。経営判断に必要な情報をリアルタイムで提供します。</p>
+    </div>
+    <div class="features-grid">
+      <!-- 1 -->
+      <div class="feature-card" style="--c:#00d4ff;--cr:0,212,255">
+        <div class="fc-icon" style="background:rgba(0,212,255,0.1)">◈</div>
+        <div class="fc-title">経営ダッシュボード</div>
+        <div class="fc-desc">KPI5指標（売上高・粗利・営業利益・経常利益・純利益）をリアルタイムで表示。ステータス別・商品種別レポートをクリックでプロジェクトにドリルダウン。</div>
+        <div class="fc-tags">
+          <span class="fc-tag">KPIカード</span>
+          <span class="fc-tag">ドリルダウン</span>
+          <span class="fc-tag">月次トレンド</span>
+          <span class="fc-tag">商品種別</span>
+        </div>
+      </div>
+      <!-- 2 -->
+      <div class="feature-card" style="--c:#00ff88;--cr:0,255,136">
+        <div class="fc-icon" style="background:rgba(0,255,136,0.08)">📊</div>
+        <div class="fc-title">フォーキャストレポート</div>
+        <div class="fc-desc">月次P&Lを12ヶ月縦断で全項目表示。不動産売買6区分（1棟MS/AP・分譲・戸建・土地・中古）に分解。四半期色分け・上半期/通期集計付き。</div>
+        <div class="fc-tags">
+          <span class="fc-tag">月次P&L</span>
+          <span class="fc-tag">セグメント分析</span>
+          <span class="fc-tag">物件別予測</span>
+          <span class="fc-tag">利益率推移</span>
+        </div>
+      </div>
+      <!-- 3 -->
+      <div class="feature-card" style="--c:#f5c842;--cr:245,200,66">
+        <div class="fc-icon" style="background:rgba(245,200,66,0.08)">🏠</div>
+        <div class="fc-title">物件詳細・収支推移</div>
+        <div class="fc-desc">仕入契約締結→建築請負→販売中→買付→販売契約→販売決済→最終収支の7ステージで収支を可視化。各ステージの利益額・利益率をスナップショット表示。</div>
+        <div class="fc-tags">
+          <span class="fc-tag">7ステージ可視化</span>
+          <span class="fc-tag">収支推移</span>
+          <span class="fc-tag">資金繰り表</span>
+          <span class="fc-tag">通知預金</span>
+        </div>
+      </div>
+      <!-- 4 -->
+      <div class="feature-card" style="--c:#8b5cf6;--cr:139,92,246">
+        <div class="fc-icon" style="background:rgba(139,92,246,0.08)">📋</div>
+        <div class="fc-title">プロジェクト一覧</div>
+        <div class="fc-desc">138件の全プロジェクトを一覧管理。ステータス・仕入契約月・仕入決済月・販売予定月・販売契約月・販売決済月・建築会社・金融機関・粗利率を横断表示。</div>
+        <div class="fc-tags">
+          <span class="fc-tag">全項目表示</span>
+          <span class="fc-tag">フィルター</span>
+          <span class="fc-tag">横断検索</span>
+          <span class="fc-tag">期別絞込</span>
+        </div>
+      </div>
+      <!-- 5 -->
+      <div class="feature-card" style="--c:#00c8a0;--cr:0,200,160">
+        <div class="fc-icon" style="background:rgba(0,200,160,0.08)">🏦</div>
+        <div class="fc-title">金融機関管理</div>
+        <div class="fc-desc">銀行別・長期/短期別借入残高推移、月次表、物件別金融機関リスト。返済期日順リスト（要注意90日以内・注意90〜180日・余裕あり）で資金リスクを早期把握。</div>
+        <div class="fc-tags">
+          <span class="fc-tag">借入残高推移</span>
+          <span class="fc-tag">返済期日管理</span>
+          <span class="fc-tag">物件別利息</span>
+          <span class="fc-tag">通知預金</span>
+        </div>
+      </div>
+      <!-- 6 -->
+      <div class="feature-card" style="--c:#ec4899;--cr:236,72,153">
+        <div class="fc-icon" style="background:rgba(236,72,153,0.08)">💴</div>
+        <div class="fc-title">資金繰り集計</div>
+        <div class="fc-desc">全物件の資金繰り表データを集計・可視化。月次収支トレンドチャート（収入/支出バー＋月末残高ライン）。ステータス別・種別別フィルターで絞り込み分析。</div>
+        <div class="fc-tags">
+          <span class="fc-tag">月次収支</span>
+          <span class="fc-tag">残高推移</span>
+          <span class="fc-tag">物件別CF</span>
+          <span class="fc-tag">集計レポート</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── OVERVIEW MOCKUP ─── -->
+<section id="overview-section">
+  <div class="container">
+    <div class="overview-grid">
+      <div>
+        <div class="section-badge"><span class="tag-pill tag-green">Overview Tab</span></div>
+        <h2 class="section-title">全体収支を<br>一目で把握</h2>
+        <p class="section-desc">138プロジェクトの売上・粗利・進行状況をリアルタイムで集約。ステータス別・商品種別テーブルをクリックするだけで、対象プロジェクト一覧がインライン展開。</p>
+        <div style="display:flex;flex-direction:column;gap:16px;margin-top:32px">
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">◈</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;margin-bottom:4px">ステータス別ドリルダウン</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.7">仕入契約予定〜販売決済済の7ステータスで集計。クリックで対象プロジェクトを即時展開。</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📦</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;margin-bottom:4px">商品種別 収益分析</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.7">FA/FC/PR/AR/PG/中古の6種別で件数・売上・原価・粗利益・粗利率を横断比較。</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <div style="width:36px;height:36px;border-radius:8px;background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">💴</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;margin-bottom:4px">資金繰り集計レポート</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.7">全物件の資金繰り表データを統合表示。月次収支・累積残高・カテゴリ別支出構成を可視化。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Mockup -->
+      <div class="ov-screen">
+        <div class="ov-mockup">
+          <div class="ov-topbar">
+            <div class="ov-topbar-dot"></div><div class="ov-topbar-dot"></div><div class="ov-topbar-dot"></div>
+            <div class="ov-topbar-line"></div>
+          </div>
+          <div class="ov-tabs">
+            <div class="ov-tab active">◈ 概要</div>
+            <div class="ov-tab">◉ 物件詳細</div>
+            <div class="ov-tab">プロジェクト一覧</div>
+            <div class="ov-tab">🏦 金融機関</div>
+            <div class="ov-tab">📊 フォーキャスト</div>
+          </div>
+          <div class="ov-kpis">
+            <div class="ov-kpi" style="border-top-color:#00d4ff"><div class="ok-l">総プロジェクト</div><div class="ok-v" style="color:#00d4ff">138件</div></div>
+            <div class="ov-kpi" style="border-top-color:#00ff88"><div class="ok-l">総売上規模</div><div class="ok-v" style="color:#00ff88">215億</div></div>
+            <div class="ov-kpi" style="border-top-color:#f5c842"><div class="ok-l">総粗利益</div><div class="ok-v" style="color:#f5c842">62億</div></div>
+            <div class="ov-kpi" style="border-top-color:#f5c842"><div class="ok-l">完了・決済済</div><div class="ok-v" style="color:#fbbf24">46件</div></div>
+            <div class="ov-kpi" style="border-top-color:#8b5cf6"><div class="ok-l">進行中</div><div class="ok-v" style="color:#8b5cf6">92件</div></div>
+          </div>
+          <div class="ov-body">
+            <div class="ov-card">
+              <div class="ov-card-title">ステータス別 件数・売上規模</div>
+              <table class="mini-table">
+                <tr><td style="color:#64748b">仕入契約予定</td><td style="color:#64748b;text-align:right">3件</td><td style="color:#94a3b8;text-align:right">2.4億</td></tr>
+                <tr><td style="color:#f59e0b">仕入契約済</td><td style="color:#fbbf24;text-align:right">48件</td><td style="color:#fbbf24;text-align:right">85.2億</td></tr>
+                <tr><td style="color:#60a5fa">建築請負済</td><td style="color:#60a5fa;text-align:right">22件</td><td style="color:#60a5fa;text-align:right">53.8億</td></tr>
+                <tr><td style="color:#00c8a0">販売中</td><td style="color:#00e8b8;text-align:right">7件</td><td style="color:#00e8b8;text-align:right">15.1億</td></tr>
+                <tr><td style="color:#8b5cf6">販売契約済</td><td style="color:#a78bfa;text-align:right">12件</td><td style="color:#a78bfa;text-align:right">24.6億</td></tr>
+                <tr><td style="color:#f5c842">販売決済済</td><td style="color:#fde68a;text-align:right">46件</td><td style="color:#fde68a;text-align:right">34.1億</td></tr>
+              </table>
+            </div>
+            <div class="ov-card">
+              <div class="ov-card-title">商品種別 件数・売上・原価・粗利率</div>
+              <table class="mini-table">
+                <tr><td style="color:#00d4ff">FA 新築AP</td><td style="color:#e2e8f0;text-align:right">45件</td><td style="color:#22c55e;text-align:right">28.4%</td></tr>
+                <tr><td style="color:#8b5cf6">FC 新築MS</td><td style="color:#e2e8f0;text-align:right">12件</td><td style="color:#22c55e;text-align:right">36.2%</td></tr>
+                <tr><td style="color:#f59e0b">PR 建売</td><td style="color:#e2e8f0;text-align:right">23件</td><td style="color:#f87171;text-align:right">6.1%</td></tr>
+                <tr><td style="color:#00c8a0">AR 賃貸併用</td><td style="color:#e2e8f0;text-align:right">8件</td><td style="color:#22c55e;text-align:right">24.8%</td></tr>
+                <tr><td style="color:#f97316">PG 土地</td><td style="color:#e2e8f0;text-align:right">18件</td><td style="color:#fbbf24;text-align:right">14.8%</td></tr>
+                <tr><td style="color:#ec4899">中古収益</td><td style="color:#e2e8f0;text-align:right">32件</td><td style="color:#22c55e;text-align:right">18.2%</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="ov-badge">🔄 全物件リアルタイム集計</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TABS SHOWCASE ─── -->
+<section id="tabs-showcase">
+  <div class="container">
+    <div class="section-header" style="text-align:center">
+      <div class="section-badge" style="justify-content:center;display:flex"><span class="tag-pill tag-gold">12 Modules</span></div>
+      <h2 class="section-title">経営のすべてを<br>ワンプラットフォームで</h2>
+      <p class="section-desc" style="margin:0 auto">不動産デベロッパーの業務フロー全体をカバーする12の専門モジュール。タブ切り替えで即座にアクセス。</p>
+    </div>
+    <div class="tabs-grid">
+      <div class="tab-showcase-card" style="--c:#00d4ff">
+        <div class="tsc-num">01</div>
+        <span class="tsc-icon">◈</span>
+        <div class="tsc-title">概要ダッシュボード</div>
+        <ul class="tsc-items">
+          <li>KPI5項目リアルタイム</li>
+          <li>月次売上・粗利トレンド</li>
+          <li>ステータス別・種別別レポート</li>
+          <li>資金繰り集計レポート</li>
+        </ul>
+      </div>
+      <div class="tab-showcase-card" style="--c:#00ff88">
+        <div class="tsc-num">02</div>
+        <span class="tsc-icon">◉</span>
+        <div class="tsc-title">物件詳細</div>
+        <ul class="tsc-items">
+          <li>7ステージ収支可視化</li>
+          <li>月次資金繰り表</li>
+          <li>プロジェクト情報・スケジュール</li>
+          <li>通知預金管理</li>
+        </ul>
+      </div>
+      <div class="tab-showcase-card" style="--c:#f5c842">
+        <div class="tsc-num">03</div>
+        <span class="tsc-icon">≡</span>
+        <div class="tsc-title">プロジェクト一覧</div>
+        <ul class="tsc-items">
+          <li>138件横断一覧表</li>
+          <li>全日程・金融・建設情報</li>
+          <li>ステータス・種別フィルター</li>
+          <li>粗利益率一覧</li>
+        </ul>
+      </div>
+      <div class="tab-showcase-card" style="--c:#00c8a0">
+        <div class="tsc-num">04</div>
+        <span class="tsc-icon">🏦</span>
+        <div class="tsc-title">金融機関管理</div>
+        <ul class="tsc-items">
+          <li>銀行別借入残高推移</li>
+          <li>返済期日順リスト</li>
+          <li>物件別金融機関一覧</li>
+          <li>推定利息分析</li>
+        </ul>
+      </div>
+      <div class="tab-showcase-card" style="--c:#8b5cf6">
+        <div class="tsc-num">05</div>
+        <span class="tsc-icon">📊</span>
+        <div class="tsc-title">フォーキャストレポート</div>
+        <ul class="tsc-items">
+          <li>月次P&L全項目12ヶ月</li>
+          <li>セグメント別売上分析</li>
+          <li>物件別フォーキャスト</li>
+          <li>四半期サマリー</li>
+        </ul>
+      </div>
+      <div class="tab-showcase-card" style="--c:#ec4899">
+        <div class="tsc-num">06</div>
+        <span class="tsc-icon">💴</span>
+        <div class="tsc-title">資金管理</div>
+        <ul class="tsc-items">
+          <li>預金残高推移チャート</li>
+          <li>借入残高増減明細</li>
+          <li>月次資金繰り明細表</li>
+          <li>収支バランス分析</li>
+        </ul>
+      </div>
+      <div class="tab-showcase-card" style="--c:#f97316">
+        <div class="tsc-num">07</div>
+        <span class="tsc-icon">🏗</span>
+        <div class="tsc-title">施工管理</div>
+        <ul class="tsc-items">
+          <li>施工区分別一覧</li>
+          <li>外注先評価・与信チェック</li>
+          <li>施工進捗ステータス</li>
+          <li>建設会社別分析</li>
+        </ul>
+      </div>
+      <div class="tab-showcase-card" style="--c:#f59e0b">
+        <div class="tsc-num">08</div>
+        <span class="tsc-icon">📥</span>
+        <div class="tsc-title">仕入・販売管理</div>
+        <ul class="tsc-items">
+          <li>仕入経路別収益分析</li>
+          <li>担当者別・部署別成績</li>
+          <li>販売チャネル分析</li>
+          <li>ドリルダウン詳細</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FORECAST SECTION ─── -->
+<section id="forecast-section">
+  <div class="container">
+    <div class="forecast-grid">
+      <div>
+        <div class="section-badge"><span class="tag-pill" style="background:rgba(139,92,246,0.1);color:var(--purple);border:1px solid rgba(139,92,246,0.25)">Forecast 29期</span></div>
+        <h2 class="section-title">フォーキャストで<br>未来を数値で経営する</h2>
+        <p class="section-desc">月次P&Lを完全可視化。売上高から当期純利益まで、セグメント別・商品種別に分解した詳細フォーキャストで、経営判断の精度を高めます。</p>
+        <div style="margin-top:32px;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.15);border-radius:10px">
+            <div style="font-size:20px">① </div>
+            <div>
+              <div style="font-size:13px;font-weight:700;margin-bottom:2px">サマリーダッシュボード</div>
+              <div style="font-size:11px;color:var(--text2)">KPI・月次棒グラフ・利益率トレンド・セグメント円グラフ・Q別損益</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(0,212,255,0.05);border:1px solid rgba(0,212,255,0.12);border-radius:10px">
+            <div style="font-size:20px">② </div>
+            <div>
+              <div style="font-size:13px;font-weight:700;margin-bottom:2px">月次P&Lレポート</div>
+              <div style="font-size:11px;color:var(--text2)">売上高〜純利益まで全12ヶ月横断。セグメント・サブセグメント内訳・四半期色分け</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(0,255,136,0.05);border:1px solid rgba(0,255,136,0.12);border-radius:10px">
+            <div style="font-size:20px">③ </div>
+            <div>
+              <div style="font-size:13px;font-weight:700;margin-bottom:2px">物件別フォーキャスト</div>
+              <div style="font-size:11px;color:var(--text2)">全物件の月次売上・原価・粗利。契約済・販売中・来期以降をカラー区分</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Forecast Mockup -->
+      <div>
+        <div class="forecast-card">
+          <div style="font-size:10px;color:#475569;margin-bottom:12px;letter-spacing:.5px;text-transform:uppercase">📊 フォーキャストレポート — サマリー</div>
+          <div class="fc-kpi-row">
+            <div class="fc-kpi">
+              <div class="fc-kpi-label">売上高</div>
+              <div class="fc-kpi-val gradient-text">129億</div>
+            </div>
+            <div class="fc-kpi">
+              <div class="fc-kpi-label">売上総利益</div>
+              <div class="fc-kpi-val" style="color:#00ff88">39億</div>
+            </div>
+            <div class="fc-kpi">
+              <div class="fc-kpi-label">営業利益</div>
+              <div class="fc-kpi-val" style="color:#f5c842">31億</div>
+            </div>
+          </div>
+          <div class="fc-bars-label">月次売上高（百万円） · 8月〜7月</div>
+          <div class="fc-bars">
+            <div class="fc-bar-wrap"><div class="fc-bar" style="height:28%;background:rgba(0,212,255,0.5)"></div><div class="fc-bar-label">8月</div></div>
+            <div class="fc-bar-wrap"><div class="fc-bar" style="height:42%;background:rgba(0,212,255,0.5)"></div><div class="fc-bar-label">9月</div></div>
+            <div class="fc-bar-wrap"><div class="fc-bar" style="height:50%;background:rgba(0,212,255,0.55)"></div><div class="fc-bar-label">10月</div></div>
+            <div class="fc-bar-wrap"><div class="fc-bar" style="height:62%;background:rgba(245,200,66,0.6)"></div><div class="fc-bar-label">11月</div></div>
+            <div class="fc-bar-wrap"><div class="fc-bar" style="height:78%;background:rgba(245,200,66,0.65)"></div><div class="fc-bar-label">12月</div></div>
+            <div class="fc-bar-wrap"><div class="fc-bar" style="height:50%;background:rgba(245,200,66,0.55)"></div><div class="fc-bar-label">1月</div></div>
+            <div class="fc-bar-wrap"><div class="fc-bar" style="height:66%;background:rgba(0,200,160,0.6)"></div><div class="fc-bar-label">2月</div></div>
+            <div class="fc-bar-wrap"><div class="fc-bar" style="height:82%;background:rgba(0,200,160,0.65)"></div><div class="fc-bar-label">3月</div></div>
+            <div class="fc-bar-wrap"><div class="fc-bar" style="height:88%;background:rgba(0,200,160,0.65)"></div><div class="fc-bar-label">4月</div></div>
+            <div class="fc-bar-wrap"><div class="fc-bar" style="height:58%;background:rgba(139,92,246,0.6)"></div><div class="fc-bar-label">5月</div></div>
+            <div class="fc-bar-wrap"><div class="fc-bar" style="height:50%;background:rgba(139,92,246,0.55)"></div><div class="fc-bar-label">6月</div></div>
+            <div class="fc-bar-wrap"><div class="fc-bar" style="height:64%;background:rgba(139,92,246,0.6)"></div><div class="fc-bar-label">7月</div></div>
+          </div>
+          <table class="fc-table" style="margin-top:14px">
+            <tr class="fc-thead"><td>セグメント</td><td>売上(億)</td><td>粗利(億)</td><td>粗利率</td></tr>
+            <tr><td style="color:#00d4ff">不動産売買</td><td>126.2</td><td>38.2</td><td style="color:#22c55e">30.3%</td></tr>
+            <tr><td style="color:#00ff88">不動産賃貸管理</td><td>2.8</td><td>1.5</td><td style="color:#22c55e">55.0%</td></tr>
+            <tr><td style="color:#f5c842">その他</td><td>1.3</td><td>0.6</td><td style="color:#22c55e">50.0%</td></tr>
+            <tr style="border-top:1px solid rgba(0,212,255,0.2)"><td style="font-weight:700;color:#fff">合計</td><td style="font-weight:700;color:#00d4ff">130.3</td><td style="font-weight:700;color:#22c55e">40.3</td><td style="font-weight:700;color:#22c55e">30.9%</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FLOW ─── -->
+<section id="flow">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start">
+      <div>
+        <div class="section-badge"><span class="tag-pill tag-cyan">Project Flow</span></div>
+        <h2 class="section-title">仕入から決済まで<br>全フェーズを追跡</h2>
+        <p class="section-desc">物件の誕生から完結まで、7つのステージで収支・リスクをリアルタイムに把握。経営者が知りたい情報を、知りたいタイミングで。</p>
+      </div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-num" style="background:rgba(100,116,139,0.15);border:2px solid #64748b;color:#64748b">1</div>
+          <div class="flow-body">
+            <div class="flow-title">仕入契約締結</div>
+            <div class="flow-desc">土地取得費・開発費を確定。想定売上高との収支シミュレーション開始。</div>
+            <div class="flow-tags">
+              <span class="flow-tag" style="background:rgba(100,116,139,0.1);color:#94a3b8;border:1px solid rgba(100,116,139,0.2)">土地取得費</span>
+              <span class="flow-tag" style="background:rgba(100,116,139,0.1);color:#94a3b8;border:1px solid rgba(100,116,139,0.2)">登記費用</span>
+              <span class="flow-tag" style="background:rgba(100,116,139,0.1);color:#94a3b8;border:1px solid rgba(100,116,139,0.2)">収支シミュレーション</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num" style="background:rgba(37,99,235,0.15);border:2px solid #2563eb;color:#60a5fa">2</div>
+          <div class="flow-body">
+            <div class="flow-title">建築請負締結</div>
+            <div class="flow-desc">建築費・設計費を確定。原価構造が固まり、精度の高い収支予測が可能に。</div>
+            <div class="flow-tags">
+              <span class="flow-tag" style="background:rgba(37,99,235,0.1);color:#60a5fa;border:1px solid rgba(37,99,235,0.2)">建築費確定</span>
+              <span class="flow-tag" style="background:rgba(37,99,235,0.1);color:#60a5fa;border:1px solid rgba(37,99,235,0.2)">設計費</span>
+              <span class="flow-tag" style="background:rgba(37,99,235,0.1);color:#60a5fa;border:1px solid rgba(37,99,235,0.2)">着工スケジュール</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num" style="background:rgba(0,200,160,0.15);border:2px solid #00c8a0;color:#00e8b8">3</div>
+          <div class="flow-body">
+            <div class="flow-title">販売中・買付</div>
+            <div class="flow-desc">販売活動開始。買付証明書受領で売価確定。収支が現実的な数字に。</div>
+            <div class="flow-tags">
+              <span class="flow-tag" style="background:rgba(0,200,160,0.1);color:#00e8b8;border:1px solid rgba(0,200,160,0.2)">広告販売費</span>
+              <span class="flow-tag" style="background:rgba(0,200,160,0.1);color:#00e8b8;border:1px solid rgba(0,200,160,0.2)">売価確定</span>
+              <span class="flow-tag" style="background:rgba(0,200,160,0.1);color:#00e8b8;border:1px solid rgba(0,200,160,0.2)">ローン審査</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num" style="background:rgba(139,92,246,0.15);border:2px solid #8b5cf6;color:#a78bfa">4</div>
+          <div class="flow-body">
+            <div class="flow-title">販売契約・決済</div>
+            <div class="flow-desc">売買契約締結で収益確定。引渡し・残金収受で事業完結。</div>
+            <div class="flow-tags">
+              <span class="flow-tag" style="background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.2)">売買契約</span>
+              <span class="flow-tag" style="background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.2)">所有権移転</span>
+              <span class="flow-tag" style="background:rgba(139,92,246,0.1);color:#a78bfa;border:1px solid rgba(139,92,246,0.2)">残金収受</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num" style="background:rgba(245,200,66,0.15);border:2px solid #f5c842;color:#f5c842">5</div>
+          <div class="flow-body">
+            <div class="flow-title">最終収支（報酬金・金利含む）</div>
+            <div class="flow-desc">金利・報奨金を含む最終収支を確定。事業精算レポートで次案件へ活かす。</div>
+            <div class="flow-tags">
+              <span class="flow-tag" style="background:rgba(245,200,66,0.1);color:#fde68a;border:1px solid rgba(245,200,66,0.2)">最終金利</span>
+              <span class="flow-tag" style="background:rgba(245,200,66,0.1);color:#fde68a;border:1px solid rgba(245,200,66,0.2)">報奨金</span>
+              <span class="flow-tag" style="background:rgba(245,200,66,0.1);color:#fde68a;border:1px solid rgba(245,200,66,0.2)">事業精算</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── QUOTE ─── -->
+<section id="quote">
+  <div class="quote-inner">
+    <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:32px;padding:6px 18px;border-radius:20px;background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.2);font-size:11px;color:var(--gold);letter-spacing:1px;text-transform:uppercase">✦ INTELLIGENCE PLATFORM</div>
+    <div class="quote-text">
+      物件ごとの収支をリアルタイムで把握し、<br>
+      フォーキャストで来期を予測し、<br>
+      資金繰りでキャッシュを守る。<br>
+      <span class="gradient-text">これが次世代不動産経営の姿です。</span>
+    </div>
+    <div class="quote-author">Frontier Dashboard — Real Estate Intelligence Platform</div>
+  </div>
+</section>
+
+<!-- ─── CTA ─── -->
+<section id="cta">
+  <div class="container" style="text-align:center">
+    <div class="section-badge" style="justify-content:center;display:flex;margin-bottom:24px"><span class="tag-pill tag-green">今すぐ体験</span></div>
+    <h2 class="cta-title">
+      経営ダッシュボードを<br>
+      <span class="gradient-text">今すぐ体験する</span>
+    </h2>
+    <p class="cta-desc">138プロジェクト、12モジュール、フォーキャストレポート—すべてのデータをブラウザで即時確認。</p>
+    <div class="cta-actions">
+      <a href="index.html" class="btn btn-primary btn-lg glow-btn">
+        <span>🚀 ダッシュボードを開く</span>
+      </a>
+      <a href="#features" class="btn btn-outline btn-lg">詳細を見る</a>
+    </div>
+    <div class="cta-note">ブラウザで即時起動 · インストール不要 · リアルタイムデータ</div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="logo footer-brand" style="margin-bottom:16px">
+          <div class="logo-mark">FD</div>
+          <div class="logo-text">
+            <b>Frontier Dashboard</b>
+            <span>Real Estate Intelligence</span>
+          </div>
+        </div>
+        <p class="footer-desc">不動産デベロッパー向け次世代経営ダッシュボード。物件管理から経営分析まで、すべての意思決定をインテリジェントに。</p>
+      </div>
+      <div class="footer-col">
+        <h4>機能</h4>
+        <ul>
+          <li><a href="#">経営ダッシュボード</a></li>
+          <li><a href="#">フォーキャストレポート</a></li>
+          <li><a href="#">物件詳細管理</a></li>
+          <li><a href="#">資金繰り分析</a></li>
+          <li><a href="#">金融機関管理</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>モジュール</h4>
+        <ul>
+          <li><a href="#">プロジェクト一覧</a></li>
+          <li><a href="#">仕入管理</a></li>
+          <li><a href="#">販売管理</a></li>
+          <li><a href="#">施工管理</a></li>
+          <li><a href="#">賃貸管理</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>リンク</h4>
+        <ul>
+          <li><a href="index.html">ダッシュボードを開く</a></li>
+          <li><a href="#features">機能一覧</a></li>
+          <li><a href="#forecast-section">フォーキャスト</a></li>
+          <li><a href="#flow">導入フロー</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Frontier Dashboard. All rights reserved.</span>
+      <div class="live-badge"><div class="live-dot"></div>SYSTEM ONLINE</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Intersection Observer for scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.feature-card, .tab-showcase-card, .number-card, .flow-step').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(24px)';
+  el.style.transition = 'opacity .6s ease, transform .6s ease';
+  observer.observe(el);
+});
+
+// Header scroll effect
+window.addEventListener('scroll', () => {
+  const h = document.querySelector('header');
+  if (window.scrollY > 50) {
+    h.style.borderBottomColor = 'rgba(0,212,255,0.15)';
+  } else {
+    h.style.borderBottomColor = 'rgba(0,212,255,0.1)';
+  }
+});
+
+// Number counter animation
+function animateNumber(el, target, suffix) {
+  let start = 0;
+  const duration = 1500;
+  const step = (timestamp) => {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(eased * target) + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+const numObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const vals = entry.target.querySelectorAll('.nc-val');
+      vals.forEach(v => {
+        const text = v.textContent.trim();
+        if (text.startsWith('138')) animateNumber(v, 138, '');
+        else if (text.startsWith('129')) animateNumber(v, 129, '億');
+        else if (text.startsWith('12') && !text.startsWith('129')) animateNumber(v, 12, '');
+      });
+      numObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('#numbers').forEach(el => numObserver.observe(el));
+</script>
+</body>
+</html>

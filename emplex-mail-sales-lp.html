@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>eMplex Mail Sales | データで狙う企業を見抜く、B2Bメール営業SaaS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg0:#060c14;--bg1:#0a1628;--bg2:#0f2040;
+  --accent:#00d4ff;--accent2:#0090ff;--accent3:#00e8b8;
+  --teal:#00c8a0;--teal2:#00e8b8;
+  --purple:#8b5cf6;--purple2:#a78bfa;
+  --gold:#f59e0b;--amber2:#fbbf24;
+  --red:#ef4444;--red2:#f87171;
+  --green:#22c55e;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#475569;
+  --border:rgba(0,212,255,0.1);--border2:rgba(0,212,255,0.22);
+  --jv-navy:#03194C;--jv-navy2:#071f5a;--jv-navy3:#0a2266;
+  --jv-red:#c8102e;--jv-white:#ffffff;--jv-paper:#f5f4f0;
+  --jv-fog:#4a5d7a;--jv-mist:#8a9ab8;
+  --jv-dp:'Syne',sans-serif;--jv-mn:'Space Mono',monospace;--jv-sr:'Noto Serif JP',serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Hiragino Sans','Yu Gothic UI','Noto Sans JP',sans-serif;background:var(--bg0);color:var(--text);overflow-x:hidden;line-height:1.6}
+
+body::before{content:'';position:fixed;inset:0;background:
+  radial-gradient(ellipse 80% 60% at 15% 10%,rgba(0,100,255,0.07) 0%,transparent 60%),
+  radial-gradient(ellipse 60% 50% at 85% 80%,rgba(0,200,160,0.06) 0%,transparent 60%),
+  radial-gradient(ellipse 40% 40% at 50% 50%,rgba(0,212,255,0.03) 0%,transparent 70%);
+  pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
+  background-size:60px 60px;pointer-events:none;z-index:0}
+
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.2);border-radius:2px}
+
+.container{max-width:1200px;margin:0 auto;padding:0 40px;position:relative;z-index:1}
+.tag-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.tag-cyan{background:rgba(0,212,255,0.1);color:var(--accent);border:1px solid rgba(0,212,255,0.25)}
+.tag-green{background:rgba(0,255,136,0.08);color:var(--accent3);border:1px solid rgba(0,255,136,0.2)}
+.tag-purple{background:rgba(139,92,246,0.1);color:var(--purple2);border:1px solid rgba(139,92,246,0.25)}
+.gradient-text{background:linear-gradient(135deg,var(--accent) 0%,var(--teal2) 50%,var(--purple) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.gradient-text-gold{background:linear-gradient(135deg,var(--gold) 0%,#ffaa00 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 20px rgba(0,212,255,0.2)}50%{box-shadow:0 0 40px rgba(0,212,255,0.5)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes scanLine{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.animate-fadeInUp{animation:fadeInUp .7s ease both}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.2s}.delay-3{animation-delay:.3s}.delay-4{animation-delay:.4s}
+
+/* ─── HEADER ─── */
+header{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 40px;height:64px;display:flex;align-items:center;background:rgba(6,12,20,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.header-inner{display:flex;align-items:center;width:100%;max-width:1200px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--teal));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;color:#031018;letter-spacing:-1px;flex-shrink:0;position:relative;overflow:hidden}
+.logo-mark::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.2));pointer-events:none}
+.logo-text b{font-size:15px;color:#fff;letter-spacing:.3px;display:block}
+.logo-text span{font-size:9px;color:var(--accent);letter-spacing:3px;text-transform:uppercase}
+nav{display:flex;align-items:center;gap:30px;margin-left:56px}
+nav a{font-size:12px;color:var(--text2);text-decoration:none;letter-spacing:.5px;transition:.2s;position:relative}
+nav a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:var(--accent);transition:.3s}
+nav a:hover{color:var(--accent)}nav a:hover::after{width:100%}
+.header-cta{margin-left:auto;display:flex;align-items:center;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 22px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s;letter-spacing:.5px;border:none}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--accent)}
+.btn-outline:hover{background:rgba(0,212,255,0.08);border-color:var(--accent)}
+.btn-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#031018;position:relative;overflow:hidden}
+.btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent),var(--accent3));opacity:0;transition:.3s}
+.btn-primary:hover::before{opacity:1}
+.btn-primary span{position:relative;z-index:1}
+.btn-lg{padding:14px 32px;font-size:14px;border-radius:10px}
+
+/* ─── HERO ─── */
+#hero{min-height:100vh;display:flex;align-items:center;padding:100px 0 80px;overflow:hidden;position:relative}
+.hero-scan{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hero-scan::after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,212,255,0.4),transparent);animation:scanLine 6s linear infinite}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:20px;background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);font-size:11px;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:28px}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent3);animation:blink 1.5s infinite}
+.hero-title{font-size:clamp(34px,4.6vw,58px);font-weight:900;line-height:1.15;letter-spacing:-2px;margin-bottom:22px}
+.hero-title .line2{color:var(--text2);font-size:.44em;font-weight:400;letter-spacing:0;display:block;margin-top:10px}
+.hero-desc{font-size:16px;color:var(--text2);max-width:560px;line-height:1.9;margin-bottom:36px}
+.hero-actions{display:flex;align-items:center;gap:16px;margin-bottom:52px;flex-wrap:wrap}
+.hero-stats{display:flex;gap:28px;flex-wrap:wrap}
+.hero-stat{display:flex;flex-direction:column;gap:4px}
+.hero-stat-val{font-size:26px;font-weight:900;letter-spacing:-1px}
+.hero-stat-label{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase}
+.hero-divider{width:1px;height:44px;background:var(--border2);align-self:center}
+
+/* ─── PREVIEW MOCKUP ─── */
+.preview-wrap{position:relative;animation:float 6s ease-in-out infinite}
+.preview-frame{background:rgba(5,14,28,0.9);border:1px solid var(--border2);border-radius:16px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,0.8),0 0 60px rgba(0,212,255,0.08),inset 0 1px 0 rgba(0,212,255,0.15)}
+.preview-bar{height:36px;background:rgba(2,8,16,0.95);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px}
+.preview-dots{display:flex;gap:6px}
+.preview-dots span{width:10px;height:10px;border-radius:50%}
+.preview-dots span:nth-child(1){background:#ff5f57}.preview-dots span:nth-child(2){background:#febc2e}.preview-dots span:nth-child(3){background:#28c840}
+.preview-url{flex:1;background:rgba(15,32,64,0.6);border-radius:6px;height:20px;display:flex;align-items:center;padding:0 10px;font-size:9px;color:var(--text3)}
+.preview-kpi{background:rgba(10,22,40,0.9);border:1px solid rgba(0,212,255,0.08);border-radius:8px;padding:9px;position:relative;overflow:hidden;border-top:2px solid}
+.preview-kpi .pk-label{font-size:7px;color:#475569;margin-bottom:4px;letter-spacing:.5px}
+.preview-kpi .pk-val{font-size:15px;font-weight:800;letter-spacing:-.5px}
+.preview-kpi .pk-sub{font-size:7px;color:#334155;margin-top:2px}
+.screen-glow{position:absolute;inset:-20px;border-radius:24px;background:radial-gradient(ellipse 60% 40% at 50% 50%,rgba(0,212,255,0.06),transparent 70%);pointer-events:none}
+
+/* ─── SECTION BASE ─── */
+section{padding:100px 0;position:relative;z-index:1}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:0 40px}
+.section-badge{margin-bottom:16px}
+.section-title{font-size:clamp(26px,3.3vw,42px);font-weight:900;letter-spacing:-1.5px;line-height:1.25;margin-bottom:16px}
+.section-desc{font-size:15px;color:var(--text2);max-width:600px;line-height:1.9}
+.section-header{margin-bottom:56px}
+
+/* ─── NUMBERS ─── */
+#numbers{background:linear-gradient(180deg,var(--bg0) 0%,rgba(0,30,60,0.3) 50%,var(--bg0) 100%);padding:76px 0}
+.numbers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--border)}
+.number-card{background:var(--bg1);padding:44px 30px;text-align:center;position:relative;overflow:hidden;transition:.3s}
+.number-card:hover{background:rgba(5,18,36,0.95)}
+.nc-val{font-size:clamp(30px,3.4vw,46px);font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:8px}
+.nc-label{font-size:12px;color:var(--text2);letter-spacing:.5px}
+.nc-sub{font-size:10px;color:var(--text3);margin-top:6px}
+
+/* ─── FEATURES ─── */
+#features{background:var(--bg0)}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.feature-card{background:rgba(5,14,28,0.8);border:1px solid var(--border);border-radius:16px;padding:30px;position:relative;overflow:hidden;transition:all .3s}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c,var(--accent)),transparent)}
+.feature-card:hover{border-color:rgba(0,212,255,0.3);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.fc-icon{width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:21px;margin-bottom:18px}
+.fc-title{font-size:17px;font-weight:800;margin-bottom:10px}
+.fc-desc{font-size:13px;color:var(--text2);line-height:1.8}
+.fc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.fc-tag{font-size:9px;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,0.05);color:var(--text3);border:1px solid var(--border)}
+
+/* ─── OVERVIEW MOCKUP ─── */
+#overview-section{background:linear-gradient(180deg,var(--bg0),var(--bg1))}
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.ov-screen{position:relative}
+.ov-mockup{background:rgba(5,14,28,0.95);border:1px solid var(--border2);border-radius:14px;padding:16px;box-shadow:0 30px 80px rgba(0,0,0,0.6),0 0 40px rgba(0,212,255,0.06)}
+.ov-topbar{height:26px;background:rgba(2,8,16,0.9);border-radius:6px;display:flex;align-items:center;padding:0 10px;gap:6px;margin-bottom:10px}
+.ov-topbar-dot{width:6px;height:6px;border-radius:50%;background:rgba(0,212,255,0.4)}
+.ov-topbar-line{flex:1;height:9px;background:rgba(0,212,255,0.06);border-radius:3px;margin-left:8px}
+.ov-body{display:flex;flex-direction:column;gap:8px}
+.ov-row{display:grid;grid-template-columns:1.3fr 1fr;gap:8px}
+.ov-card{background:rgba(10,22,40,0.7);border:1px solid rgba(0,212,255,0.06);border-radius:6px;padding:8px}
+.ov-card-title{font-size:6.5px;color:#475569;letter-spacing:.5px;margin-bottom:6px;text-transform:uppercase}
+.ov-badge{position:absolute;top:-16px;right:-16px;background:rgba(0,200,160,0.1);border:1px solid rgba(0,200,160,0.3);border-radius:10px;padding:8px 14px;font-size:10px;color:var(--teal);font-weight:700;backdrop-filter:blur(10px)}
+.ei-mini{background:rgba(15,32,64,0.7);border-radius:5px;padding:5px 7px;margin-bottom:4px;border:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center}
+.ei-mini .em-pj{font-size:6.5px;font-weight:700;color:var(--text)}
+.ei-mini .em-h{font-size:9px;font-weight:800;color:var(--teal2)}
+
+/* ─── MODULES ─── */
+#modules{background:var(--bg1)}
+.tabs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.tab-showcase-card{background:rgba(5,14,28,0.8);border:1px solid var(--border);border-radius:14px;padding:24px;transition:all .3s;position:relative;overflow:hidden}
+.tab-showcase-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--c,var(--accent)),transparent);transform:scaleX(0);transition:.3s}
+.tab-showcase-card:hover{border-color:rgba(0,212,255,0.2);transform:translateY(-3px)}
+.tab-showcase-card:hover::before{transform:scaleX(1)}
+.tsc-num{font-size:11px;color:var(--text3);letter-spacing:2px;margin-bottom:12px;font-weight:600}
+.tsc-icon{font-size:26px;margin-bottom:12px;display:block}
+.tsc-title{font-size:15px;font-weight:800;margin-bottom:8px;color:#fff}
+.tsc-items{list-style:none;display:flex;flex-direction:column;gap:5px}
+.tsc-items li{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:6px}
+.tsc-items li::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--accent);flex-shrink:0;opacity:.6}
+
+/* ─── FLOW ─── */
+#flow{background:linear-gradient(180deg,var(--bg1),var(--bg0))}
+.flow-steps{display:flex;flex-direction:column;gap:0;position:relative}
+.flow-steps::before{content:'';position:absolute;left:23px;top:24px;bottom:24px;width:1px;background:linear-gradient(180deg,var(--accent),var(--teal),var(--purple))}
+.flow-step{display:flex;gap:24px;align-items:flex-start;padding:24px 0;position:relative}
+.flow-num{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;flex-shrink:0;position:relative;z-index:1}
+.flow-body{flex:1}
+.flow-title{font-size:17px;font-weight:800;margin-bottom:6px}
+.flow-desc{font-size:13px;color:var(--text2);line-height:1.8;max-width:600px}
+.flow-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.flow-tag{font-size:9px;padding:3px 9px;border-radius:4px;font-weight:600}
+
+/* ─── PRICING ─── */
+#pricing{background:var(--bg0)}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:stretch}
+.price-card{background:rgba(5,14,28,0.85);border:1px solid var(--border);border-radius:18px;padding:32px 28px;display:flex;flex-direction:column;position:relative;transition:.3s}
+.price-card:hover{transform:translateY(-4px)}
+.price-card.on{border-color:rgba(0,212,255,0.4);background:rgba(0,212,255,0.04);box-shadow:0 20px 60px rgba(0,212,255,0.12)}
+.price-pop{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent2),var(--accent));color:#031018;font-size:10px;font-weight:800;padding:5px 16px;border-radius:20px;letter-spacing:.5px;white-space:nowrap}
+.price-name{font-size:13px;font-weight:700;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.price-val{font-size:34px;font-weight:900;letter-spacing:-1px;margin-bottom:2px}
+.price-val small{font-size:13px;font-weight:600;color:var(--text2)}
+.price-unit{font-size:11px;color:var(--text3);margin-bottom:22px}
+.price-desc{font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:20px;min-height:52px}
+.price-list{list-style:none;display:flex;flex-direction:column;gap:11px;margin-bottom:26px;flex:1}
+.price-list li{font-size:12.5px;color:var(--text);display:flex;align-items:flex-start;gap:8px;line-height:1.6}
+.price-list li::before{content:'✓';color:var(--teal2);font-weight:900;flex-shrink:0}
+.price-list li.na{color:var(--text3)}
+.price-list li.na::before{content:'—';color:var(--text3)}
+.pricing-note{text-align:center;font-size:11px;color:var(--text3);margin-top:32px;letter-spacing:.3px}
+
+/* ─── QUOTE ─── */
+#quote{background:var(--bg0);text-align:center;padding:76px 0}
+.quote-inner{max-width:800px;margin:0 auto;padding:0 40px}
+.quote-text{font-size:clamp(17px,2.3vw,24px);font-weight:700;line-height:1.7;color:#fff;margin-bottom:22px;position:relative}
+.quote-text::before{content:'"';position:absolute;top:-20px;left:-20px;font-size:80px;color:rgba(0,212,255,0.1);font-family:serif;line-height:1}
+.quote-author{font-size:12px;color:var(--text2);letter-spacing:1px}
+
+/* ─── FAQ ─── */
+#faq{background:linear-gradient(180deg,var(--bg0),var(--bg1))}
+.faq-list{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.faq-item{background:rgba(5,14,28,0.8);border:1px solid var(--border);border-radius:12px;padding:20px 24px;cursor:pointer;transition:.2s}
+.faq-item:hover{border-color:var(--border2)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:14px;font-weight:700;color:#fff}
+.faq-q .fq-mark{font-size:16px;color:var(--accent);transition:.25s;flex-shrink:0}
+.faq-item.open .fq-mark{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.faq-item.open .faq-a{max-height:260px}
+.faq-a p{font-size:12.5px;color:var(--text2);line-height:1.9;padding-top:14px}
+
+/* ─── CTA ─── */
+#cta{padding:110px 0;text-align:center;position:relative;overflow:hidden}
+#cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(0,100,255,0.08),transparent 70%)}
+.cta-title{font-size:clamp(30px,3.8vw,48px);font-weight:900;letter-spacing:-2px;margin-bottom:20px}
+.cta-desc{font-size:16px;color:var(--text2);max-width:520px;margin:0 auto 40px;line-height:1.8}
+.cta-actions{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+.cta-note{font-size:11px;color:var(--text3);margin-top:20px;letter-spacing:.5px}
+.glow-btn{position:relative;overflow:hidden;animation:pulseGlow 3s ease-in-out infinite}
+
+/* ─── FOOTER ─── */
+footer{background:rgba(2,5,12,0.9);border-top:1px solid var(--border);padding:56px 0 30px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:56px;margin-bottom:44px}
+.footer-brand .logo-text b{font-size:17px}
+.footer-desc{font-size:12px;color:var(--text3);margin-top:12px;line-height:1.8;max-width:260px}
+.footer-col h4{font-size:11px;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-col ul li a{font-size:12px;color:var(--text3);text-decoration:none;transition:.2s}
+.footer-col ul li a:hover{color:var(--accent)}
+.footer-bottom{border-top:1px solid var(--border);padding-top:22px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text3);flex-wrap:wrap;gap:10px}
+.live-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);font-size:10px;color:#4ade80;font-weight:700}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 1.5s infinite}
+
+/* ─── PROFILE ─── */
+#profile.prof-section{background:var(--jv-paper);padding:7rem 4.5rem}
+.prof-grid{display:grid;grid-template-columns:340px 1fr;gap:5rem;align-items:start}
+.prof-photo-card{position:sticky;top:88px}
+.prof-photo{width:100%;aspect-ratio:3/4;overflow:hidden;background:linear-gradient(135deg,var(--jv-navy) 0%,var(--jv-navy3) 100%);position:relative}
+.prof-photo-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}
+.prof-photo-initial{font-family:var(--jv-dp);font-size:6rem;font-weight:800;color:rgba(255,255,255,.12)}
+.prof-name-block{background:var(--jv-navy);padding:1.5rem 1.8rem;margin-top:-4px}
+.prof-name{font-family:var(--jv-dp);font-size:1.4rem;font-weight:800;color:var(--jv-white);margin-bottom:.15rem}
+.prof-name-en{font-family:var(--jv-mn);font-size:.58rem;letter-spacing:.18em;color:rgba(255,255,255,.35);margin-bottom:.65rem}
+.prof-role-line{font-family:var(--jv-mn);font-size:.58rem;letter-spacing:.06em;color:rgba(255,255,255,.5);line-height:1.8}
+.prof-badges{margin-top:.9rem;display:flex;flex-direction:column;gap:.3rem}
+.prof-badge{display:flex;align-items:center;gap:.5rem;font-family:var(--jv-mn);font-size:.52rem;letter-spacing:.06em;color:rgba(255,255,255,.5)}
+.prof-badge::before{content:'✓';color:var(--jv-red);font-size:.6rem}
+.prof-career-intro{font-family:var(--jv-dp);font-size:clamp(1.4rem,2.4vw,2.2rem);font-weight:700;color:var(--jv-navy);line-height:1.3;margin-bottom:2.5rem}
+.prof-career-intro em{font-style:normal;color:var(--jv-red)}
+.c-item{display:grid;grid-template-columns:90px 1fr;gap:1.5rem;padding:1.3rem 0;border-bottom:1px solid rgba(3,25,76,.1)}
+.c-item:first-of-type{border-top:1px solid rgba(3,25,76,.1)}
+.c-yr{font-family:var(--jv-mn);font-size:.6rem;color:var(--jv-mist);padding-top:.12rem;letter-spacing:.06em}
+.c-txt{font-size:.84rem;font-weight:300;line-height:1.9;color:var(--jv-fog)}
+.c-txt strong{color:var(--jv-navy);font-weight:500}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+@media(max-width:1024px){.prof-grid{grid-template-columns:1fr}}
+@media(max-width:768px){#profile.prof-section{padding:4rem 1.25rem}.prof-photo-card{position:static}}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:1024px){.features-grid{grid-template-columns:repeat(2,1fr)}.tabs-grid{grid-template-columns:repeat(2,1fr)}.numbers-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr}.pricing-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto}.overview-grid{grid-template-columns:1fr}}
+@media(max-width:768px){
+  .hero-title{font-size:32px}
+  #hero{padding-top:110px}
+  #hero .container>div{display:block!important}
+  .preview-wrap{margin-top:40px}
+  .container{padding:0 20px}
+  header{padding:0 20px}
+  nav{display:none}
+  .logo-text span{display:none}
+  .header-cta .btn-outline{display:none}
+  .features-grid,.tabs-grid{grid-template-columns:1fr}
+  .numbers-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .hero-stats{gap:18px}
+}
+</style>
+</head>
+<body>
+
+<!-- ─── HEADER ─── -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-mark">e</div>
+      <div class="logo-text">
+        <b>eMplex Mail Sales</b>
+        <span>Intent-Driven Mail Sales SaaS</span>
+      </div>
+    </div>
+    <nav>
+      <a href="#features">機能</a>
+      <a href="#modules">モジュール</a>
+      <a href="#pricing">料金</a>
+      <a href="#flow">導入フロー</a>
+      <a href="#faq">よくある質問</a>
+      <a href="#profile">代表紹介</a>
+    </nav>
+    <div class="header-cta">
+      <a href="emplex-mail-sales.html" class="btn btn-outline">デモを開く</a>
+      <a href="#pricing" class="btn btn-primary"><span>🚀 無料トライアルを始める</span></a>
+    </div>
+  </div>
+</header>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-scan"></div>
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center">
+
+      <!-- LEFT -->
+      <div>
+        <div class="hero-badge animate-fadeInUp">
+          <span class="dot"></span>
+          ハマり度合いスコアリング × 上場企業インテリジェンス搭載
+        </div>
+        <h1 class="hero-title animate-fadeInUp delay-1">
+          <span class="gradient-text">eMplex</span> Mail Sales
+          <span class="line2">狙うべき企業を、データで見抜く。返信率で終わらせない営業を。</span>
+        </h1>
+        <p class="hero-desc animate-fadeInUp delay-2">
+          業種・規模・社員数・売上高・エンゲージメント・人件費原価型比率を加重評価する独自のICPスコアリングで、
+          IPO予定企業・TOKYO PRO Market・東証グロースなど実在830社超のターゲットを自動収集。
+          MA行動スコア・CRM感情分析・SNSインテントシグナルを統合した「統合スコア」でホットリードを検知し、
+          テンプレート型メール文章生成から送信・開封・返信トラッキングまでをワンストップで実現するB2Bメール営業SaaSです。
+        </p>
+        <div class="hero-actions animate-fadeInUp delay-3">
+          <a href="#pricing" class="btn btn-primary btn-lg glow-btn">
+            <span>🚀 無料でターゲットリストを見る</span>
+          </a>
+          <a href="emplex-mail-sales.html" class="btn btn-outline btn-lg">デモを体験する →</a>
+        </div>
+        <div class="hero-stats animate-fadeInUp delay-4">
+          <div class="hero-stat">
+            <div class="hero-stat-val gradient-text">830<span style="font-size:16px">社+</span></div>
+            <div class="hero-stat-label">実在の上場・上場予定企業データ</div>
+          </div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-val" style="color:var(--accent3)">6<span style="font-size:16px">要素</span></div>
+            <div class="hero-stat-label">加重ハマり度合いスコアリング</div>
+          </div>
+          <div class="hero-divider"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-val" style="color:var(--gold)">0<span style="font-size:16px">円</span></div>
+            <div class="hero-stat-label">メール文章生成にAPIキー不要</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: MOCKUP -->
+      <div class="preview-wrap animate-fadeInUp delay-2">
+        <div class="screen-glow"></div>
+        <div class="preview-frame">
+          <div class="preview-bar">
+            <div class="preview-dots"><span></span><span></span><span></span></div>
+            <div class="preview-url">app.emplex-mail-sales.jp / ダッシュボード</div>
+            <div class="live-badge" style="font-size:8px;padding:2px 8px"><div class="live-dot"></div>LIVE</div>
+          </div>
+          <div style="padding:10px 12px">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px">
+              <div class="preview-kpi" style="border-top-color:#00d4ff">
+                <div class="pk-label">総リード数</div>
+                <div class="pk-val" style="color:#00d4ff">128</div>
+                <div class="pk-sub">+12 今週</div>
+              </div>
+              <div class="preview-kpi" style="border-top-color:#0090ff">
+                <div class="pk-label">送信数</div>
+                <div class="pk-val" style="color:#0090ff">4,820</div>
+                <div class="pk-sub">+340</div>
+              </div>
+              <div class="preview-kpi" style="border-top-color:#f59e0b">
+                <div class="pk-label">開封率</div>
+                <div class="pk-val" style="color:#fbbf24">43.9%</div>
+                <div class="pk-sub">+2.4pt</div>
+              </div>
+              <div class="preview-kpi" style="border-top-color:#00e8b8">
+                <div class="pk-label">返信率</div>
+                <div class="pk-val" style="color:#00e8b8">10.1%</div>
+                <div class="pk-sub">+0.8pt</div>
+              </div>
+            </div>
+            <div class="ov-row" style="margin-bottom:8px">
+              <div style="background:rgba(10,22,40,0.9);border:1px solid rgba(0,212,255,0.08);border-radius:8px;padding:8px">
+                <div style="font-size:7px;color:#475569;margin-bottom:5px;letter-spacing:.5px">ターゲットリスト ベスト10000（抜粋）</div>
+                <table style="width:100%;border-collapse:collapse">
+                  <tr style="border-bottom:1px solid rgba(0,212,255,0.06)"><td style="font-size:6.5px;padding:2px;color:#e2e8f0">ヒロホールディングス</td><td style="font-size:6.5px;text-align:right;color:#00d4ff;font-weight:700">Fit 87</td><td style="font-size:6.5px;text-align:right;color:#94a3b8">TPM上場</td></tr>
+                  <tr style="border-bottom:1px solid rgba(0,212,255,0.06)"><td style="font-size:6.5px;padding:2px;color:#e2e8f0">アイリッジ</td><td style="font-size:6.5px;text-align:right;color:#00d4ff;font-weight:700">Fit 87</td><td style="font-size:6.5px;text-align:right;color:#94a3b8">グロース上場</td></tr>
+                  <tr><td style="font-size:6.5px;padding:2px;color:#e2e8f0">株式会社HashPort</td><td style="font-size:6.5px;text-align:right;color:#00d4ff;font-weight:700">Fit 70</td><td style="font-size:6.5px;text-align:right;color:#94a3b8">IPO予定</td></tr>
+                </table>
+              </div>
+              <div style="background:rgba(10,22,40,0.9);border:1px solid rgba(0,212,255,0.08);border-radius:8px;padding:8px">
+                <div style="font-size:7px;color:#475569;margin-bottom:5px;letter-spacing:.5px">上場区分 内訳</div>
+                <div class="ei-mini"><span class="em-pj">東証グロース</span><span class="em-h">608社</span></div>
+                <div class="ei-mini"><span class="em-pj">TOKYO PRO Market</span><span class="em-h">187社</span></div>
+                <div class="ei-mini"><span class="em-pj">IPO予定</span><span class="em-h">26社</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute;top:40px;right:-110px;background:rgba(0,200,160,0.1);border:1px solid rgba(0,200,160,0.3);border-radius:10px;padding:8px 14px;font-size:10px;color:var(--teal);font-weight:700;backdrop-filter:blur(10px);white-space:nowrap">
+          ✓ 実企業データを自動収集
+        </div>
+        <div style="position:absolute;bottom:70px;right:-96px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);border-radius:10px;padding:8px 14px;font-size:10px;color:var(--purple);font-weight:700;backdrop-filter:blur(10px);white-space:nowrap">
+          ✓ ハマり度合いで自動優先順位付け
+        </div>
+        <div style="position:absolute;bottom:-16px;left:-70px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:8px 14px;font-size:10px;color:var(--gold);font-weight:700;backdrop-filter:blur(10px);white-space:nowrap">
+          ✓ APIキー無しでメール文章生成
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── NUMBERS ─── -->
+<div class="divider"></div>
+<section id="numbers">
+  <div class="container">
+    <div class="numbers-grid">
+      <div class="number-card">
+        <div class="nc-val gradient-text">830社+</div>
+        <div class="nc-label">実在の上場・上場予定企業</div>
+        <div class="nc-sub">TOKYO PRO Market187社・東証グロース608社・IPO予定企業</div>
+      </div>
+      <div class="number-card">
+        <div class="nc-val" style="color:var(--accent3)">14列</div>
+        <div class="nc-label">ソート可能なターゲットリスト</div>
+        <div class="nc-sub">都道府県・時価総額・監査法人・主幹事証券まで網羅</div>
+      </div>
+      <div class="number-card">
+        <div class="nc-val gradient-text-gold">3パターン</div>
+        <div class="nc-label">メール文章テンプレート生成</div>
+        <div class="nc-sub">課題訴求型／実績訴求型／質問フック型</div>
+      </div>
+      <div class="number-card">
+        <div class="nc-val" style="color:var(--purple)">P0〜P3</div>
+        <div class="nc-label">インテント層別ホットリード判定</div>
+        <div class="nc-sub">MA行動＋CRM感情＋SNSシグナルの統合スコア</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FEATURES ─── -->
+<section id="features">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-badge"><span class="tag-pill tag-cyan">CORE FEATURES</span></div>
+      <h2 class="section-title">「なんとなく」の営業リストを、<br>スコアで語れる資産に変える。</h2>
+      <p class="section-desc">属性・行動・感情・インテントの4軸を統合し、営業が本当に狙うべき企業だけを浮かび上がらせます。</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal" style="--c:#00d4ff">
+        <div class="fc-icon" style="background:rgba(0,212,255,0.1);color:#00d4ff">🎯</div>
+        <div class="fc-title">ハマり度合いスコアリング</div>
+        <div class="fc-desc">業種・規模・社員数・売上高・エンゲージメント・人件費原価型比率を加重評価する独自ICPアルゴリズム。スライダー1本で狙う業種・規模を再定義できます。</div>
+        <div class="fc-tags"><span class="fc-tag">加重平均</span><span class="fc-tag">ベルカーブ評価</span><span class="fc-tag">業種別重み付け</span></div>
+      </div>
+      <div class="feature-card reveal" style="--c:#00e8b8">
+        <div class="fc-icon" style="background:rgba(0,232,184,0.1);color:#00e8b8">🏢</div>
+        <div class="fc-title">ターゲットリスト ベスト10000</div>
+        <div class="fc-desc">TOKYO PRO Market・東証グロース・IPO予定企業を横断収集。上場区分・リスト区分タブ、都道府県・時価総額・監査法人・主幹事証券まで含む全列ソート対応。</div>
+        <div class="fc-tags"><span class="fc-tag">CSV/JSON出力</span><span class="fc-tag">URLで即追加</span><span class="fc-tag">名刺連携</span></div>
+      </div>
+      <div class="feature-card reveal" style="--c:#8b5cf6">
+        <div class="fc-icon" style="background:rgba(139,92,246,0.1);color:#8b5cf6">✉️</div>
+        <div class="fc-title">メール文章提案</div>
+        <div class="fc-desc">課題訴求型・実績訴求型・質問フック型の3パターンを企業データから即時生成。返信傾向ルールに基づく自動改良もAPIキー不要で完結します。</div>
+        <div class="fc-tags"><span class="fc-tag">APIキー不要</span><span class="fc-tag">テンプレート生成</span><span class="fc-tag">改良履歴管理</span></div>
+      </div>
+      <div class="feature-card reveal" style="--c:#f59e0b">
+        <div class="fc-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b">📡</div>
+        <div class="fc-title">マーケティングオートメーション</div>
+        <div class="fc-desc">企業訪問ログ・シナリオ自動化・MA-ROIを標準搭載。行動スコア・CRM感情スコア・SNSインテントシグナルを束ねた「統合スコア」でP0〜P3のホットリードを自動検知。</div>
+        <div class="fc-tags"><span class="fc-tag">P0/P1アラート</span><span class="fc-tag">PBM連携ROI</span><span class="fc-tag">シナリオ配信</span></div>
+      </div>
+      <div class="feature-card reveal" style="--c:#00d4ff">
+        <div class="fc-icon" style="background:rgba(0,212,255,0.1);color:#00d4ff">📇</div>
+        <div class="fc-title">人脈の森 連携</div>
+        <div class="fc-desc">Eight名刺データと会社名を自動突合し、ターゲットリスト上に「名刺あり／なし」を表示。過去の人脈資産をそのまま営業リードの優先度判断に活用できます。</div>
+        <div class="fc-tags"><span class="fc-tag">法人格正規化突合</span><span class="fc-tag">名刺枚数ソート</span></div>
+      </div>
+      <div class="feature-card reveal" style="--c:#00e8b8">
+        <div class="fc-icon" style="background:rgba(0,232,184,0.1);color:#00e8b8">📈</div>
+        <div class="fc-title">反応率分析 &amp; ドリルダウン</div>
+        <div class="fc-desc">リスト別・ソース別・業種別・規模別・IPO区分別の営業ファネルをワンクリックで可視化。開封率・返信率・アポ獲得数はすべて企業リストへドリルダウン可能です。</div>
+        <div class="fc-tags"><span class="fc-tag">カレンダー式アポ管理</span><span class="fc-tag">勝ちパターン蓄積</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── OVERVIEW ─── -->
+<section id="overview-section">
+  <div class="container">
+    <div class="overview-grid">
+      <div>
+        <div class="section-badge"><span class="tag-pill tag-purple">TARGET LIST BEST 10000</span></div>
+        <h2 class="section-title">実在830社超のデータベースを、<br>そのまま営業リストに。</h2>
+        <p class="section-desc" style="margin-bottom:24px">
+          TOKYO PRO Market上場企業187社・東証グロース上場企業608社・IPO予定企業を実データとして収集し、
+          ハマり度合いスコア順に自動整列。都道府県・時価総額・監査法人・主幹事証券会社・上場日まで、
+          営業戦略に必要な項目をすべて1つの表に集約しました。
+        </p>
+        <ul class="tsc-items" style="gap:12px">
+          <li>上場区分タブ（すべて／未上場／IPO予定／TOKYO PRO Market／東証グロース）で瞬時に絞り込み</li>
+          <li>リスト区分タブで展示会・紹介経由・インポートリストごとに集計</li>
+          <li>企業URLを貼り付けるだけでAIが自動調査し、ワンクリック追加（APIキー未設定でも仮登録可）</li>
+        </ul>
+      </div>
+      <div class="ov-screen reveal">
+        <div class="ov-mockup">
+          <div class="ov-topbar"><div class="ov-topbar-dot"></div><div class="ov-topbar-dot"></div><div class="ov-topbar-line"></div></div>
+          <div class="ov-body">
+            <div class="ov-row">
+              <div class="ov-card">
+                <div class="ov-card-title">上場区分</div>
+                <div class="ei-mini"><span class="em-pj">すべて</span><span class="em-h">835</span></div>
+                <div class="ei-mini"><span class="em-pj">東証グロース上場</span><span class="em-h">608</span></div>
+                <div class="ei-mini"><span class="em-pj">TOKYO PRO Market</span><span class="em-h">187</span></div>
+              </div>
+              <div class="ov-card">
+                <div class="ov-card-title">上場予定(IPO予定)</div>
+                <div class="ei-mini"><span class="em-pj">手動登録</span><span class="em-h">12</span></div>
+                <div class="ei-mini"><span class="em-pj">BizReach求人</span><span class="em-h">14</span></div>
+              </div>
+            </div>
+            <div class="ov-card">
+              <div class="ov-card-title">時価総額ランキング (上位・百万円)</div>
+              <div class="ei-mini"><span class="em-pj">トライアルホールディングス</span><span class="em-h">367,194</span></div>
+              <div class="ei-mini"><span class="em-pj">MTG</span><span class="em-h">308,356</span></div>
+              <div class="ei-mini"><span class="em-pj">GO</span><span class="em-h">244,089</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="ov-badge">✓ 全14列 ソート対応</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MODULES ─── -->
+<section id="modules">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-badge"><span class="tag-pill tag-green">4 MODULE GROUPS</span></div>
+      <h2 class="section-title">ターゲティングからエンゲージ、<br>MAまでを1つのSaaSで。</h2>
+      <p class="section-desc">サイドバーの4カテゴリーで、営業活動の入口から改善サイクルまでをシームレスに接続します。</p>
+    </div>
+    <div class="tabs-grid">
+      <div class="tab-showcase-card reveal" style="--c:#00d4ff">
+        <div class="tsc-num">GROUP 01</div>
+        <span class="tsc-icon">🎯</span>
+        <div class="tsc-title">ターゲティング</div>
+        <ul class="tsc-items">
+          <li>リストインポート（CSV／ドラッグ&ドロップ）</li>
+          <li>企業スコアリング（ICP設定・内訳表示）</li>
+          <li>リストビルダー（条件保存・自動生成）</li>
+          <li>インテントセールス（P0〜P3判定）</li>
+        </ul>
+      </div>
+      <div class="tab-showcase-card reveal" style="--c:#00e8b8">
+        <div class="tsc-num">GROUP 02</div>
+        <span class="tsc-icon">✉️</span>
+        <div class="tsc-title">エンゲージ</div>
+        <ul class="tsc-items">
+          <li>メール文章提案（3パターン生成）</li>
+          <li>勝ちパターン（業種・規模別ライブラリ）</li>
+          <li>アポイントスケジュール（カレンダー式）</li>
+          <li>送信履歴の永続保存・返信管理</li>
+        </ul>
+      </div>
+      <div class="tab-showcase-card reveal" style="--c:#8b5cf6">
+        <div class="tsc-num">GROUP 03</div>
+        <span class="tsc-icon">📊</span>
+        <div class="tsc-title">分析</div>
+        <ul class="tsc-items">
+          <li>反応率分析（リスト別・ソース別）</li>
+          <li>業種・規模・IPO区分別 営業ファネル</li>
+          <li>開封率・返信率・アポ獲得数のドリルダウン</li>
+        </ul>
+      </div>
+      <div class="tab-showcase-card reveal" style="--c:#f59e0b">
+        <div class="tsc-num">GROUP 04</div>
+        <span class="tsc-icon">📡</span>
+        <div class="tsc-title">マーケティングオートメーション</div>
+        <ul class="tsc-items">
+          <li>企業訪問ログ（HPアクセス・流入元）</li>
+          <li>シナリオ自動化（ナーチャリング配信）</li>
+          <li>MA-ROI（PBM連携・収益貢献可視化）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FLOW ─── -->
+<section id="flow">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-badge"><span class="tag-pill tag-cyan">HOW IT WORKS</span></div>
+      <h2 class="section-title">導入から成果創出まで、5ステップ。</h2>
+      <p class="section-desc">リストを取り込んだその日から、スコアリングと文章生成が動き出します。</p>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step reveal">
+        <div class="flow-num" style="background:rgba(0,212,255,0.12);color:var(--accent);border:2px solid var(--accent)">1</div>
+        <div class="flow-body">
+          <div class="flow-title">ターゲットリストを取り込む</div>
+          <div class="flow-desc">CSVインポート、企業URLの即時追加、あるいはTOKYO PRO Market・東証グロース・IPO予定企業の実データベースをそのまま活用。</div>
+          <div class="flow-tags"><span class="flow-tag" style="background:rgba(0,212,255,0.1);color:var(--accent)">CSV/URL/実データ</span></div>
+        </div>
+      </div>
+      <div class="flow-step reveal">
+        <div class="flow-num" style="background:rgba(0,232,184,0.12);color:var(--accent3);border:2px solid var(--accent3)">2</div>
+        <div class="flow-body">
+          <div class="flow-title">ハマり度合いスコアで優先順位付け</div>
+          <div class="flow-desc">業種・規模・社員数・売上高・エンゲージメント・人件費原価型比率を加重評価し、狙うべき企業を自動的に上位表示。</div>
+          <div class="flow-tags"><span class="flow-tag" style="background:rgba(0,232,184,0.1);color:var(--accent3)">ICPスコアリング</span></div>
+        </div>
+      </div>
+      <div class="flow-step reveal">
+        <div class="flow-num" style="background:rgba(139,92,246,0.12);color:var(--purple2);border:2px solid var(--purple)">3</div>
+        <div class="flow-body">
+          <div class="flow-title">メール文章を3パターン生成</div>
+          <div class="flow-desc">課題訴求型・実績訴求型・質問フック型をテンプレートエンジンが即時生成。APIキーがなくてもすぐに送信文章が完成します。</div>
+          <div class="flow-tags"><span class="flow-tag" style="background:rgba(139,92,246,0.1);color:var(--purple2)">APIキー不要</span></div>
+        </div>
+      </div>
+      <div class="flow-step reveal">
+        <div class="flow-num" style="background:rgba(245,158,11,0.12);color:var(--gold);border:2px solid var(--gold)">4</div>
+        <div class="flow-body">
+          <div class="flow-title">送信〜開封〜返信を自動トラッキング</div>
+          <div class="flow-desc">送信履歴は永続保存され、開封率・返信率・アポ獲得数はすべて企業単位のリストへドリルダウン可能。</div>
+          <div class="flow-tags"><span class="flow-tag" style="background:rgba(245,158,11,0.1);color:var(--gold)">送信履歴の永続化</span></div>
+        </div>
+      </div>
+      <div class="flow-step reveal">
+        <div class="flow-num" style="background:rgba(0,212,255,0.12);color:var(--accent);border:2px solid var(--accent)">5</div>
+        <div class="flow-body">
+          <div class="flow-title">勝ちパターンを蓄積し、次の営業へ</div>
+          <div class="flow-desc">返信を獲得した文章はワンクリックで「勝ちパターン」として登録。業種・規模別に検索できるライブラリとして組織に蓄積されます。</div>
+          <div class="flow-tags"><span class="flow-tag" style="background:rgba(0,212,255,0.1);color:var(--accent)">組織ナレッジ化</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PRICING ─── -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-header reveal" style="text-align:center;margin:0 auto 56px;max-width:600px">
+      <div class="section-badge"><span class="tag-pill tag-cyan">PRICING</span></div>
+      <h2 class="section-title">チームの規模に合わせて、無理なく。</h2>
+      <p class="section-desc" style="margin:0 auto">初期費用0円。まずは無料トライアルでターゲットリストの精度を体感してください。</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card reveal">
+        <div class="price-name">Starter</div>
+        <div class="price-val">¥0<small>/月</small></div>
+        <div class="price-unit">個人・小規模チーム向け</div>
+        <div class="price-desc">ハマり度合いスコアリングとテンプレートメール生成を、まずは無料で体験。</div>
+        <ul class="price-list">
+          <li>ターゲットリスト ベスト10000（閲覧）</li>
+          <li>ハマり度合いスコアリング</li>
+          <li>メール文章提案（3パターン生成）</li>
+          <li class="na">MAモジュール（企業訪問ログ等）</li>
+          <li class="na">人脈の森 連携</li>
+        </ul>
+        <a href="emplex-mail-sales.html" class="btn btn-outline" style="justify-content:center">まずは無料で試す</a>
+      </div>
+      <div class="price-card on reveal">
+        <div class="price-pop">最も選ばれています</div>
+        <div class="price-name">Standard</div>
+        <div class="price-val">¥49,800<small>/月〜</small></div>
+        <div class="price-unit">営業チーム向け（〜10名）</div>
+        <div class="price-desc">MAモジュール・人脈の森連携まで含めた、営業組織のフル活用プラン。</div>
+        <ul class="price-list">
+          <li>Starterの全機能</li>
+          <li>マーケティングオートメーション一式</li>
+          <li>人脈の森 連携（名刺データ突合）</li>
+          <li>CSV/JSONエクスポート無制限</li>
+          <li>勝ちパターンライブラリ</li>
+        </ul>
+        <a href="#cta" class="btn btn-primary" style="justify-content:center"><span>お問い合わせ</span></a>
+      </div>
+      <div class="price-card reveal">
+        <div class="price-name">Enterprise</div>
+        <div class="price-val">お問い合わせ</div>
+        <div class="price-unit">複数事業部・大規模組織向け</div>
+        <div class="price-desc">独自データ連携・API拡張・専任サポートが必要な組織向けのカスタムプラン。</div>
+        <ul class="price-list">
+          <li>Standardの全機能</li>
+          <li>専用データ連携（自社CRM・SFA）</li>
+          <li>MA-ROI（PBM連携カスタム設計）</li>
+          <li>専任カスタマーサクセス担当</li>
+        </ul>
+        <a href="#cta" class="btn btn-outline" style="justify-content:center">相談する</a>
+      </div>
+    </div>
+    <div class="pricing-note">全プラン初期費用0円・クレジットカード登録不要でトライアル開始できます。</div>
+  </div>
+</section>
+
+<!-- ─── QUOTE ─── -->
+<section id="quote">
+  <div class="quote-inner reveal">
+    <div class="quote-text">「営業は勘と根性の仕事ではない。狙うべき企業をデータで見抜ければ、返信率は必ず変わる。」</div>
+    <div class="quote-author">— eMplex Mail Sales 開発チーム</div>
+  </div>
+</section>
+
+<!-- ─── FAQ ─── -->
+<section id="faq">
+  <div class="container">
+    <div class="section-header reveal" style="text-align:center;margin:0 auto 56px;max-width:600px">
+      <div class="section-badge"><span class="tag-pill tag-purple">FAQ</span></div>
+      <h2 class="section-title">よくある質問</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item reveal" onclick="this.classList.toggle('open')">
+        <div class="faq-q">メール文章の生成にAnthropic APIキーは必要ですか？<span class="fq-mark">+</span></div>
+        <div class="faq-a"><p>不要です。「メール文章提案」機能は企業データを埋め込んだテンプレートエンジンで動作するため、APIキーなしで3パターン生成・ルールベースの改良まで完結します。IPO予定企業のWeb調査や企業URLからの自動情報取得など、一部のAI Web検索機能のみAnthropic APIキーの設定が必要です。</p></div>
+      </div>
+      <div class="faq-item reveal" onclick="this.classList.toggle('open')">
+        <div class="faq-q">ターゲットリストの企業データはどこから取得していますか？<span class="fq-mark">+</span></div>
+        <div class="faq-a"><p>TOKYO PRO Market（187社）・東証グロース（608社）の上場企業一覧、上場日、時価総額（時価総額上位250社）などは公開情報源を基に構築しています。監査法人・主幹事証券会社・都道府県などは現時点で一部企業のみ実データを反映しており、順次拡充中です。</p></div>
+      </div>
+      <div class="faq-item reveal" onclick="this.classList.toggle('open')">
+        <div class="faq-q">APIキー未設定でもターゲットリストに企業を追加できますか？<span class="fq-mark">+</span></div>
+        <div class="faq-a"><p>可能です。企業URLを貼り付けると、APIキー未設定時はドメイン名から仮の企業情報で即時登録され、後からAPIキーを設定すれば「AI再調査」ボタンで正式な企業情報に更新できます。</p></div>
+      </div>
+      <div class="faq-item reveal" onclick="this.classList.toggle('open')">
+        <div class="faq-q">「人脈の森」との連携は何ができますか？<span class="fq-mark">+</span></div>
+        <div class="faq-a"><p>Eight名刺データをもとに、ターゲットリスト上の各企業に「名刺あり／なし」を自動表示します。法人格表記の揺れ（株式会社の位置や全角半角）を正規化して自動突合するため、既存の人脈資産をそのまま営業優先度の判断材料にできます。</p></div>
+      </div>
+      <div class="faq-item reveal" onclick="this.classList.toggle('open')">
+        <div class="faq-q">既存のCRM/SFAとの連携は可能ですか？<span class="fq-mark">+</span></div>
+        <div class="faq-a"><p>Standardプラン以上でCSV/JSONエクスポートによる連携が可能です。専用のデータ連携が必要な場合はEnterpriseプランでカスタム対応いたします。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROFILE ─── -->
+<section class="prof-section" id="profile">
+  <div class="prof-grid">
+    <div class="prof-photo-card reveal">
+      <div class="prof-photo">
+        <div class="prof-photo-placeholder">
+          <div class="prof-photo-initial">古</div>
+        </div>
+      </div>
+      <div class="prof-name-block">
+        <div class="prof-name">古谷 幸治</div>
+        <div class="prof-name-en">KOJI FURUYA</div>
+        <div class="prof-role-line">株式会社プロジェクト・イノベーション<br>代表取締役CEO</div>
+        <div class="prof-badges">
+          <div class="prof-badge">管理会計・営業データ分析歴30年</div>
+          <div class="prof-badge">eMplexシリーズ プロダクト開発責任者</div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal d1">
+      <div class="prof-career-intro">営業を、<em>「勘」</em>から<em>「スコア」</em>の仕事にする。</div>
+      <div class="c-item">
+        <div class="c-yr">Phase 1</div>
+        <div class="c-txt">大手企業の管理会計・営業支援システム構築に従事。<strong>「数字から意思決定を組み立てる」</strong>仕事を軸に、業種横断でのデータ活用支援を重ねる。</div>
+      </div>
+      <div class="c-item">
+        <div class="c-yr">Phase 2</div>
+        <div class="c-txt"><strong>株式会社プロジェクト・イノベーション</strong>を設立、代表取締役CEOに就任。プロジェクト単位の採算管理・フォーキャストの仕組みを、複数の業界に横展開。</div>
+      </div>
+      <div class="c-item">
+        <div class="c-yr">Phase 3</div>
+        <div class="c-txt">営業現場の「なんとなくのリスト」「属人化した文章作成」に着目し、<strong>ICPスコアリング×実企業データ×テンプレート生成</strong>を統合したeMplex Mail Salesを設計・開発。</div>
+      </div>
+      <div style="margin-top:2.5rem;padding:1.8rem 2rem;background:rgba(3,25,76,.06);border-left:3px solid var(--jv-red)">
+        <div style="font-family:var(--jv-mn);font-size:.52rem;letter-spacing:.2em;color:var(--jv-red);margin-bottom:1rem;opacity:.8">STRENGTHS</div>
+        <div style="display:flex;flex-direction:column;gap:.6rem">
+          <div style="display:flex;gap:.75rem;align-items:baseline;font-size:.84rem;font-weight:300;color:var(--jv-fog);line-height:1.8"><span style="color:var(--jv-red);font-family:var(--jv-mn);font-size:.6rem;flex-shrink:0">01</span><strong style="color:var(--jv-navy);font-weight:500">データドリブンな営業設計</strong>——勘に頼らないターゲティングの仕組み化</div>
+          <div style="display:flex;gap:.75rem;align-items:baseline;font-size:.84rem;font-weight:300;color:var(--jv-fog);line-height:1.8"><span style="color:var(--jv-red);font-family:var(--jv-mn);font-size:.6rem;flex-shrink:0">02</span><strong style="color:var(--jv-navy);font-weight:500">実データへのこだわり</strong>——公開情報を基にした実在企業データベースの構築・保守</div>
+        </div>
+      </div>
+      <div style="margin-top:1.5rem;padding:1.5rem 2rem;background:rgba(3,25,76,.04);border-left:3px solid var(--jv-navy)">
+        <div style="font-family:var(--jv-mn);font-size:.52rem;letter-spacing:.2em;color:var(--jv-mist);margin-bottom:.7rem">WHY MAIL SALES</div>
+        <div style="font-family:var(--jv-sr);font-style:italic;font-size:.98rem;color:var(--jv-navy);line-height:1.9">「狙うべき企業がわかれば、営業メールはもっとシンプルになる。eMplex Mail Salesは、そのための最初の一歩を、データで用意する挑戦だ。」</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA ─── -->
+<section id="cta">
+  <div class="container">
+    <div class="reveal">
+      <h2 class="cta-title">今日から、狙うべき企業が見える。</h2>
+      <p class="cta-desc">ターゲットリスト ベスト10000とメール文章提案は、APIキー登録なしですぐに試せます。</p>
+      <div class="cta-actions">
+        <a href="emplex-mail-sales.html" class="btn btn-primary btn-lg glow-btn"><span>🚀 無料でターゲットリストを見る</span></a>
+        <a href="emplex-mail-sales.html" class="btn btn-outline btn-lg">デモを体験する →</a>
+      </div>
+      <div class="cta-note">初期費用0円・クレジットカード登録不要</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <div class="logo-mark">e</div>
+          <div class="logo-text"><b>eMplex Mail Sales</b><span>Intent-Driven Mail Sales SaaS</span></div>
+        </div>
+        <p class="footer-desc">ハマり度合いスコアリングと実企業データベースで、狙うべき企業をデータで見抜くB2Bメール営業SaaS。</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#features">機能一覧</a></li>
+          <li><a href="#modules">モジュール</a></li>
+          <li><a href="#pricing">料金プラン</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="#flow">導入フロー</a></li>
+          <li><a href="#faq">よくある質問</a></li>
+          <li><a href="emplex-mail-sales.html">デモを開く</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#profile">代表紹介</a></li>
+          <li><a href="#cta">お問い合わせ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 eMplex Mail Sales. All rights reserved.</div>
+      <div>Powered by 株式会社プロジェクト・イノベーション</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0.12 });
+revealEls.forEach(el=>io.observe(el));
+
+window.addEventListener('scroll', ()=>{
+  const h = document.querySelector('header');
+  if(window.scrollY > 20){ h.style.borderBottomColor = 'rgba(0,212,255,0.22)'; }
+  else { h.style.borderBottomColor = 'rgba(0,212,255,0.1)'; }
+});
+</script>
+</body>
+</html>
